@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nweb/OpeListView.dart';
@@ -89,7 +91,7 @@ class _Menu1 extends State<Menu1> {
                   bottomMenuToShow = 'Menu2';
                   return onAnytap!();
                 },
-                child: Container(
+                child: SizedBox(
                     height: 100,
                     child: Center(
                         child: Text(
@@ -106,8 +108,8 @@ class _Menu1 extends State<Menu1> {
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF2B9B80)),
-                onPressed: () {},
-                child: Container(
+                onPressed: null,
+                child: SizedBox(
                     height: 100,
                     child: Center(
                         child: Text(
@@ -123,8 +125,12 @@ class _Menu1 extends State<Menu1> {
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF2B9B80)),
-                onPressed: () {},
-                child: Container(
+                onPressed: () {ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('Liste chargée'),
+                                  duration: const Duration(milliseconds: 400),
+                                ));},
+                child: SizedBox(
                     height: 100,
                     child: Center(
                         child: Text(
@@ -179,7 +185,7 @@ class _Menu2 extends State<Menu2> {
                   bottomMenuToShow = 'Menu1';
                   return onAnytap!();
                 },
-                child: Container(
+                child: SizedBox(
                   height: double.infinity,
                   child: Center(
                     child: Text(
@@ -200,7 +206,7 @@ class _Menu2 extends State<Menu2> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF2B879B)),
                 onPressed: null,
-                child: Container(
+                child: SizedBox(
                     height: 100,
                     child: Center(
                         child: Text(
@@ -221,7 +227,7 @@ class _Menu2 extends State<Menu2> {
                   if (selectedIndex >= 1) selectedIndex--;
                   return onAnytap!();
                 },
-                child: Container(
+                child: SizedBox(
                     height: 100,
                     child: Center(
                         child: Text(
@@ -239,7 +245,7 @@ class _Menu2 extends State<Menu2> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF2B9B80)),
                 onPressed: null,
-                child: Container(
+                child: SizedBox(
                     height: 100,
                     child: Center(
                         child: Text(
@@ -262,7 +268,7 @@ class _Menu2 extends State<Menu2> {
                     element.trajectoires.forEach((element2) {ProgramCurrent.add(element2);controller.text=controller.text+element2.toString();controller.text+='\n';});
                   });
                 },
-                child: Container(
+                child: SizedBox(
                     height: 100,
                     child: Center(
                         child: Text(

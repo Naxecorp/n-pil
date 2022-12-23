@@ -163,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
-                    child: serialConnected ? Text('Connecté') : Text('Déonnecté'),
+                    child: serialConnected ? Text('Connecté') : Text('Déconnecté'),
                     style: ElevatedButton.styleFrom(
                         backgroundColor:
                         serialConnected ? Colors.greenAccent : Colors.redAccent),
