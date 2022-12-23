@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_const_constructors, sort_child_properties_last
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,6 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'OpeListView.dart';
 
 class GeneralOpeViewer extends StatefulWidget {
-
-
-
   // print(ListOfOperationCurrent.elementAt(selectedIndex).runtimeType.toString());
   const GeneralOpeViewer({super.key});
 
@@ -19,39 +17,67 @@ class GeneralOpeViewer extends StatefulWidget {
 }
 
 class GeneralOpeViewerState extends State<GeneralOpeViewer> {
-
-
-
   GeneralOpeViewerState();
 
   @override
   Widget build(BuildContext context) {
-    if(ListOfOperationCurrent.elementAt(selectedIndex).runtimeType.toString()=='OperationSurfacage')return Container(color: Colors.white,child: Center(child: Text('Visualisation bientôt disponible')),);
-    else if(ListOfOperationCurrent.elementAt(selectedIndex).runtimeType.toString()=='OperationPocheCarre')return Container(color: Colors.white,child: Center(child: Text('Visualisation bientôt disponible')),);
-    else if(ListOfOperationCurrent.elementAt(selectedIndex).runtimeType.toString()=='OperationPocheRonde')return Container(color: Colors.white,child: Center(child: Text('Visualisation bientôt disponible')),);
-    else if(ListOfOperationCurrent.elementAt(selectedIndex).runtimeType.toString()=='OperationPercage')return Container(color: Colors.white,child: Center(child: Text('Visualisation bientôt disponible')),);
-    else if(ListOfOperationCurrent.elementAt(selectedIndex).runtimeType.toString()=='OperationPocheCarre')return Container(color: Colors.white,child: Center(child: Text('Visualisation bientôt disponible')),);
-    else return Container(color: Colors.black);
+    if (ListOfOperationCurrent.elementAt(selectedIndex)
+            .runtimeType
+            .toString() ==
+        'OperationSurfacage')
+      return Container(
+        color: Colors.white,
+        child: Center(child: Text('Visualisation bientôt disponible')),
+      );
+    else if (ListOfOperationCurrent.elementAt(selectedIndex)
+            .runtimeType
+            .toString() ==
+        'OperationPocheCarre')
+      return Container(
+        color: Colors.white,
+        child: Center(child: Text('Visualisation bientôt disponible')),
+      );
+    else if (ListOfOperationCurrent.elementAt(selectedIndex)
+            .runtimeType
+            .toString() ==
+        'OperationPocheRonde')
+      return Container(
+        color: Colors.white,
+        child: Center(child: Text('Visualisation bientôt disponible')),
+      );
+    else if (ListOfOperationCurrent.elementAt(selectedIndex)
+            .runtimeType
+            .toString() ==
+        'OperationPercage')
+      return Container(
+        color: Colors.white,
+        child: Center(child: Text('Visualisation bientôt disponible')),
+      );
+    else if (ListOfOperationCurrent.elementAt(selectedIndex)
+            .runtimeType
+            .toString() ==
+        'OperationPocheCarre')
+      return Container(
+        color: Colors.white,
+        child: Center(child: Text('Visualisation bientôt disponible')),
+      );
+    else
+      return Container(color: Colors.black);
   }
 }
 
-
 /********************************** USINAGE CLASSIQUE ********************************/
-
 
 /***************OPERATION DE Surfacage***************/
 
 class OpeSurfacage extends StatefulWidget {
-  const OpeSurfacage
-
-  ({super.key});
+  const OpeSurfacage({super.key});
 
   @override
   OpeSurfacageState createState() => OpeSurfacageState();
 }
 
 class OpeSurfacageState extends State<OpeSurfacage> {
-
   double _ParamA = 0;
   double _ParamB = 0;
   double _ParamC = 0;
@@ -60,10 +86,9 @@ class OpeSurfacageState extends State<OpeSurfacage> {
   double _ParamY = 0;
   double _ParamZ = 0;
 
-  double _ParamDf=0;
-  double _ParamAP=0.2;
-  double _ParamDecalage=0;
-
+  double _ParamDf = 0;
+  double _ParamAP = 0.2;
+  double _ParamDecalage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -102,10 +127,12 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(
-                            onChanged: (text)  {
-                            _ParamA = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            label: 10,
+                            onChanged: (text) {
+                              _ParamA = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -125,9 +152,12 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamB = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            label: 10,
+                            onChanged: (text) {
+                              _ParamB = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -147,9 +177,12 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamC = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            label: 10,
+                            onChanged: (text) {
+                              _ParamC = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -159,21 +192,23 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child:  Text(
+                          child: Text(
                             'Diamètre fraise ',
                             textAlign: TextAlign.justify,
                             style: TextStyle(
-                                color: Color(0xFF5A5A5A),
+                              color: Color(0xFF5A5A5A),
                               fontWeight: FontWeight.bold,
-
                             ),
                           ),
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamDf=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            label: 3,
+                            onChanged: (text) {
+                              _ParamDf = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -183,21 +218,23 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child:  Text(
+                          child: Text(
                             'Profondeur de passe ',
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                               color: Color(0xFF5A5A5A),
                               fontWeight: FontWeight.bold,
-
                             ),
                           ),
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamAP=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            label: 0.3,
+                            onChanged: (text) {
+                              _ParamAP = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -218,9 +255,12 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamDecalage=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            label: 4,
+                            onChanged: (text) {
+                              _ParamDecalage = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     )
@@ -231,69 +271,73 @@ class OpeSurfacageState extends State<OpeSurfacage> {
             Flexible(
                 flex: 1,
                 child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 100,
-                            child: const Text(
-                              'X ',
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 111, 111, 111),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40),
-                            ),
+                          const Text(
+                            'X ',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 111, 111, 111),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 40),
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamX = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              label: 10,
+                              onChanged: (text) {
+                                _ParamX = double.parse(text);
+                              },
+                            ),
                           )
                         ],
                       ),
                       const SizedBox(height: 15),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 100,
-                            child: const Text(
-                              'Y ',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 111, 111, 111),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 40,
-                              ),
+                          const Text(
+                            'Y ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
                             ),
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamY = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              label: 10,
+                              onChanged: (text) {
+                                _ParamY = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 15),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 100,
-                            child: const Text(
-                              'Z ',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 111, 111, 111),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 40,
-                              ),
+                          const Text(
+                            'Z ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
                             ),
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamZ = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              label: 10,
+                              onChanged: (text) {
+                                _ParamZ = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -303,7 +347,18 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         width: 150,
                         child: AddOperation(
                           onPressed: () {
-                            ListOfOperationCurrent.add(OperationSurfacage(OriginZ: _ParamZ, OriginY: _ParamY, OriginX: _ParamX, ParamA: _ParamA, ParamB: _ParamB, ParamC: _ParamC, ParamDf: _ParamDf, ParamAP: _ParamAP, ParamDecalage: _ParamDecalage,label: "Surfacage "+ListOfOperationCurrent.length.toString()));
+                            ListOfOperationCurrent.add(OperationSurfacage(
+                                OriginZ: _ParamZ,
+                                OriginY: _ParamY,
+                                OriginX: _ParamX,
+                                ParamA: _ParamA,
+                                ParamB: _ParamB,
+                                ParamC: _ParamC,
+                                ParamDf: _ParamDf,
+                                ParamAP: _ParamAP,
+                                ParamDecalage: _ParamDecalage,
+                                label: "Surfacage " +
+                                    ListOfOperationCurrent.length.toString()));
                             setState(() {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -324,21 +379,16 @@ class OpeSurfacageState extends State<OpeSurfacage> {
   }
 }
 
-
 /***************OPERATION DE Poche Carre***************/
 
 class OpePocheCarre extends StatefulWidget {
-  const OpePocheCarre
-
-  ({super.key});
+  const OpePocheCarre({super.key});
 
   @override
   OpePocheCarreState createState() => OpePocheCarreState();
 }
 
 class OpePocheCarreState extends State {
-
-
   double _ParamA = 0;
   double _ParamB = 0;
   double _ParamC = 0;
@@ -347,10 +397,8 @@ class OpePocheCarreState extends State {
   double _ParamY = 0;
   double _ParamZ = 0;
 
-  double _ParamDf=0;
-  double _ParamAP=0;
-
-
+  double _ParamDf = 0;
+  double _ParamAP = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -389,10 +437,11 @@ class OpePocheCarreState extends State {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(
-                            onChanged: (text)  {
+                          child: OwnTextField(
+                            onChanged: (text) {
                               _ParamA = double.parse(text);
-                            },),
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -412,9 +461,11 @@ class OpePocheCarreState extends State {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamB = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamB = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -434,9 +485,11 @@ class OpePocheCarreState extends State {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamC = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamC = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -446,21 +499,22 @@ class OpePocheCarreState extends State {
                         Container(
                           width: 100,
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child:  Text(
+                          child: Text(
                             'Diamètre fraise ',
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                               color: Color(0xFF5A5A5A),
                               fontWeight: FontWeight.bold,
-
                             ),
                           ),
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamDf=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamDf = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -470,21 +524,22 @@ class OpePocheCarreState extends State {
                         Container(
                           width: 100,
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child:  Text(
+                          child: Text(
                             'Profondeur de passe ',
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                               color: Color(0xFF5A5A5A),
                               fontWeight: FontWeight.bold,
-
                             ),
                           ),
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamAP=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamAP = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -495,69 +550,70 @@ class OpePocheCarreState extends State {
             Flexible(
                 flex: 1,
                 child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 100,
-                            child: const Text(
-                              'X ',
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 111, 111, 111),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40),
-                            ),
+                          const Text(
+                            'X ',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 111, 111, 111),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 40),
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamX = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamX = double.parse(text);
+                              },
+                            ),
                           )
                         ],
                       ),
                       const SizedBox(height: 15),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 100,
-                            child: const Text(
-                              'Y ',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 111, 111, 111),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 40,
-                              ),
+                          const Text(
+                            'Y ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
                             ),
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamY = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamY = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 15),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 100,
-                            child: const Text(
-                              'Z ',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 111, 111, 111),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 40,
-                              ),
+                          const Text(
+                            'Z ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
                             ),
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamZ = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamZ = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -567,7 +623,17 @@ class OpePocheCarreState extends State {
                         width: 150,
                         child: AddOperation(
                           onPressed: () {
-                            ListOfOperationCurrent.add(OperationPocheCarre(OriginZ: _ParamZ, OriginY: _ParamY, OriginX: _ParamX, ParamA: _ParamA, ParamB: _ParamB, ParamC: _ParamC, ParamDf: _ParamDf, ParamAP: _ParamAP, label: "Poche Carrée "+ListOfOperationCurrent.length.toString()));
+                            ListOfOperationCurrent.add(OperationPocheCarre(
+                                OriginZ: _ParamZ,
+                                OriginY: _ParamY,
+                                OriginX: _ParamX,
+                                ParamA: _ParamA,
+                                ParamB: _ParamB,
+                                ParamC: _ParamC,
+                                ParamDf: _ParamDf,
+                                ParamAP: _ParamAP,
+                                label: "Poche Carrée " +
+                                    ListOfOperationCurrent.length.toString()));
                             setState(() {
                               //CurrentLis
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -589,20 +655,16 @@ class OpePocheCarreState extends State {
   }
 }
 
-
 /***************OPERATION DE Poche Ronde***************/
 
 class OpePocheRonde extends StatefulWidget {
-  const OpePocheRonde
-
-  ({super.key});
+  const OpePocheRonde({super.key});
 
   @override
   OpePocheRondeState createState() => OpePocheRondeState();
 }
 
 class OpePocheRondeState extends State {
-
   double _ParamD = 0;
   double _ParamC = 0;
 
@@ -610,9 +672,8 @@ class OpePocheRondeState extends State {
   double _ParamY = 0;
   double _ParamZ = 0;
 
-  double _ParamDf=0;
-  double _ParamAP=0;
-
+  double _ParamDf = 0;
+  double _ParamAP = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -651,9 +712,11 @@ class OpePocheRondeState extends State {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamD = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamD = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -673,9 +736,11 @@ class OpePocheRondeState extends State {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamC = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamC = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -685,21 +750,22 @@ class OpePocheRondeState extends State {
                         Container(
                           width: 100,
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child:  Text(
+                          child: Text(
                             'Diamètre fraise ',
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                               color: Color(0xFF5A5A5A),
                               fontWeight: FontWeight.bold,
-
                             ),
                           ),
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamDf=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamDf = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -710,69 +776,70 @@ class OpePocheRondeState extends State {
             Flexible(
                 flex: 1,
                 child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 100,
-                            child: const Text(
-                              'X ',
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 111, 111, 111),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40),
-                            ),
+                          const Text(
+                            'X ',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 111, 111, 111),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 40),
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamX = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamX = double.parse(text);
+                              },
+                            ),
                           )
                         ],
                       ),
                       const SizedBox(height: 15),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 100,
-                            child: const Text(
-                              'Y ',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 111, 111, 111),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 40,
-                              ),
+                          const Text(
+                            'Y ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
                             ),
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamY = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamY = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 15),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 100,
-                            child: const Text(
-                              'Z ',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 111, 111, 111),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 40,
-                              ),
+                          const Text(
+                            'Z ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
                             ),
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamZ = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamZ = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -783,7 +850,17 @@ class OpePocheRondeState extends State {
                         child: AddOperation(
                           onPressed: () {
                             setState(() {
-                              ListOfOperationCurrent.add(OperationPocheRonde(OriginZ: _ParamZ, OriginY: _ParamY, OriginX: _ParamX, ParamD: _ParamD, ParamC: _ParamC, ParamDf: _ParamDf, ParamAP: _ParamAP, label: "Poche Ronde "+ListOfOperationCurrent.length.toString()));
+                              ListOfOperationCurrent.add(OperationPocheRonde(
+                                  OriginZ: _ParamZ,
+                                  OriginY: _ParamY,
+                                  OriginX: _ParamX,
+                                  ParamD: _ParamD,
+                                  ParamC: _ParamC,
+                                  ParamDf: _ParamDf,
+                                  ParamAP: _ParamAP,
+                                  label: "Poche Ronde " +
+                                      ListOfOperationCurrent.length
+                                          .toString()));
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: const Text('Opération ajoutée'),
@@ -803,20 +880,16 @@ class OpePocheRondeState extends State {
   }
 }
 
-
 /***************OPERATION DE PERCAGE***************/
 
 class OpePercage extends StatefulWidget {
-  const OpePercage
-
-  ({super.key});
+  const OpePercage({super.key});
 
   @override
   OpePercageState createState() => OpePercageState();
 }
 
 class OpePercageState extends State<OpePercage> {
-
   double _ParamA = 0;
   double _ParamB = 0;
   double _ParamC = 0;
@@ -825,10 +898,8 @@ class OpePercageState extends State<OpePercage> {
   double _ParamY = 0;
   double _ParamZ = 0;
 
-  double _ParamDf=0;
-  double _ParamAP=0;
-
-
+  double _ParamDf = 0;
+  double _ParamAP = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -867,10 +938,11 @@ class OpePercageState extends State<OpePercage> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(
-                            onChanged: (text)  {
+                          child: OwnTextField(
+                            onChanged: (text) {
                               _ParamA = double.parse(text);
-                            },),
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -890,9 +962,11 @@ class OpePercageState extends State<OpePercage> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamB = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamB = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -912,9 +986,11 @@ class OpePercageState extends State<OpePercage> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamC = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamC = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -924,21 +1000,22 @@ class OpePercageState extends State<OpePercage> {
                         Container(
                           width: 100,
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child:  Text(
+                          child: Text(
                             'Diamètre fraise ',
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                               color: Color(0xFF5A5A5A),
                               fontWeight: FontWeight.bold,
-
                             ),
                           ),
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamDf=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamDf = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -964,9 +1041,11 @@ class OpePercageState extends State<OpePercage> {
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamX = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamX = double.parse(text);
+                              },
+                            ),
                           )
                         ],
                       ),
@@ -984,9 +1063,11 @@ class OpePercageState extends State<OpePercage> {
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamY = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamY = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -1004,9 +1085,11 @@ class OpePercageState extends State<OpePercage> {
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamZ = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamZ = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -1037,23 +1120,18 @@ class OpePercageState extends State<OpePercage> {
   }
 }
 
-
 /********************************** CONNECTEURS ********************************/
-
 
 /***************OPERATION DE SUB-D9***************/
 
 class OpeSubd9 extends StatefulWidget {
-  const OpeSubd9
-
-  ({super.key});
+  const OpeSubd9({super.key});
 
   @override
   _OpeSubd9 createState() => _OpeSubd9();
 }
 
 class _OpeSubd9 extends State<OpeSubd9> {
-
   double _ParamA = 0;
   double _ParamB = 0;
   double _ParamC = 0;
@@ -1062,10 +1140,9 @@ class _OpeSubd9 extends State<OpeSubd9> {
   double _ParamY = 0;
   double _ParamZ = 0;
 
-  double _ParamDf=0;
-  double _ParamAP=0;
-  double _ParamDecalage=0;
-
+  double _ParamDf = 0;
+  double _ParamAP = 0;
+  double _ParamDecalage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -1076,12 +1153,29 @@ class _OpeSubd9 extends State<OpeSubd9> {
             Flexible(
                 flex: 2,
                 child: Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 140,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 84, 204, 197),borderRadius: BorderRadius.all(Radius.circular(10))
+                        ),
+                        child: IconButton(
+                          
+                          color: Colors.white,                          
+                          onPressed: () {  }, 
+                          icon:Icon(Icons.rotate_90_degrees_cw),),
+                      ),
+                      Spacer(),
+                      Image(
+                        image: AssetImage('assets/subd9H.png'),
+                      ),
+                    ],
+                  ),
                   margin: EdgeInsets.all(30),
                   padding: EdgeInsets.all(30),
                   // color: Colors.red,
-                  child: Image(
-                    image: AssetImage('assets/subd9H.png'),
-                  ),
                 )),
             Flexible(
               flex: 1,
@@ -1104,10 +1198,11 @@ class _OpeSubd9 extends State<OpeSubd9> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(
-                            onChanged: (text)  {
+                          child: OwnTextField(
+                            onChanged: (text) {
                               _ParamA = double.parse(text);
-                            },),
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -1127,9 +1222,11 @@ class _OpeSubd9 extends State<OpeSubd9> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamB = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamB = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -1149,9 +1246,11 @@ class _OpeSubd9 extends State<OpeSubd9> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamC = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamC = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -1161,21 +1260,22 @@ class _OpeSubd9 extends State<OpeSubd9> {
                         Container(
                           width: 100,
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child:  Text(
+                          child: Text(
                             'Diamètre fraise ',
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                               color: Color(0xFF5A5A5A),
                               fontWeight: FontWeight.bold,
-
                             ),
                           ),
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamDf=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamDf = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -1196,9 +1296,11 @@ class _OpeSubd9 extends State<OpeSubd9> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamDecalage=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamDecalage = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     )
@@ -1225,9 +1327,11 @@ class _OpeSubd9 extends State<OpeSubd9> {
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamX = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamX = double.parse(text);
+                              },
+                            ),
                           )
                         ],
                       ),
@@ -1247,9 +1351,11 @@ class _OpeSubd9 extends State<OpeSubd9> {
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamY = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamY = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -1269,9 +1375,11 @@ class _OpeSubd9 extends State<OpeSubd9> {
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamZ = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamZ = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -1302,21 +1410,16 @@ class _OpeSubd9 extends State<OpeSubd9> {
   }
 }
 
-
 /***************OPERATION DE SUB-D15***************/
 
 class OpeSubd15 extends StatefulWidget {
-  const OpeSubd15
-
-  ({super.key});
+  const OpeSubd15({super.key});
 
   @override
   _OpeSubd15 createState() => _OpeSubd15();
 }
 
 class _OpeSubd15 extends State<OpeSubd15> {
-
-
   double _ParamA = 0;
   double _ParamB = 0;
   double _ParamC = 0;
@@ -1325,9 +1428,8 @@ class _OpeSubd15 extends State<OpeSubd15> {
   double _ParamY = 0;
   double _ParamZ = 0;
 
-  double _ParamDf=0;
-  double _ParamAP=0;
-
+  double _ParamDf = 0;
+  double _ParamAP = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -1366,10 +1468,11 @@ class _OpeSubd15 extends State<OpeSubd15> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(
-                            onChanged: (text)  {
+                          child: OwnTextField(
+                            onChanged: (text) {
                               _ParamA = double.parse(text);
-                            },),
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -1389,9 +1492,11 @@ class _OpeSubd15 extends State<OpeSubd15> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamB = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamB = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -1411,9 +1516,11 @@ class _OpeSubd15 extends State<OpeSubd15> {
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamC = double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamC = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -1423,21 +1530,22 @@ class _OpeSubd15 extends State<OpeSubd15> {
                         Container(
                           width: 100,
                           padding: EdgeInsets.symmetric(horizontal: 4),
-                          child:  Text(
+                          child: Text(
                             'Diamètre fraise ',
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                               color: Color(0xFF5A5A5A),
                               fontWeight: FontWeight.bold,
-
                             ),
                           ),
                         ),
                         Container(
                           width: 100,
-                          child:  OwnTextField(onChanged: (text){
-                            _ParamDf=double.parse(text);
-                          },),
+                          child: OwnTextField(
+                            onChanged: (text) {
+                              _ParamDf = double.parse(text);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -1464,9 +1572,11 @@ class _OpeSubd15 extends State<OpeSubd15> {
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamX = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamX = double.parse(text);
+                              },
+                            ),
                           )
                         ],
                       ),
@@ -1486,9 +1596,11 @@ class _OpeSubd15 extends State<OpeSubd15> {
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamY = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamY = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -1508,9 +1620,11 @@ class _OpeSubd15 extends State<OpeSubd15> {
                           ),
                           Container(
                             width: 100,
-                            child:  OwnTextField(onChanged: (text){
-                              _ParamZ = double.parse(text);
-                            },),
+                            child: OwnTextField(
+                              onChanged: (text) {
+                                _ParamZ = double.parse(text);
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -1541,24 +1655,26 @@ class _OpeSubd15 extends State<OpeSubd15> {
   }
 }
 
-
 class OwnTextField extends StatefulWidget {
-  const OwnTextField({this.onChanged});
+  const OwnTextField({this.onChanged, this.label});
 
   final ValueChanged<String>? onChanged;
+  final double? label;
 
   @override
-  OwnTextFieldState createState() => OwnTextFieldState(onChanged);
+  OwnTextFieldState createState() => OwnTextFieldState(onChanged, label);
 }
 
 class OwnTextFieldState extends State<OwnTextField> {
   final ValueChanged<String>? _onChanged;
+  final double? _label;
 
-  OwnTextFieldState(this._onChanged);
+  OwnTextFieldState(this._onChanged, this._label);
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      initialValue: _label.toString(),
       onChanged: (text) {
         return _onChanged!(text);
       },
