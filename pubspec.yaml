@@ -37,6 +37,7 @@ dependencies:
   syncfusion_flutter_gauges: ^20.3.61
   awesome_snackbar_content: ^0.1.0
   file_picker: ^5.2.4
+  flutter_inset_box_shadow: ^1.0.8
 
 
 

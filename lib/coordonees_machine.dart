@@ -200,6 +200,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                           child: AspectRatio(
                             aspectRatio: 1,
                             child: Touche(
+                              isToggled: true,
                               onPressed: () {
                                 print('ok');
                               },
@@ -211,6 +212,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                           child: AspectRatio(
                             aspectRatio: 1,
                             child: Touche(
+                              isToggled: false,
                               onPressed: () {
                                 print('ok');
                               },

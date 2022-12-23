@@ -28,7 +28,7 @@ external disconectEvent();
 external readLoop();
 
 bool serialConnected = false;
-int pageToShow = 2;
+int pageToShow = 1;
 
 
 void main() {
