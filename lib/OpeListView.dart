@@ -1,22 +1,7 @@
-import 'dart:async';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'dart:js' as js;
-import 'dart:js_util';
-
-import 'package:js/js.dart';
-import 'window.dart';
-import 'ArretUrgence.dart';
-
-import 'family_menu.dart';
-import 'ope_menu.dart';
 import 'opeviewer.dart';
 import 'operation.dart';
-import 'familleviewer.dart';
-import 'bottomMenu.dart';
-import 'conversationel.dart';
-
 
 
 List<Operation> ListOfOperationCurrent = <Operation>[];
@@ -94,10 +79,10 @@ class _OpeListSide extends State<OpeListSide> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: const [
                   Flexible(
                     flex: 1,
-                    child: const FittedBox(
+                    child: FittedBox(
                       fit: BoxFit.fitWidth,
                       child: Text(
                         "Liste des",
@@ -111,7 +96,7 @@ class _OpeListSide extends State<OpeListSide> {
                   ),
                   Flexible(
                     flex: 1,
-                    child: const FittedBox(
+                    child: FittedBox(
                       fit: BoxFit.fitWidth,
                       child: Text(
                         "opérations",

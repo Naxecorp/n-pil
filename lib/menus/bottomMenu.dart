@@ -1,12 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/OpeListView.dart';
-import 'package:nweb/conversationel.dart';
-import 'package:nweb/operation.dart';
-import 'package:nweb/programmeScreen.dart';
-import 'OpeListView.dart';
+import '../screens.dart';
+import 'package:nweb/service/API_Manager.dart';
+import 'package:nweb/globals_var.dart'as global;
+
 
 class BottomMenu extends StatefulWidget {
   const BottomMenu({
@@ -162,6 +160,76 @@ class Menu2 extends StatefulWidget {
 }
 
 class _Menu2 extends State<Menu2> {
+
+  String FileName="Prog1";
+
+  Future<void> askForNameFile()async {
+    String _FileName="";
+    showDialog(
+      context: context,
+      builder: (BuildContext context)
+    {
+      // return object of type Dialog
+      return AlertDialog(
+        title: Text("Définir un nom de programme"),
+        content: Container(
+          height: 80,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                child: TextFormField(
+                  initialValue: "Prog1",
+                  onChanged: (text) {
+                    _FileName = text;
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(),
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      gapPadding: 5.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          // usually buttons at the bottom of the dialog
+          TextButton(
+            child: Text("Annuler"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+              child: Text("Ok"),
+              onPressed: () {
+                FileName = _FileName;
+                Navigator.of(context).pop();
+                List<String> Buffer = [];
+                ListOfOperationCurrent.forEach((element) {
+                  element.construct();
+                  element.trajectoires.forEach((element2) {
+                    Buffer.add(element2);
+                  });
+                });
+                String Bufferjoined = Buffer.join("\n");
+                API_Manager().upLoadAFile("0:/gcodes/$FileName.gcode", Buffer.toString().codeUnits.length.toString(), Uint8List.fromList(Bufferjoined.codeUnits)).then((notused) {
+                  API_Manager().getfileList().then((value) => global.ListofGcodeFile=value);
+                }
+                );
+              }
+          ),
+        ],
+      );
+    });
+  }
+
+
   final VoidCallback? onAnytap;
 
   _Menu2(this.onAnytap);
@@ -261,12 +329,10 @@ class _Menu2 extends State<Menu2> {
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF2B9B80)),
-                onPressed: () {
-                 ListOfOperationCurrent.forEach((element) {
-                    element.showValues();
-                    element.construct();
-                    element.trajectoires.forEach((element2) {ProgramCurrent.add(element2);controller.text=controller.text+element2.toString();controller.text+='\n';});
-                  });
+                onPressed: () async{
+
+                  await askForNameFile();
+
                 },
                 child: SizedBox(
                     height: 100,

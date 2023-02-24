@@ -46,14 +46,12 @@ class Operation {
 class OperationSurfacage extends Operation{
 
 
-
-
-  double ParamA;
-  double ParamB;
-  double ParamC;
-  double ParamDf;
-  double ParamAP;
-  double ParamDecalage;
+  double ParamA=10;
+  double ParamB=10;
+  double ParamC=1;
+  double ParamDf=3;
+  double ParamAP=0.3;
+  double ParamDecalage=4;
 
   OperationSurfacage({required super.OriginZ, required super.OriginY, required super.OriginX,super.label, required this.ParamA,required this.ParamB,required this.ParamC,required this.ParamDf,required this.ParamAP,required this.ParamDecalage});
 
@@ -124,7 +122,6 @@ class OperationPocheCarre extends Operation{
 
     trajectoires.add(';$label');
     trajectoires.add('G0 X$OriginX Y$OriginY Z$OriginZ');
-    trajectoires.add('G92 X0 Y0 Z0');
     trajectoires.add('G0 Z1 F1500');
     trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
     trajectoires.add('G0 Z0');
@@ -148,6 +145,84 @@ class OperationPocheCarre extends Operation{
     trajectoires.add(';End of $label\n');
 
   }
+
+
+}
+
+class OperationContournage extends Operation{
+
+  double ParamA = 50;
+  double ParamB = 100;
+  double ParamC = 3;
+  double ParamDf = 3;
+  double ParamAP = 0.3;
+
+  OperationContournage({required super.OriginZ, required super.OriginY, required super.OriginX,super.label, required this.ParamA,required this.ParamB,required this.ParamC,required this.ParamDf,required this.ParamAP});
+
+@override
+Future<void> construct ()async{
+
+  trajectoires.add(';$label');
+  trajectoires.add('G0 X$OriginX Y$OriginY Z$OriginZ');
+  trajectoires.add('G0 Z1 F1500');
+  trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
+  trajectoires.add('G0 Z0');
+
+
+  for(int j = 1;j*ParamAP<=ParamC;j++)
+  {
+    trajectoires.add('G1 Z'+(j*ParamAP).toString());
+
+    trajectoires.add('G1 Y'+(ParamB/2-ParamDf/2).toString());
+    trajectoires.add('G1 X'+(ParamA/2-ParamDf/2).toString());
+    trajectoires.add('G1 Y'+(-ParamB/2+ParamDf/2).toString());
+    trajectoires.add('G1 X'+(-ParamA/2+ParamDf/2).toString());
+
+
+  }
+
+
+  trajectoires.add(';End of $label\n');
+
+}
+
+
+}
+
+class OperationLigneDroite extends Operation{
+
+  double ParamA = 10;
+  double ParamC = 1;
+
+  double ParamDf = 3;
+  double ParamAP = 0.3;
+
+  double NbLigne = 2;
+  double Interligne = 3;
+
+  OperationLigneDroite({required super.OriginZ, required super.OriginY, required super.OriginX,super.label, required this.ParamA,required this.ParamC,required this.ParamDf,required this.ParamAP,required this.NbLigne,required this.Interligne});
+
+@override
+Future<void> construct ()async{
+
+  trajectoires.add(';$label');
+  trajectoires.add('G0 X$OriginX Y$OriginY  F1500');
+
+
+    for(int i=1;i<=NbLigne-1;i++){
+    trajectoires.add('G0 Z'+(OriginZ).toString()+' F1500');
+    trajectoires.add('G1 Y'+(OriginY+ParamA).toString());
+    trajectoires.add('G0 Z'+(OriginZ+1).toString()+' F1500');
+    trajectoires.add('G0 Y'+(OriginY).toString());
+    trajectoires.add('G0 X'+(OriginX+(i)*Interligne).toString());
+    }
+
+
+  trajectoires.add('G0 Z'+(OriginZ+1).toString()+' F1500');
+  trajectoires.add('G0 X$OriginX Y$OriginY Z200');
+  trajectoires.add(';End of $label\n');
+
+}
 
 
 }
@@ -190,6 +265,9 @@ Future<void> construct ()async{
 
 
 }
+
+
+
 
 class OperationDb9 extends Operation{
 

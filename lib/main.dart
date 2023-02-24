@@ -7,15 +7,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'dart:js' as js;
 import 'dart:js_util';
-
 import 'package:js/js.dart';
-import 'package:nweb/operation.dart';
-import 'side_menu.dart';
 
-import 'dashboard.dart';
-import 'conversationel.dart';
-import 'programmeScreen.dart';
-import 'parametreScreen.dart';
+import 'menus/side_menu.dart';
+import 'service/API_Manager.dart';
+import 'globals_var.dart' as global;
+import 'screens.dart';
+
 var user = js.JsObject.fromBrowserObject(js.context['bool_connect']);
 
 @JS('connect')
@@ -30,6 +28,7 @@ external readLoop();
 bool serialConnected = false;
 int pageToShow = 1;
 
+final TextEditingController controllerForTerminal = TextEditingController();
 
 void main() {
   runApp(const MyApp());
@@ -42,9 +41,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Naxe N02',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'RobotoMono'
       ),
       home: const MyHomePage(title: 'Machine atelier 1'),
       debugShowCheckedModeBanner: false,
@@ -62,7 +62,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _counter = "";
+
 
   PageController page = PageController();
 
@@ -71,81 +71,43 @@ class _MyHomePageState extends State<MyHomePage> {
 
   StreamController<String> controller = StreamController<String>();
 
-  @protected
-  @mustCallSuper
+  Future<void> actualiserMachineObjectModel() async {
+    Timer.periodic(Duration(milliseconds: 600), (timer) {
+      API_Manager().getdataMachineObjectModel().then((machine) {
+        global.machineObjectModel = machine;
+        if (mounted)setState(() {});
+        if(global.myEthernet_connection.isConnected==false)timer.cancel();
+      });
+    });
+  }
+
+  Future<void> actualiserMoveObjectModel() async {
+    Timer.periodic(const Duration(seconds: 5,milliseconds: 3), (timer) {
+      API_Manager().getMachineMoveObjectModel().then((move) => global.objectModelMove = move);
+        if (mounted)setState(() {});
+        if(global.myEthernet_connection.isConnected==false)timer.cancel();
+    });
+  }
+
+  Future<void> actualiserMoveObjectModelOneSec() async {
+    Future.delayed(const Duration(seconds: 1,milliseconds: 30), () {
+      API_Manager().getMachineMoveObjectModel().then((move) => global.objectModelMove = move);
+      if (mounted)setState(() {});
+      //if(global.myEthernet_connection.isConnected==false)timer.cancel();
+    });
+  }
+
   void initState() {
-    serialConnected = false;
-    controller.stream.listen((event) {
-      _counter = event;
-      print('Value from controleur : $event');
-      setState(() {});
-    });
-  }
-
-  void _sendAnything() {
-    setState(() {
-      js.context.callMethod('writeToStream', ['M92']);
-    });
-  }
-
-  void _sendAnything2() {
-    setState(() {
-      js.context.callMethod('writeToStream', ['M155 S0']);
-    });
-  }
-
-  Future<void> _connectToSerial() async {
-    Future<String> threeFuture = promiseToFuture(connect());
-    final three = await threeFuture;
-    print(three);
-    readLoopDart();
-    if (three == 'connected') {
-      actualiserProgress();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Connecté')));
-      serialConnected = true;
-      setState(() {});
-    }
-  }
-
-  void _disconectEventDart() {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('déconnecté')));
-    serialConnected = false;
-  }
-
-  Future<void> actualiserProgress() async {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      var object = js.context.callMethod('getBoolConnect');
-      print(object.toString() + 'object');
-      if (object.toString() == 'false') _disconectEventDart();
-      if (this.mounted) setState(() {});
-    });
-  }
-
-  Future<void> readLoopDart() async {
-    final Future<String> threeFuture = promiseToFuture(readLoop());
-    final three = await threeFuture;
-    //print('from flutter ' + three);
-    controller.add(three);
-    callreadLoopDart();
-  }
-
-  void callreadLoopDart() {
-    //print('callreadLoopDart');
-    readLoopDart();
-  }
-
-  void _disconect() {
-    print('Try to disconect');
+    API_Manager().CORSInit();
+    actualiserMachineObjectModel();
+    actualiserMoveObjectModel();
+    API_Manager().getfileList().then((value) => global.ListofGcodeFile=value);
   }
 
 
 
   @override
   Widget build(BuildContext context) {
-    height = MediaQuery.of(context).size.height;
-    width = MediaQuery.of(context).size.aspectRatio;
     return Scaffold(
       //drawer: NavDrawer(),
       appBar: AppBar(
@@ -153,30 +115,45 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Flexible(flex: 2,child: Container(child: Image(image: AssetImage('iconnaxe.png')))),
-            Flexible(flex:10,child: Container(child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Spacer(),
-                Text(widget.title,style: TextStyle(color: Color(0xFF707585)),),
-                SizedBox(width: 20,),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    child: serialConnected ? Text('Connecté') : Text('Déconnecté'),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                        serialConnected ? Colors.greenAccent : Colors.redAccent),
-                    onPressed: () {
-                      if (!serialConnected)
-                        _connectToSerial();
-                      else
-                        _disconect();
-                    },
-                  ),
-                ),
-              ],
-            ))),
+            Flexible(
+                flex: 2,
+                child:
+                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
+            Flexible(
+                flex: 10,
+                child: Container(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Spacer(),
+                    Text(
+                      widget.title,
+                      style: TextStyle(color: Color(0xFF707585)),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        child: global.myEthernet_connection.isConnected==true ? Text('Connecté',style: TextStyle(color: Colors.white),)
+                            : Text('Déconnecté'),
+                        style: ElevatedButton.styleFrom(
+                          disabledBackgroundColor: Colors.green,
+                            backgroundColor: global.myEthernet_connection.isConnected==true ? Colors.greenAccent : Colors.redAccent),
+                        onPressed: global.myEthernet_connection.isConnected==false ? () {
+                          actualiserMachineObjectModel();
+                          actualiserMoveObjectModel();
+                          /*
+                          if (!serialConnected)
+                            _connectToSerial();
+                          else
+                            _disconect();*/}:null,
+                      ),
+                    ),
+
+                  ],
+                ))),
           ],
         ),
       ),
@@ -188,15 +165,33 @@ class _MyHomePageState extends State<MyHomePage> {
               flex: 2,
               child: Container(
                 margin: EdgeInsets.all(10),
-                child: SideMenu(onAnyTap: (){
-                  setState(() {
-
-                });},),
+                child: SideMenu(
+                  onAnyTap: () {
+                    setState(() {
+                      print("hahaha");
+                    });
+                  },
+                ),
               ),
             ),
             Flexible(
               flex: 10,
-              child: pageToShow == 1 ? Dashboard():pageToShow==2? Conversationel():pageToShow==3? ProgrammeScreen():pageToShow==4? ParametreScreen():Center(child: Text('Start Page')),
+              child: pageToShow == 1
+                  ? DashboardScreen(
+                      notifyParent: () {
+                        setState(() {});
+                        print(offsetSelected);
+                      },
+                    )
+                  : pageToShow == 2
+                      ? ConversationelScreen()
+                      : pageToShow == 3
+                          ? ProgrammeScreen()
+                          : pageToShow == 4
+                              ? ParametreScreen()
+                              : pageToShow == 5
+                                  ? ParametreScreen()
+                                  : Center(child: Text('Start Page')),
             ),
           ],
         ),
@@ -204,5 +199,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-

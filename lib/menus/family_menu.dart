@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'conversationel.dart';
+import '../screens.dart';
 
 class FamilyMenu extends StatefulWidget {
   const FamilyMenu({
@@ -74,9 +74,8 @@ class _FamilyMenu extends State<FamilyMenu> {
                           });
                           return onAnytap();
                         },
-                        leading: Icon(
-                          Icons.check_box_outline_blank,
-                          color: Colors.black45,
+                        leading: Image(
+                          image: AssetImage('assets/Icon Usinage classique.png'),
                         ),
                         title: Text(
                           'Usinage classique',
@@ -100,9 +99,8 @@ class _FamilyMenu extends State<FamilyMenu> {
                           });
                           return onAnytap();
                         },
-                        leading: Icon(
-                          Icons.workspaces_filled,
-                          color: Colors.black45,
+                        leading: Image(
+                          image: AssetImage('assets/Icon cnc conecteurs.png'),
                         ),
                         title: Text(
                           'Connecteurs',

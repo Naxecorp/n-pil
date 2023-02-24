@@ -4,13 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/operation.dart';
-import 'conversationel.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 import 'OpeListView.dart';
 
 class GeneralOpeViewer extends StatefulWidget {
   // print(ListOfOperationCurrent.elementAt(selectedIndex).runtimeType.toString());
-  const GeneralOpeViewer({super.key});
+  const GeneralOpeViewer
+
+  ({super.key});
 
   @override
   GeneralOpeViewerState createState() => GeneralOpeViewerState();
@@ -21,42 +23,65 @@ class GeneralOpeViewerState extends State<GeneralOpeViewer> {
 
   @override
   Widget build(BuildContext context) {
-    if (ListOfOperationCurrent.elementAt(selectedIndex)
-            .runtimeType
-            .toString() ==
+    if (ListOfOperationCurrent
+        .elementAt(selectedIndex)
+        .runtimeType
+        .toString() ==
         'OperationSurfacage')
       return Container(
         color: Colors.white,
         child: Center(child: Text('Visualisation bientôt disponible')),
       );
-    else if (ListOfOperationCurrent.elementAt(selectedIndex)
-            .runtimeType
-            .toString() ==
+    else if (ListOfOperationCurrent
+        .elementAt(selectedIndex)
+        .runtimeType
+        .toString() ==
         'OperationPocheCarre')
       return Container(
         color: Colors.white,
         child: Center(child: Text('Visualisation bientôt disponible')),
       );
-    else if (ListOfOperationCurrent.elementAt(selectedIndex)
-            .runtimeType
-            .toString() ==
+    else if (ListOfOperationCurrent
+        .elementAt(selectedIndex)
+        .runtimeType
+        .toString() ==
         'OperationPocheRonde')
       return Container(
         color: Colors.white,
         child: Center(child: Text('Visualisation bientôt disponible')),
       );
-    else if (ListOfOperationCurrent.elementAt(selectedIndex)
-            .runtimeType
-            .toString() ==
+    else if (ListOfOperationCurrent
+        .elementAt(selectedIndex)
+        .runtimeType
+        .toString() ==
         'OperationPercage')
       return Container(
         color: Colors.white,
         child: Center(child: Text('Visualisation bientôt disponible')),
       );
-    else if (ListOfOperationCurrent.elementAt(selectedIndex)
-            .runtimeType
-            .toString() ==
+    else if (ListOfOperationCurrent
+        .elementAt(selectedIndex)
+        .runtimeType
+        .toString() ==
         'OperationPocheCarre')
+      return Container(
+        color: Colors.white,
+        child: Center(child: Text('Visualisation bientôt disponible')),
+      );
+    else if (ListOfOperationCurrent
+        .elementAt(selectedIndex)
+        .runtimeType
+        .toString() ==
+        'OperationContournage')
+      return Container(
+        color: Colors.white,
+        child: Center(child: Text('Visualisation bientôt disponible')),
+      );
+    else if (ListOfOperationCurrent
+        .elementAt(selectedIndex)
+        .runtimeType
+        .toString() ==
+        'OperationLigneDroite')
       return Container(
         color: Colors.white,
         child: Center(child: Text('Visualisation bientôt disponible')),
@@ -71,24 +96,26 @@ class GeneralOpeViewerState extends State<GeneralOpeViewer> {
 /***************OPERATION DE Surfacage***************/
 
 class OpeSurfacage extends StatefulWidget {
-  const OpeSurfacage({super.key});
+  const OpeSurfacage
+
+  ({super.key});
 
   @override
   OpeSurfacageState createState() => OpeSurfacageState();
 }
 
 class OpeSurfacageState extends State<OpeSurfacage> {
-  double _ParamA = 0;
-  double _ParamB = 0;
-  double _ParamC = 0;
+  double _ParamA = 10;
+  double _ParamB = 10;
+  double _ParamC = 0.1;
 
-  double _ParamX = 0;
-  double _ParamY = 0;
-  double _ParamZ = 0;
+  double _ParamX = 50;
+  double _ParamY = 50;
+  double _ParamZ = 10;
 
-  double _ParamDf = 0;
-  double _ParamAP = 0.2;
-  double _ParamDecalage = 0;
+  double _ParamDf = 3;
+  double _ParamAP = 0.1;
+  double _ParamDecalage = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +155,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           child: OwnTextField(
-                            label: 10,
+                            label: _ParamA,
                             onChanged: (text) {
                               _ParamA = double.parse(text);
                             },
@@ -153,7 +180,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           child: OwnTextField(
-                            label: 10,
+                            label: _ParamB,
                             onChanged: (text) {
                               _ParamB = double.parse(text);
                             },
@@ -178,7 +205,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           child: OwnTextField(
-                            label: 10,
+                            label: _ParamC,
                             onChanged: (text) {
                               _ParamC = double.parse(text);
                             },
@@ -204,7 +231,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           child: OwnTextField(
-                            label: 3,
+                            label: _ParamDf,
                             onChanged: (text) {
                               _ParamDf = double.parse(text);
                             },
@@ -230,7 +257,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           child: OwnTextField(
-                            label: 0.3,
+                            label: _ParamAP,
                             onChanged: (text) {
                               _ParamAP = double.parse(text);
                             },
@@ -256,7 +283,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           child: OwnTextField(
-                            label: 4,
+                            label: _ParamDecalage,
                             onChanged: (text) {
                               _ParamDecalage = double.parse(text);
                             },
@@ -287,7 +314,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                           Container(
                             width: 100,
                             child: OwnTextField(
-                              label: 10,
+                              label: _ParamX,
                               onChanged: (text) {
                                 _ParamX = double.parse(text);
                               },
@@ -310,7 +337,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                           Container(
                             width: 100,
                             child: OwnTextField(
-                              label: 10,
+                              label: _ParamY,
                               onChanged: (text) {
                                 _ParamY = double.parse(text);
                               },
@@ -333,7 +360,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                           Container(
                             width: 100,
                             child: OwnTextField(
-                              label: 10,
+                              label: _ParamZ,
                               onChanged: (text) {
                                 _ParamZ = double.parse(text);
                               },
@@ -382,23 +409,25 @@ class OpeSurfacageState extends State<OpeSurfacage> {
 /***************OPERATION DE Poche Carre***************/
 
 class OpePocheCarre extends StatefulWidget {
-  const OpePocheCarre({super.key});
+  const OpePocheCarre
+
+  ({super.key});
 
   @override
   OpePocheCarreState createState() => OpePocheCarreState();
 }
 
 class OpePocheCarreState extends State {
-  double _ParamA = 0;
-  double _ParamB = 0;
-  double _ParamC = 0;
+  double _ParamA = 10;
+  double _ParamB = 10;
+  double _ParamC = 5;
 
-  double _ParamX = 0;
-  double _ParamY = 0;
+  double _ParamX = 50;
+  double _ParamY = 50;
   double _ParamZ = 0;
 
-  double _ParamDf = 0;
-  double _ParamAP = 0;
+  double _ParamDf = 3;
+  double _ParamAP = 0.4;
 
   @override
   Widget build(BuildContext context) {
@@ -438,6 +467,7 @@ class OpePocheCarreState extends State {
                         Container(
                           width: 100,
                           child: OwnTextField(
+                            label: _ParamA,
                             onChanged: (text) {
                               _ParamA = double.parse(text);
                             },
@@ -462,6 +492,7 @@ class OpePocheCarreState extends State {
                         Container(
                           width: 100,
                           child: OwnTextField(
+                            label: _ParamB,
                             onChanged: (text) {
                               _ParamB = double.parse(text);
                             },
@@ -486,6 +517,7 @@ class OpePocheCarreState extends State {
                         Container(
                           width: 100,
                           child: OwnTextField(
+                            label: _ParamC,
                             onChanged: (text) {
                               _ParamC = double.parse(text);
                             },
@@ -511,6 +543,7 @@ class OpePocheCarreState extends State {
                         Container(
                           width: 100,
                           child: OwnTextField(
+                            label: _ParamDf,
                             onChanged: (text) {
                               _ParamDf = double.parse(text);
                             },
@@ -536,6 +569,7 @@ class OpePocheCarreState extends State {
                         Container(
                           width: 100,
                           child: OwnTextField(
+                            label: _ParamAP,
                             onChanged: (text) {
                               _ParamAP = double.parse(text);
                             },
@@ -566,6 +600,7 @@ class OpePocheCarreState extends State {
                           Container(
                             width: 100,
                             child: OwnTextField(
+                              label: _ParamX,
                               onChanged: (text) {
                                 _ParamX = double.parse(text);
                               },
@@ -588,6 +623,7 @@ class OpePocheCarreState extends State {
                           Container(
                             width: 100,
                             child: OwnTextField(
+                              label: _ParamY,
                               onChanged: (text) {
                                 _ParamY = double.parse(text);
                               },
@@ -610,6 +646,7 @@ class OpePocheCarreState extends State {
                           Container(
                             width: 100,
                             child: OwnTextField(
+                              label: _ParamZ,
                               onChanged: (text) {
                                 _ParamZ = double.parse(text);
                               },
@@ -658,22 +695,24 @@ class OpePocheCarreState extends State {
 /***************OPERATION DE Poche Ronde***************/
 
 class OpePocheRonde extends StatefulWidget {
-  const OpePocheRonde({super.key});
+  const OpePocheRonde
+
+  ({super.key});
 
   @override
   OpePocheRondeState createState() => OpePocheRondeState();
 }
 
 class OpePocheRondeState extends State {
-  double _ParamD = 0;
-  double _ParamC = 0;
+  double _ParamD = 10;
+  double _ParamC = 3;
 
-  double _ParamX = 0;
-  double _ParamY = 0;
+  double _ParamX = 50;
+  double _ParamY = 50;
   double _ParamZ = 0;
 
-  double _ParamDf = 0;
-  double _ParamAP = 0;
+  double _ParamDf = 3;
+  double _ParamAP = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -713,6 +752,7 @@ class OpePocheRondeState extends State {
                         Container(
                           width: 100,
                           child: OwnTextField(
+                            label: _ParamD,
                             onChanged: (text) {
                               _ParamD = double.parse(text);
                             },
@@ -737,6 +777,7 @@ class OpePocheRondeState extends State {
                         Container(
                           width: 100,
                           child: OwnTextField(
+                            label: _ParamC,
                             onChanged: (text) {
                               _ParamC = double.parse(text);
                             },
@@ -762,6 +803,7 @@ class OpePocheRondeState extends State {
                         Container(
                           width: 100,
                           child: OwnTextField(
+                            label: _ParamDf,
                             onChanged: (text) {
                               _ParamDf = double.parse(text);
                             },
@@ -792,6 +834,7 @@ class OpePocheRondeState extends State {
                           Container(
                             width: 100,
                             child: OwnTextField(
+                              label: _ParamX,
                               onChanged: (text) {
                                 _ParamX = double.parse(text);
                               },
@@ -814,6 +857,7 @@ class OpePocheRondeState extends State {
                           Container(
                             width: 100,
                             child: OwnTextField(
+                              label: _ParamY,
                               onChanged: (text) {
                                 _ParamY = double.parse(text);
                               },
@@ -836,6 +880,7 @@ class OpePocheRondeState extends State {
                           Container(
                             width: 100,
                             child: OwnTextField(
+                              label: _ParamZ,
                               onChanged: (text) {
                                 _ParamZ = double.parse(text);
                               },
@@ -883,7 +928,9 @@ class OpePocheRondeState extends State {
 /***************OPERATION DE PERCAGE***************/
 
 class OpePercage extends StatefulWidget {
-  const OpePercage({super.key});
+  const OpePercage
+
+  ({super.key});
 
   @override
   OpePercageState createState() => OpePercageState();
@@ -1120,12 +1167,629 @@ class OpePercageState extends State<OpePercage> {
   }
 }
 
+
+/***************OPERATION DE CONTOURNAGE***************/
+
+class OpeContournage extends StatefulWidget {
+  const OpeContournage
+
+  ({super.key});
+
+  @override
+  OpeContournageState createState() => OpeContournageState();
+}
+
+class OpeContournageState extends State {
+  double _ParamA = 10;
+  double _ParamB = 10;
+  double _ParamC = 5;
+
+  double _ParamX = 50;
+  double _ParamY = 50;
+  double _ParamZ = 0;
+
+  double _ParamDf = 3;
+  double _ParamAP = 0.4;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.all(30),
+        child: Row(
+          children: [
+            Flexible(
+                flex: 2,
+                child: Container(
+                  margin: EdgeInsets.all(30),
+                  padding: EdgeInsets.all(30),
+                  // color: Colors.red,
+                  child: Image(
+                    image: AssetImage('assets/pochecarre.png'),
+                  ),
+                )),
+            Flexible(
+              flex: 1,
+              child: Container(
+                //color: Colors.orange,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          child: const Text(
+                            'A (mm) ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 124, 51, 43),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamA,
+                            onChanged: (text) {
+                              _ParamA = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          child: const Text(
+                            'B (mm) ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 27, 109, 160),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamB,
+                            onChanged: (text) {
+                              _ParamB = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          child: const Text(
+                            'C (mm) ',
+                            style: TextStyle(
+                              color: Colors.black45,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamC,
+                            onChanged: (text) {
+                              _ParamC = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            'Diamètre fraise ',
+                            textAlign: TextAlign.justify,
+                            style: TextStyle(
+                              color: Color(0xFF5A5A5A),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamDf,
+                            onChanged: (text) {
+                              _ParamDf = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            'Profondeur de passe ',
+                            textAlign: TextAlign.justify,
+                            style: TextStyle(
+                              color: Color(0xFF5A5A5A),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamAP,
+                            onChanged: (text) {
+                              _ParamAP = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Flexible(
+                flex: 1,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'X ',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 111, 111, 111),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 40),
+                          ),
+                          Container(
+                            width: 100,
+                            child: OwnTextField(
+                              label: _ParamX,
+                              onChanged: (text) {
+                                _ParamX = double.parse(text);
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Y ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
+                            ),
+                          ),
+                          Container(
+                            width: 100,
+                            child: OwnTextField(
+                              label: _ParamY,
+                              onChanged: (text) {
+                                _ParamY = double.parse(text);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Z ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
+                            ),
+                          ),
+                          Container(
+                            width: 100,
+                            child: OwnTextField(
+                              label: _ParamZ,
+                              onChanged: (text) {
+                                _ParamZ = double.parse(text);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Container(
+                        alignment: Alignment.bottomLeft,
+                        width: 150,
+                        child: AddOperation(
+                          onPressed: () {
+                            ListOfOperationCurrent.add(OperationContournage(
+                                OriginZ: _ParamZ,
+                                OriginY: _ParamY,
+                                OriginX: _ParamX,
+                                ParamA: _ParamA,
+                                ParamB: _ParamB,
+                                ParamC: _ParamC,
+                                ParamDf: _ParamDf,
+                                ParamAP: _ParamAP,
+                                label: "Contournage " +
+                                    ListOfOperationCurrent.length.toString()));
+                            setState(() {
+                              //CurrentLis
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('Opération ajoutée'),
+                                  duration: const Duration(milliseconds: 400),
+                                ),
+                              );
+                            });
+                          },
+                        ),
+                      ),
+                      const Spacer(),
+                    ],
+                  ),
+                ))
+          ],
+        ));
+  }
+}
+
+/***************OPERATION LIGNE DROITE***************/
+
+class OpeLigneDroite extends StatefulWidget {
+  const OpeLigneDroite
+
+  ({super.key});
+
+  @override
+  OpeLigneDroiteState createState() => OpeLigneDroiteState();
+}
+
+class OpeLigneDroiteState extends State<OpeLigneDroite> {
+
+
+  double _ParamA = 10;
+  double _ParamC = 1;
+
+  double _ParamX = 50;
+  double _ParamY = 50;
+  double _ParamZ = 0;
+
+  double _Nbligne = 3;
+  double _Interligne = 3;
+  double _ParamDf = 3;
+  double _ParamAP = 0.3;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.all(30),
+        child: Row(
+          children: [
+            Flexible(
+                flex: 2,
+                child: Container(
+                  //color: Colors.blueAccent,
+                    height: double.infinity,
+                    width: double.infinity,
+                    margin: EdgeInsets.all(30),
+                    padding: EdgeInsets.all(30),
+                    // color: Colors.red,
+                    child: FittedBox(fit: BoxFit.contain,
+                        child: Icon(Icons.format_list_bulleted))
+                )),
+            Flexible(
+              flex: 1,
+              child: Container(
+                //color: Colors.orange.withOpacity(0.5),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          child: Text(
+                            'Longueur ligne ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 124, 51, 43),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamA,
+                            onChanged: (text) {
+                              _ParamA = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          child: const Text(
+                            'Profondeur ',
+                            style: TextStyle(
+                              color: Colors.black45,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamC,
+                            onChanged: (text) {
+                              _ParamC = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          child: const Text(
+                            'Nombre de ligne ',
+                            style: TextStyle(
+                              color: Colors.black45,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _Nbligne,
+                            onChanged: (text) {
+                              _Nbligne = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          child: const Text(
+                            'Espace Interligne ',
+                            style: TextStyle(
+                              color: Colors.black45,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _Interligne,
+                            onChanged: (text) {
+                              _Interligne = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            'Diamètre outil ',
+                            textAlign: TextAlign.justify,
+                            style: TextStyle(
+                              color: Color(0xFF5A5A5A),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamDf,
+                            onChanged: (text) {
+                              _ParamDf = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            'Profondeur de passe ',
+                            textAlign: TextAlign.justify,
+                            style: TextStyle(
+                              color: Color(0xFF5A5A5A),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamAP,
+                            onChanged: (text) {
+                              _ParamAP = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Flexible(
+                flex: 1,
+                child: Container(
+                  //color: Colors.blue.withOpacity(0.5),
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'X ',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 111, 111, 111),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 40),
+                          ),
+                          Container(
+                            width: 100,
+                            child: OwnTextField(
+                              label: _ParamX,
+                              onChanged: (text) {
+                                _ParamX = double.parse(text);
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Y ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
+                            ),
+                          ),
+                          Container(
+                            width: 100,
+                            child: OwnTextField(
+                              label: _ParamY,
+                              onChanged: (text) {
+                                _ParamY = double.parse(text);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Z ',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 111, 111, 111),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40,
+                            ),
+                          ),
+                          Container(
+                            width: 100,
+                            child: OwnTextField(
+                              label: _ParamZ,
+                              onChanged: (text) {
+                                _ParamZ = double.parse(text);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Container(
+                        alignment: Alignment.bottomLeft,
+                        width: 150,
+                        child: AddOperation(
+                          onPressed: () {
+                            ListOfOperationCurrent.add(OperationLigneDroite(
+                              OriginZ: _ParamZ,
+                              OriginY: _ParamY,
+                              OriginX: _ParamX,
+                              ParamA: _ParamA,
+                              ParamC: _ParamC,
+                              ParamDf: _ParamDf,
+                              ParamAP: _ParamAP,
+                              NbLigne: _Nbligne,
+                              Interligne: _Interligne,
+                              label: "Lignes droites " +
+                                  ListOfOperationCurrent.length.toString(),));
+                            setState(() {
+                              //CurrentLis
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('Opération ajoutée'),
+                                  duration: const Duration(milliseconds: 400),
+                                ),
+                              );
+                            });
+                          },
+                        ),
+                      ),
+                      const Spacer(),
+                    ],
+                  ),
+                ))
+          ],
+        ));
+  }
+}
+
+
 /********************************** CONNECTEURS ********************************/
 
 /***************OPERATION DE SUB-D9***************/
 
 class OpeSubd9 extends StatefulWidget {
-  const OpeSubd9({super.key});
+  const OpeSubd9
+
+  ({super.key});
 
   @override
   _OpeSubd9 createState() => _OpeSubd9();
@@ -1154,22 +1818,29 @@ class _OpeSubd9 extends State<OpeSubd9> {
                 flex: 2,
                 child: Container(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Container(
-                        width: 140,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 84, 204, 197),borderRadius: BorderRadius.all(Radius.circular(10))
+                      Flexible(
+                        flex: 1,
+                        child: Container(
+                          width: 140,
+                          height: 60,
+                          decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 84, 204, 197),
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(10))
+                          ),
+                          child: IconButton(
+                            color: Colors.white,
+                            onPressed: () {},
+                            icon: Icon(Icons.rotate_right),),
                         ),
-                        child: IconButton(
-                          
-                          color: Colors.white,                          
-                          onPressed: () {  }, 
-                          icon:Icon(Icons.rotate_90_degrees_cw),),
                       ),
-                      Spacer(),
-                      Image(
-                        image: AssetImage('assets/subd9H.png'),
+                      Flexible(
+                        flex: 5,
+                        child: Image(
+                          image: AssetImage('assets/subd9H.png'),
+                        ),
                       ),
                     ],
                   ),
@@ -1413,7 +2084,9 @@ class _OpeSubd9 extends State<OpeSubd9> {
 /***************OPERATION DE SUB-D15***************/
 
 class OpeSubd15 extends StatefulWidget {
-  const OpeSubd15({super.key});
+  const OpeSubd15
+
+  ({super.key});
 
   @override
   _OpeSubd15 createState() => _OpeSubd15();

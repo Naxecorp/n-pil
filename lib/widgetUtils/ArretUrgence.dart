@@ -1,22 +1,30 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:nweb/service/API_Manager.dart';
 
 class ArretUrgence extends StatefulWidget {
-  const ArretUrgence({super.key, this.title});
+  const ArretUrgence({super.key, this.title, required this.notifyParent});
 
   final String? title;
+  final Function() notifyParent;
 
   @override
-  State<ArretUrgence> createState() => _ArretUrgenceState();
+  State<ArretUrgence> createState() => _ArretUrgenceState(notifyParent);
 }
 
 class _ArretUrgenceState extends State<ArretUrgence> {
+  final Function() notifyParent;
+
+  _ArretUrgenceState(this.notifyParent);
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
-        print('Arret Urgence');
+      onTap: ()async{
+        await API_Manager().sendGcodeCommand("M112");
+        API_Manager().sendGcodeCommand("M999");
+        return notifyParent();
       },
       child: Center(
         child: Container(
@@ -41,7 +49,7 @@ class _ArretUrgenceState extends State<ArretUrgence> {
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: Text(
-                'Arret urgence',
+                'Arret immédiat',
                 style: TextStyle(color: Colors.white),
                 maxLines: 2,
               ),

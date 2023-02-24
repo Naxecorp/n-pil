@@ -1,10 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'main.dart';
-import 'conversationel.dart';
-import 'opeviewer.dart';
+import '../screens.dart';
+import '../opeviewer.dart';
 
 class OpeMenuUsinage extends StatefulWidget {
   const OpeMenuUsinage({
@@ -82,9 +80,12 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                               });
                               return onAnytap!();
                             },
-                            leading: Icon(
-                              Icons.check_box_outline_blank,
-                              color: Colors.black45,
+                            leading: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image(
+                                image: AssetImage('assets/Icon Surfacage.png'),
+
+                              ),
                             ),
                             title: Text(
                               'Surfacage',
@@ -108,9 +109,9 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                               });
                               return onAnytap!();
                             },
-                            leading: Icon(
-                              Icons.workspaces_filled,
-                              color: Colors.black45,
+                            leading: Image(
+                              image: AssetImage('assets/Icon poche carre.png'),
+
                             ),
                             title: Text(
                               'Poche carée',
@@ -134,9 +135,9 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                               });
                               return onAnytap!();
                             },
-                            leading: Icon(
-                              Icons.stream,
-                              color: Colors.black45,
+                            leading: Image(
+                              image: AssetImage('assets/Icon Poche ronde.png'),
+
                             ),
                             title: Text(
                               'Poche Ronde',
@@ -152,20 +153,46 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                         child: Card(
                           child: ListTile(
-                            tileColor: opeToShow=='Percage'?Color(0xFF9A9A9A):Colors.white,
+                            tileColor: opeToShow=='Contournage'?Color(0xFF9A9A9A):Colors.white,
                             onTap: () {
-                              opeToShow = 'Percage';
+                              opeToShow = 'Contournage';
                               setState(() {
 
                               });
                               return onAnytap!();
                             },
-                            leading: Icon(
-                              Icons.star,
-                              color: Colors.black45,
+                            leading: Image(
+                              image: AssetImage('assets/Icon Contournage.png'),
+
                             ),
                             title: Text(
-                              'Perçage',
+                              'Contournage',
+                              style: TextStyle(
+                                  color: Colors.black45,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                        child: Card(
+                          child: ListTile(
+                            tileColor: opeToShow=='LigneDroite'?Color(0xFF9A9A9A):Colors.white,
+                            onTap: () {
+                              opeToShow = 'LigneDroite';
+                              setState(() {
+
+                              });
+                              return onAnytap!();
+                            },
+                            leading: Image(
+                              image: AssetImage('assets/Icon ligne droites.png'),
+
+                            ),
+                            title: Text(
+                              'Lignes Droites',
                               style: TextStyle(
                                   color: Colors.black45,
                                   fontWeight: FontWeight.bold),
@@ -189,8 +216,10 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                   ? OpePocheCarre()
                   : opeToShow == 'PocheRonde'
                   ? OpePocheRonde()
-                  : opeToShow == 'Percage'
-                  ? OpePercage()
+                  : opeToShow == 'Contournage'
+                  ? OpeContournage()
+                  : opeToShow == 'LigneDroite'
+                  ? OpeLigneDroite()
                   : Center(child: Text('Selectionner opération')),
             )) // Affichage des VUES opération
       ],
@@ -275,9 +304,8 @@ class _OpeMenuConnecteur extends State<OpeMenuConnecteur> {
                               });
                               return onAnytap!();
                             },
-                            leading: Icon(
-                              Icons.check_box_outline_blank,
-                              color: Colors.black45,
+                            leading: Image(
+                              image: AssetImage('assets/Icon Subd.png'),
                             ),
                             title: Text(
                               'Sub-D 9',
@@ -301,9 +329,8 @@ class _OpeMenuConnecteur extends State<OpeMenuConnecteur> {
                               });
                               return onAnytap!();
                             },
-                            leading: Icon(
-                              Icons.workspaces_filled,
-                              color: Colors.black45,
+                            leading: Image(
+                              image: AssetImage('assets/Icon Subd.png'),
                             ),
                             title: Text(
                               'Sub-D 15',
@@ -327,9 +354,8 @@ class _OpeMenuConnecteur extends State<OpeMenuConnecteur> {
                               });
                               return onAnytap!();
                             },
-                            leading: Icon(
-                              Icons.stream,
-                              color: Colors.black45,
+                            leading: Image(
+                              image: AssetImage('assets/Icon Subd.png'),
                             ),
                             title: Text(
                               'Sub-D25',
@@ -353,9 +379,8 @@ class _OpeMenuConnecteur extends State<OpeMenuConnecteur> {
                               });
                               return onAnytap!();
                             },
-                            leading: Icon(
-                              Icons.star,
-                              color: Colors.black45,
+                            leading: Image(
+                              image: AssetImage('assets/Icon HDMI.png'),
                             ),
                             title: Text(
                               'HDMI',
