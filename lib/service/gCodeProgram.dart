@@ -1,15 +1,6 @@
 import 'dart:convert';
 
 
-class GcodeProgram {
-
-  String path = "toto";
-  double size = 0;
-  String name = "tata";
-
-}
-
-
 ReturnedListGcodeProgram returnedListGcodeProgramFromJson(String str) => ReturnedListGcodeProgram.fromJson(json.decode(str));
 
 

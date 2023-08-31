@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../globals_var.dart' as global;
 import 'package:nweb/service/API_Manager.dart';
 import '../widgetUtils/touche.dart';
@@ -93,7 +96,7 @@ class EndCoursesState extends State {
                             ? Colors.orange
                             : Colors.green,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       Container(
@@ -133,33 +136,32 @@ class InfoSystemState extends State<InfoSystem> {
         Flexible(
             flex: 1,
             child: Container(
-              margin: EdgeInsets.all(1),
+              margin: const EdgeInsets.all(1),
               //color: Colors.green,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
+                  const Text(
                     "Status",
                     style: TextStyle(
                         color: Color(0xFF707585), fontWeight: FontWeight.bold),
                   ),
                   Text(
-                      global.machineObjectModel.result?.statee?.status
-                              .toString() ??
+                      global.machineObjectModel.result?.state?.status.toString() ??
                           "???",
-                      style: TextStyle(color: Color(0xFF707585))),
+                      style: const TextStyle(color: Color(0xFF707585))),
                 ],
               ),
             )),
         Flexible(
             flex: 1,
             child: Container(
-              margin: EdgeInsets.all(1),
+              margin: const EdgeInsets.all(1),
               //color: Colors.green,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
+                  const Text(
                     "MCU Température",
                     style: TextStyle(
                         color: Color(0xFF707585), fontWeight: FontWeight.bold),
@@ -175,8 +177,8 @@ class InfoSystemState extends State<InfoSystem> {
                                   ?.current
                                   ?.toStringAsFixed(1) ??
                               "...",
-                          style: TextStyle(color: Color(0xFF707585))),
-                      Text("°C", style: TextStyle(color: Color(0xFF707585)))
+                          style: const TextStyle(color: Color(0xFF707585))),
+                      const Text("°C", style: TextStyle(color: Color(0xFF707585)))
                     ],
                   ),
                 ],
@@ -185,12 +187,12 @@ class InfoSystemState extends State<InfoSystem> {
         Flexible(
             flex: 1,
             child: Container(
-              margin: EdgeInsets.all(1),
+              margin: const EdgeInsets.all(1),
               //color: Colors.green,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
+                  const Text(
                     "V12",
                     style: TextStyle(
                         color: Color(0xFF707585), fontWeight: FontWeight.bold),
@@ -201,14 +203,13 @@ class InfoSystemState extends State<InfoSystem> {
                     children: [
                       Text(
                         global.machineObjectModel.result?.boards
-                                ?.elementAt(0)
-                                .v12
+                                ?.elementAt(0).v12
                                 ?.current
                                 ?.toStringAsFixed(1) ??
                             "...",
-                        style: TextStyle(color: Color(0xFF707585)),
+                        style: const TextStyle(color: Color(0xFF707585)),
                       ),
-                      Text(" V", style: TextStyle(color: Color(0xFF707585))),
+                      const Text(" V", style: TextStyle(color: Color(0xFF707585))),
                     ],
                   ),
                 ],
@@ -217,12 +218,12 @@ class InfoSystemState extends State<InfoSystem> {
         Flexible(
             flex: 1,
             child: Container(
-              margin: EdgeInsets.all(1),
+              margin: const EdgeInsets.all(1),
               //color: Colors.green,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
+                  const Text(
                     "Vin",
                     style: TextStyle(
                         color: Color(0xFF707585), fontWeight: FontWeight.bold),
@@ -236,8 +237,8 @@ class InfoSystemState extends State<InfoSystem> {
                                   ?.current
                                   ?.toStringAsFixed(1) ??
                               "...",
-                          style: TextStyle(color: Color(0xFF707585))),
-                      Text(" V", style: TextStyle(color: Color(0xFF707585))),
+                          style: const TextStyle(color: Color(0xFF707585))),
+                      const Text(" V", style: TextStyle(color: Color(0xFF707585))),
                     ],
                   ),
                 ],
@@ -250,6 +251,8 @@ class InfoSystemState extends State<InfoSystem> {
 
 double stepValue = 0.1;
 
+
+
 class DeplacementMachine extends StatefulWidget {
   const DeplacementMachine({super.key, this.child});
 
@@ -260,18 +263,23 @@ class DeplacementMachine extends StatefulWidget {
 }
 
 class _DeplacementMachine extends State<DeplacementMachine> {
+
+  bool MovesWithoutEndstop = false;
+  double AccelValue = 100.0;
+  double SpeedValue = 1000.0;
+
   @override
   Widget build(BuildContext context) {
+
     return Container(
-      color: Color(0xFFF0F0F3),
+      color: const Color(0xFFF0F0F3),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Flexible(
             flex: 3,
             child: Container(
-              //color: Colors.orange,
-              padding: EdgeInsets.all(2),
+              padding: const EdgeInsets.all(2),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -285,19 +293,20 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                             child: AspectRatio(
                               aspectRatio: 1,
                               child: NeumorphicButton(
-                                margin: EdgeInsets.all(15),
-                                style: NeumorphicStyle(
+                                margin: const EdgeInsets.all(15),
+                                style: const NeumorphicStyle(
                                   color: Color(0xFFF0F0F3),
                                 ),
-                                onPressed: () {
-                                  API_Manager()
+                                onPressed: ()async {
+                                  await API_Manager()
                                       .sendGcodeCommand("G28 X")
                                       .then((value) => print(value));
+
                                 },
                                 child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
-                                    children: [
+                                    children: const [
                                       Icon(
                                         Icons.home_filled,
                                         color: Color(0xFF707585),
@@ -317,8 +326,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                             child: AspectRatio(
                               aspectRatio: 1,
                               child: NeumorphicButton(
-                                margin: EdgeInsets.all(15),
-                                style: NeumorphicStyle(
+                                margin: const EdgeInsets.all(15),
+                                style: const NeumorphicStyle(
                                   color: Color(0xFFF0F0F3),
                                 ),
                                 onPressed: () {
@@ -330,11 +339,11 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.home_filled,
                                         color: Color(0xFF707585),
                                       ),
-                                      FittedBox(
+                                      const FittedBox(
                                           fit: BoxFit.fitHeight,
                                           child: Text(
                                             'Axe Y',
@@ -349,8 +358,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                             child: AspectRatio(
                               aspectRatio: 1,
                               child: NeumorphicButton(
-                                margin: EdgeInsets.all(15),
-                                style: NeumorphicStyle(
+                                margin: const EdgeInsets.all(15),
+                                style: const NeumorphicStyle(
                                   color: Color(0xFFF0F0F3),
                                 ),
                                 onPressed: () {
@@ -362,11 +371,11 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.home_filled,
                                         color: Color(0xFF707585),
                                       ),
-                                      FittedBox(
+                                      const FittedBox(
                                           fit: BoxFit.fitHeight,
                                           child: Text(
                                             'Axe Z',
@@ -387,13 +396,9 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                         Flexible(
                           flex: 1,
                           child: NeumorphicRadio(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 10),
-                            child: Text(
-                              "0.01",
-                              style: TextStyle(color: Color(0xFF707585)),
-                            ),
-                            style: NeumorphicRadioStyle(
+                            style: const NeumorphicRadioStyle(
                                 shape: NeumorphicShape.convex,
                                 unselectedColor: Color(0xFFF0F0F3)),
                             value: 0.01,
@@ -403,18 +408,18 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                 stepValue = value!;
                               });
                             },
+                            child: const Text(
+                              "0.01",
+                              style: TextStyle(color: Color(0xFF707585)),
+                            ),
                           ),
                         ),
                         Flexible(
                           flex: 1,
                           child: NeumorphicRadio(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 10),
-                            child: Text(
-                              "0.1",
-                              style: TextStyle(color: Color(0xFF707585)),
-                            ),
-                            style: NeumorphicRadioStyle(
+                            style: const NeumorphicRadioStyle(
                                 shape: NeumorphicShape.convex,
                                 unselectedColor: Color(0xFFF0F0F3)),
                             value: 0.1,
@@ -424,16 +429,18 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                 stepValue = value!;
                               });
                             },
+                            child: const Text(
+                              "0.1",
+                              style: TextStyle(color: Color(0xFF707585)),
+                            ),
                           ),
                         ),
                         Flexible(
                           flex: 1,
                           child: NeumorphicRadio(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 10),
-                            child: Text("1",
-                                style: TextStyle(color: Color(0xFF707585))),
-                            style: NeumorphicRadioStyle(
+                            style: const NeumorphicRadioStyle(
                                 shape: NeumorphicShape.convex,
                                 unselectedColor: Color(0xFFF0F0F3)),
                             value: 1.0,
@@ -443,16 +450,16 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                 stepValue = value!;
                               });
                             },
+                            child: const Text("1",
+                                style: TextStyle(color: Color(0xFF707585))),
                           ),
                         ),
                         Flexible(
                           flex: 1,
                           child: NeumorphicRadio(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 10),
-                            child: Text("10",
-                                style: TextStyle(color: Color(0xFF707585))),
-                            style: NeumorphicRadioStyle(
+                            style: const NeumorphicRadioStyle(
                                 shape: NeumorphicShape.convex,
                                 unselectedColor: Color(0xFFF0F0F3)),
                             value: 10.0,
@@ -462,16 +469,16 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                 stepValue = value!;
                               });
                             },
+                            child: const Text("10",
+                                style: TextStyle(color: Color(0xFF707585))),
                           ),
                         ),
                         Flexible(
                           flex: 1,
                           child: NeumorphicRadio(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 10),
-                            child: Text("50",
-                                style: TextStyle(color: Color(0xFF707585))),
-                            style: NeumorphicRadioStyle(
+                            style: const NeumorphicRadioStyle(
                                 shape: NeumorphicShape.convex,
                                 unselectedColor: Color(0xFFF0F0F3)),
                             value: 50.0,
@@ -481,6 +488,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                 stepValue = value!;
                               });
                             },
+                            child: const Text("50",
+                                style: TextStyle(color: Color(0xFF707585))),
                           ),
                         ),
                       ],
@@ -493,48 +502,37 @@ class _DeplacementMachine extends State<DeplacementMachine> {
           Flexible(
             flex: 5,
             child: Container(
-              //color: Colors.blue,
-              padding: EdgeInsets.all(4),
+
+              padding: const EdgeInsets.all(4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Flexible(
                     flex: 1,
                     child: Container(
-                      //margin: EdgeInsets.symmetric(vertical: 30),
-                      //height: 300,
-                      //width: 300,
                       //color: Colors.green,
                       child: Joystick(
                         size: 70,
-                        iconColor: Color(0xFF707585),
-                        onUpPressed: () {
-                          API_Manager()
-                              .sendGcodeCommand("M120\nG91\nG1 Y" +
-                                  stepValue.toString() +
-                                  " F6000\nM121\n")
-                              .then((value) => print(value));
+                        iconColor: const Color(0xFF707585),
+                        onUpPressed: ()async {
+                          if (MovesWithoutEndstop) await API_Manager().sendGcodeCommand("M120\nG91\nG1 Y$stepValue H2 F$SpeedValue\nM121\n").then((value) => print(value));
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Y$stepValue F$SpeedValue\nM121\n");
+                          API_Manager().sendrr_reply();
                         },
-                        onDownPressed: () {
-                          API_Manager()
-                              .sendGcodeCommand("M120\nG91\nG1 Y-" +
-                                  stepValue.toString() +
-                                  " F6000\nM121\n")
-                              .then((value) => print(value));
+                        onDownPressed: () async{
+                          if (MovesWithoutEndstop)await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 Y-$stepValue F$SpeedValue\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Y-$stepValue F$SpeedValue\nM121\n");
+                          API_Manager().sendrr_reply();
                         },
-                        onLeftPressed: () {
-                          API_Manager()
-                              .sendGcodeCommand("M120\nG91\nG1 X-" +
-                                  stepValue.toString() +
-                                  " F6000\nM121\n")
-                              .then((value) => print(value));
+                        onLeftPressed: () async{
+                          if (MovesWithoutEndstop)await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 X-$stepValue F$SpeedValue\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 X-$stepValue F$SpeedValue\nM121\n");
+                          API_Manager().sendrr_reply();
                         },
-                        onRightPressed: () {
-                          API_Manager()
-                              .sendGcodeCommand("M120\nG91\nG1 X" +
-                                  stepValue.toString() +
-                                  " F6000\nM121\n")
-                              .then((value) => print(value));
+                        onRightPressed: () async{
+                          if (MovesWithoutEndstop) await API_Manager().sendGcodeCommand("M120\nG91\nG1 X$stepValue H2 F$SpeedValue\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 X$stepValue F$SpeedValue\nM121\n");
+                          API_Manager().sendrr_reply();
                         },
                       ),
                     ),
@@ -547,24 +545,21 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                       //color: Colors.yellow,
                       child: Joystick2(
                         size: 70,
-                        iconColor: Color(0xFF707585),
-                        onUpPressed: () {
-                          API_Manager()
-                              .sendGcodeCommand(
-                                  "M120\nG91\nG1 Z$stepValue F6000\nM121\n")
-                              .then((value) => print(value));
+                        iconColor: const Color(0xFF707585),
+                        onUpPressed: () async {
+                          if (MovesWithoutEndstop) await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 Z$stepValue F$SpeedValue\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Z$stepValue F$SpeedValue\nM121\n");
                           API_Manager().sendrr_reply();
                         },
-                        onDownPressed: () {
+                        onDownPressed: ()async {
                           var Zstepdown;
-                          if (stepValue > 50)
-                            Zstepdown = 1;
+                          if (stepValue > 10)
+                            Zstepdown = 10;
                           else
                             Zstepdown = stepValue;
-                          API_Manager()
-                              .sendGcodeCommand(
-                                  "M120\nG91\nG1 Z-$Zstepdown F6000\nM121\n")
-                              .then((value) => print('tot' + value));
+                          if (MovesWithoutEndstop)await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 Z-$Zstepdown F$SpeedValue\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Z-$Zstepdown F$SpeedValue\nM121\n");
+                          API_Manager().sendrr_reply();
                         },
                       ),
                     ),
@@ -572,13 +567,302 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                 ],
               ),
             ),
-          )
+          ),
+          Flexible(
+              flex: 3,
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    global.AdminLogged == true ? Container(child: NeumorphicButton(
+                      margin: const EdgeInsets.all(15),
+                      style: NeumorphicStyle(
+                        depth: MovesWithoutEndstop == true ?-5:5,//SpindleFanIsOn?-10:10,
+                        color: const Color(0xFFF0F0F3),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          MovesWithoutEndstop = !MovesWithoutEndstop;
+                        });
+                      },
+                      child: Column(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Icon(
+                              Icons.not_interested,
+                              color: Color(0xFF707585),
+                            ),
+                            const FittedBox(
+                                fit: BoxFit.fitHeight,
+                                child: Text(
+                                  'Fin de Courses',
+                                  style: TextStyle(
+                                      color: Color(0xFF707585)),
+                                ))
+                          ]),
+                    ),):Container(),
+                    global.AdminLogged == true ? Container(child: NeumorphicButton(
+                      margin: const EdgeInsets.all(15),
+                      style: NeumorphicStyle(
+                        color: const Color(0xFFF0F0F3),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          API_Manager().sendGcodeCommand("M120\nG91\nG1 Y500 F$SpeedValue\nM121\n");
+                        });
+                      },
+                      child: Column(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Icon(
+                              Icons.arrow_drop_up,
+                              color: Color(0xFF707585),
+                            ),
+                            const FittedBox(
+                                fit: BoxFit.fitHeight,
+                                child: Text(
+                                  'Y max',
+                                  style: TextStyle(
+                                      color: Color(0xFF707585)),
+                                ))
+                          ]),
+                    ),):Container(),
+                    global.AdminLogged == true ? Container(child: NeumorphicButton(
+                      margin: const EdgeInsets.all(15),
+                      style: NeumorphicStyle(
+                        color: const Color(0xFFF0F0F3),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          API_Manager().sendGcodeCommand("M120\nG91\nG1 Y-500 F$SpeedValue\nM121\n");
+                        });
+                      },
+                      child: Column(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Icon(
+                              Icons.arrow_drop_down,
+                              color: Color(0xFF707585),
+                            ),
+                            const FittedBox(
+                                fit: BoxFit.fitHeight,
+                                child: Text(
+                                  'Y Zero',
+                                  style: TextStyle(
+                                      color: Color(0xFF707585)),
+                                ))
+                          ]),
+                    ),):Container(),
+                    global.AdminLogged == true ? Container(child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text("Accel: $AccelValue"),
+                        NeumorphicButton(
+                          margin: const EdgeInsets.all(5),
+                          style: NeumorphicStyle(
+                            color: const Color(0xFFF0F0F3),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              AccelValue = AccelValue+10;
+                              API_Manager().sendGcodeCommand("M201 Y$AccelValue \n");
+                            });
+                          },
+                          child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(
+                                  Icons.add,
+                                  color: Color(0xFF707585),
+                                ),
+                                const FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Acceleration',
+                                      style: TextStyle(
+                                          color: Color(0xFF707585)),
+                                    ))
+                              ]),
+                        ),
+                        NeumorphicButton(
+                          margin: const EdgeInsets.all(5),
+                          style: NeumorphicStyle(
+                            color: const Color(0xFFF0F0F3),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              if(AccelValue>10)AccelValue = AccelValue-10;
+                              API_Manager().sendGcodeCommand("M201 Y$AccelValue \n");
+                            });
+                          },
+                          child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(
+                                  Icons.remove,
+                                  color: Color(0xFF707585),
+                                ),
+                                const FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Acceleration',
+                                      style: TextStyle(
+                                          color: Color(0xFF707585)),
+                                    ))
+                              ]),
+                        ),
+                      ],
+                    ),):Container(),
+                    global.AdminLogged == true ? Container(child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text("Speed: $SpeedValue"),
+                        NeumorphicButton(
+                          margin: const EdgeInsets.all(5),
+                          style: NeumorphicStyle(
+                            color: const Color(0xFFF0F0F3),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              SpeedValue = SpeedValue+100;
+                              API_Manager().sendGcodeCommand("M203 Y$SpeedValue \n");
+                            });
+                          },
+                          child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(
+                                  Icons.add,
+                                  color: Color(0xFF707585),
+                                ),
+                                const FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Vit. max',
+                                      style: TextStyle(
+                                          color: Color(0xFF707585)),
+                                    ))
+                              ]),
+                        ),
+                        NeumorphicButton(
+                          margin: const EdgeInsets.all(5),
+                          style: NeumorphicStyle(
+                            color: const Color(0xFFF0F0F3),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              if(SpeedValue>100)SpeedValue = SpeedValue-100;
+                              API_Manager().sendGcodeCommand("M203 Y$SpeedValue \n");
+                            });
+                          },
+                          child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(
+                                  Icons.remove,
+                                  color: Color(0xFF707585),
+                                ),
+                                const FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Vit. max',
+                                      style: TextStyle(
+                                          color: Color(0xFF707585)),
+                                    ))
+                              ]),
+                        ),
+                      ],
+                    ),):Container(),
+                    global.AdminLogged == true ? Container(child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text("Jerk: " + global.Jerk.toStringAsFixed(1)),
+                        NeumorphicButton(
+                          margin: const EdgeInsets.all(5),
+                          style: NeumorphicStyle(
+                            color: const Color(0xFFF0F0F3),
+                          ),
+                          onPressed: () {
+                            setState(() {
+
+                              if(global.Jerk>=50)global.Jerk = global.Jerk+50;
+                              else global.Jerk = global.Jerk+1;
+
+                              API_Manager().sendGcodeCommand("M566 X"+global.Jerk.toStringAsFixed(1)+" Y"+global.Jerk.toStringAsFixed(1)+"\n");
+                            });
+                          },
+                          child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(
+                                  Icons.add,
+                                  color: Color(0xFF707585),
+                                ),
+                                const FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Vit. max',
+                                      style: TextStyle(
+                                          color: Color(0xFF707585)),
+                                    ))
+                              ]),
+                        ),
+                        NeumorphicButton(
+                          margin: const EdgeInsets.all(5),
+                          style: NeumorphicStyle(
+                            color: const Color(0xFFF0F0F3),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              if(global.Jerk<=50){
+                                if(global.Jerk>1)global.Jerk = global.Jerk-1;
+                              }
+                              else global.Jerk = global.Jerk-50;
+
+                              API_Manager().sendGcodeCommand("M566 X"+global.Jerk.toStringAsFixed(1)+" Y"+global.Jerk.toStringAsFixed(1)+"\n");
+                            });
+                          },
+                          child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(
+                                  Icons.remove,
+                                  color: Color(0xFF707585),
+                                ),
+                                const FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Vit. max',
+                                      style: TextStyle(
+                                          color: Color(0xFF707585)),
+                                    ))
+                              ]),
+                        ),
+                      ],
+                    ),):Container(),
+                    const Spacer(),
+                    Container(width: 200,child: ArretUrgence(notifyParent: (){},),),
+                  ],
+                ),
+              ))
         ],
       ),
     );
     throw UnimplementedError();
   }
 }
+
+
+
 
 class ModeMachine extends StatefulWidget {
   const ModeMachine({super.key, this.child});
@@ -593,19 +877,15 @@ class ModeMachineState extends State<ModeMachine> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xFFF0F0F3),
+      color: const Color(0xFFF0F0F3),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             NeumorphicRadio(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "FFF",
-                style: TextStyle(color: Color(0xFF707585)),
-              ),
-              style: NeumorphicRadioStyle(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              style: const NeumorphicRadioStyle(
                   shape: NeumorphicShape.convex,
                   unselectedColor: Color(0xFFF0F0F3)),
               value: global.MachineMode.fff,
@@ -617,33 +897,33 @@ class ModeMachineState extends State<ModeMachine> {
                     .then((value) => global.machineMode = value);
                 setState(() {});
               },
-            ),
-            NeumorphicRadio(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Laser",
+              child: const Text(
+                "FFF",
                 style: TextStyle(color: Color(0xFF707585)),
               ),
-              style: NeumorphicRadioStyle(
+            ),
+            NeumorphicRadio(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              style: const NeumorphicRadioStyle(
                   shape: NeumorphicShape.convex,
                   unselectedColor: Color(0xFFF0F0F3)),
               value: global.MachineMode.laser,
               groupValue: global.machineMode,
               onChanged: (global.MachineMode? MMvalue) async {
-                await API_Manager().sendGcodeCommand("M452");
+                await API_Manager().sendGcodeCommand('M452 C"out5-" F100');
                 await API_Manager()
                     .getMachineMode()
                     .then((value) => global.machineMode = value);
                 setState(() {});
               },
-            ),
-            NeumorphicRadio(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "CNC",
+              child: const Text(
+                "Laser",
                 style: TextStyle(color: Color(0xFF707585)),
               ),
-              style: NeumorphicRadioStyle(
+            ),
+            NeumorphicRadio(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              style: const NeumorphicRadioStyle(
                   shape: NeumorphicShape.convex,
                   unselectedColor: Color(0xFFF0F0F3)),
               value: global.MachineMode.cnc,
@@ -655,6 +935,10 @@ class ModeMachineState extends State<ModeMachine> {
                     .then((value) => global.machineMode = value);
                 setState(() {});
               },
+              child: const Text(
+                "CNC",
+                style: TextStyle(color: Color(0xFF707585)),
+              ),
             ),
           ],
         ),
@@ -663,6 +947,9 @@ class ModeMachineState extends State<ModeMachine> {
     throw UnimplementedError();
   }
 }
+
+
+
 
 class CoordoneesMachine extends StatefulWidget {
   const CoordoneesMachine({super.key, this.child, this.notifyParent});
@@ -683,7 +970,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
   Widget build(BuildContext context) {
     //global.machineObjectModel.result?.move?.axes?.elementAt(0)!.machinePosition?.toStringAsFixed(2) ?? "...",
     return Container(
-        color: Color(0xFFF0F0F3),
+        color: const Color(0xFFF0F0F3),
         child: Container(
             //margin: EdgeInsets.all(10),
             //color: Colors.green,
@@ -694,7 +981,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                 flex: 1,
                 child: Container(
                   width: double.infinity,
-                  margin: EdgeInsets.all(1),
+                  margin: const EdgeInsets.all(1),
                   //color: Colors.green,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -711,7 +998,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                                                 .homed ==
                                             false
                                         ? Colors.redAccent
-                                        : Color(0xFF707585),
+                                        : const Color(0xFF707585),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20),
                               ))),
@@ -725,7 +1012,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                                         .machinePosition
                                         ?.toStringAsFixed(2) ??
                                     "...",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Color(0xFF707585), fontSize: 50),
                               ))),
                     ],
@@ -735,7 +1022,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                 flex: 1,
                 child: Container(
                   width: double.infinity,
-                  margin: EdgeInsets.all(1),
+                  margin: const EdgeInsets.all(1),
                   //color: Colors.green,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -752,7 +1039,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                                                 .homed ==
                                             false
                                         ? Colors.red
-                                        : Color(0xFF707585),
+                                        : const Color(0xFF707585),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20),
                               ))),
@@ -766,7 +1053,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                                         .machinePosition
                                         ?.toStringAsFixed(2) ??
                                     "...",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Color(0xFF707585), fontSize: 50),
                               ))),
                     ],
@@ -776,7 +1063,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                 flex: 1,
                 child: Container(
                   width: double.infinity,
-                  margin: EdgeInsets.all(1),
+                  margin: const EdgeInsets.all(1),
                   //color: Colors.green,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -793,7 +1080,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                                                 .homed ==
                                             false
                                         ? Colors.red
-                                        : Color(0xFF707585),
+                                        : const Color(0xFF707585),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20),
                               ))),
@@ -807,7 +1094,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                                         .machinePosition
                                         ?.toStringAsFixed(2) ??
                                     "...",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Color(0xFF707585), fontSize: 50),
                               ))),
                     ],
@@ -818,6 +1105,9 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
     throw UnimplementedError();
   }
 }
+
+
+
 
 class CoordoneesOutil extends StatefulWidget {
   const CoordoneesOutil({super.key, this.child, this.notifyParent});
@@ -838,7 +1128,7 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
   Widget build(BuildContext context) {
     //global.machineObjectModel.result?.move?.axes?.elementAt(0)!.machinePosition?.toStringAsFixed(2) ?? "...",
     return Container(
-        color: Color(0xFFF0F0F3),
+        color: const Color(0xFFF0F0F3),
         child: Container(
             //margin: EdgeInsets.all(10),
             //color: Colors.green,
@@ -849,12 +1139,12 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                 flex: 2,
                 child: Container(
                   width: double.infinity,
-                  margin: EdgeInsets.all(5),
+                  margin: const EdgeInsets.all(5),
                   //color: Colors.green,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Flexible(
+                      const Flexible(
                           flex: 1,
                           child: FittedBox(
                               fit: BoxFit.contain,
@@ -875,19 +1165,19 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                         .userPosition
                                         ?.toStringAsFixed(2) ??
                                     "...",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Color(0xFF707585), fontSize: 50),
                               ))),
                       Flexible(
                           flex: 2,
                           child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 5),
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
                             width: double.infinity,
                             height: double.infinity,
                             //color: Colors.orange,
-                            child: ElevatedButton(
+                            child: NeumorphicButton(
                               onPressed: global.machineObjectModel.result
-                                          ?.statee?.status ==
+                                          ?.state?.status ==
                                       "processing"
                                   ? null
                                   : () {
@@ -896,17 +1186,47 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                       API_Manager()
                                           .sendGcodeCommand("G10 L20 P1");
                                     },
-                              child: Text(
-                                "Set 0",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Color(0xFF707585),
-                                    fontWeight: FontWeight.bold),
+                              style: const NeumorphicStyle(
+                                color: Color(0xFFF0F0F3),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Color(0xFF9A9A9A),
-                                backgroundColor: Color(0xFFF0F0F3),
-                                elevation: 10,
+                              child: const Center(
+                                child: Text(
+                                  "Set 0",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Color(0xFF707585),
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          )),
+                      Flexible(
+                          flex: 2,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            width: double.infinity,
+                            height: double.infinity,
+                            //color: Colors.orange,
+                            child: NeumorphicButton(
+                              onPressed: global.machineObjectModel.result
+                                  ?.state?.status ==
+                                  "processing"
+                                  ? null
+                                  : () {
+                                API_Manager()
+                                    .sendGcodeCommand("G0 X0");
+                              },
+                              style: const NeumorphicStyle(
+                                color: Color(0xFFF0F0F3),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "GO TO 0",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Color(0xFF707585),
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                           )),
@@ -917,12 +1237,12 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                 flex: 2,
                 child: Container(
                   width: double.infinity,
-                  margin: EdgeInsets.all(5),
+                  margin: const EdgeInsets.all(5),
                   //color: Colors.green,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Flexible(
+                      const Flexible(
                           flex: 1,
                           child: FittedBox(
                               fit: BoxFit.fitHeight,
@@ -943,19 +1263,19 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                         .userPosition
                                         ?.toStringAsFixed(2) ??
                                     "...",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Color(0xFF707585), fontSize: 50),
                               ))),
                       Flexible(
                           flex: 2,
                           child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 5),
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
                             width: double.infinity,
                             height: double.infinity,
                             //color: Colors.orange,
-                            child: ElevatedButton(
+                            child: NeumorphicButton(
                               onPressed: global.machineObjectModel.result
-                                          ?.statee?.status ==
+                                          ?.state?.status ==
                                       "processing"
                                   ? null
                                   : () {
@@ -964,17 +1284,47 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                       API_Manager()
                                           .sendGcodeCommand("G10 L20 P1");
                                     },
-                              child: Text(
-                                "Set 0",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Color(0xFF707585),
-                                    fontWeight: FontWeight.bold),
+                              style: const NeumorphicStyle(
+                                color: Color(0xFFF0F0F3),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Color(0xFF9A9A9A),
-                                backgroundColor: Color(0xFFF0F0F3),
-                                elevation: 10,
+                              child: const Center(
+                                child: Text(
+                                  "Set 0",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Color(0xFF707585),
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          )),
+                      Flexible(
+                          flex: 2,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            width: double.infinity,
+                            height: double.infinity,
+                            //color: Colors.orange,
+                            child: NeumorphicButton(
+                              onPressed: global.machineObjectModel.result
+                                  ?.state?.status ==
+                                  "processing"
+                                  ? null
+                                  : () {
+                                API_Manager()
+                                    .sendGcodeCommand("G0 Y0");
+                              },
+                              style: const NeumorphicStyle(
+                                color: Color(0xFFF0F0F3),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "GO TO 0",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Color(0xFF707585),
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                           )),
@@ -985,12 +1335,12 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                 flex: 2,
                 child: Container(
                   width: double.infinity,
-                  margin: EdgeInsets.all(5),
+                  margin: const EdgeInsets.all(5),
                   //color: Colors.green,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Flexible(
+                      const Flexible(
                           flex: 1,
                           child: FittedBox(
                               fit: BoxFit.fitHeight,
@@ -1011,19 +1361,19 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                         .userPosition
                                         ?.toStringAsFixed(2) ??
                                     "...",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: Color(0xFF707585), fontSize: 50),
                               ))),
                       Flexible(
                           flex: 2,
                           child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 5),
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
                             width: double.infinity,
                             height: double.infinity,
                             //color: Colors.orange,
-                            child: ElevatedButton(
+                            child: NeumorphicButton(
                               onPressed: global.machineObjectModel.result
-                                          ?.statee?.status ==
+                                          ?.state?.status ==
                                       "processing"
                                   ? null
                                   : () {
@@ -1032,17 +1382,47 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                       API_Manager()
                                           .sendGcodeCommand("G10 L20 P1");
                                     },
-                              child: Text(
-                                "Set 0",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Color(0xFF707585),
-                                    fontWeight: FontWeight.bold),
+                              style: const NeumorphicStyle(
+                                color: Color(0xFFF0F0F3),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Color(0xFF9A9A9A),
-                                backgroundColor: Color(0xFFF0F0F3),
-                                elevation: 10,
+                              child: const Center(
+                                child: Text(
+                                  "Set 0",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Color(0xFF707585),
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          )),
+                      Flexible(
+                          flex: 2,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            width: double.infinity,
+                            height: double.infinity,
+                            //color: Colors.orange,
+                            child: NeumorphicButton(
+                              onPressed: global.machineObjectModel.result
+                                  ?.state?.status ==
+                                  "processing"
+                                  ? null
+                                  : () {
+                                API_Manager()
+                                    .sendGcodeCommand("G0 Z0");
+                              },
+                              style: const NeumorphicStyle(
+                                color: Color(0xFFF0F0F3),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "GO TO 0",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Color(0xFF707585),
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                           )),
@@ -1051,39 +1431,218 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                 )),
             Flexible(
                 flex: 1,
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: ElevatedButton(
-                    onPressed:
-                        global.machineObjectModel.result?.statee?.status ==
-                                "processing"
-                            ? null
-                            : () {
-                                API_Manager()
-                                    .sendGcodeCommand("G10 L20 P1 X0 Y0 Z0");
-                                API_Manager().sendGcodeCommand("G10 L20 P1");
-                              },
-                    child: Text(
-                      "Set 0 XYZ",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Color(0xFF707585),
-                          fontWeight: FontWeight.bold),
+                child: Column(
+                  children: [
+                    Flexible(
+                      flex :1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: NeumorphicButton(
+                          onPressed:
+                              global.machineObjectModel.result?.state?.status ==
+                                      "processing"
+                                  ? null
+                                  : () {
+                                      API_Manager()
+                                          .sendGcodeCommand("G10 L20 P1 X0 Y0 Z0");
+                                      API_Manager().sendGcodeCommand("G10 L20 P1");
+                                    },
+                          style: const NeumorphicStyle(
+                            color: Color(0xFFF0F0F3),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Set 0 XYZ",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Color(0xFF707585),
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Color(0xFF9A9A9A),
-                      backgroundColor: Color(0xFFF0F0F3),
-                      elevation: 10,
+                    Flexible(
+                      flex :1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: NeumorphicButton(
+                          onPressed:
+                          global.machineObjectModel.result?.state?.status ==
+                              "processing"
+                              ? null
+                              : () {
+                            API_Manager()
+                                .sendGcodeCommand("G53 G0 Z189");
+                            API_Manager().sendGcodeCommand("G0 X0 Y0");
+                            API_Manager().sendGcodeCommand("G0 Z0");
+                          },
+                          style: const NeumorphicStyle(
+                            color: Color(0xFFF0F0F3),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "GO TO 0 XYZ",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Color(0xFF707585),
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 )),
+
           ],
         )));
     throw UnimplementedError();
   }
 }
+
+
+
+class CoordoneesOutilSansBouton extends StatefulWidget {
+  const CoordoneesOutilSansBouton({super.key, this.child, this.notifyParent});
+
+  final Widget? child;
+  final Function()? notifyParent;
+
+  @override
+  State<CoordoneesOutilSansBouton> createState() => CoordoneesOutilSansBoutonState(notifyParent);
+}
+
+class CoordoneesOutilSansBoutonState extends State<CoordoneesOutilSansBouton> {
+  final VoidCallback? _notifyParent;
+
+  CoordoneesOutilSansBoutonState(this._notifyParent);
+
+  @override
+  Widget build(BuildContext context) {
+    //global.machineObjectModel.result?.move?.axes?.elementAt(0)!.machinePosition?.toStringAsFixed(2) ?? "...",
+    return Container(
+        color: const Color(0xFFF0F0F3),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Flexible(
+                flex: 2,
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(5),
+                  //color: Colors.green,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const Flexible(
+                          flex: 1,
+                          child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Text(
+                                "X",
+                                style: TextStyle(
+                                    color: Color(0xFF707585),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
+                              ))),
+                      Flexible(
+                          flex: 3,
+                          child: FittedBox(
+                              fit: BoxFit.fitHeight,
+                              child: Text(
+                                global.machineObjectModel.result?.move?.axes
+                                    ?.elementAt(0)!
+                                    .userPosition
+                                    ?.toStringAsFixed(2) ??
+                                    "...",
+                                style: const TextStyle(
+                                    color: Color(0xFF707585), fontSize: 50),
+                              ))),
+                    ],
+                  ),
+                )),
+            Flexible(
+                flex: 2,
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(5),
+                  //color: Colors.green,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const Flexible(
+                          flex: 1,
+                          child: FittedBox(
+                              fit: BoxFit.fitHeight,
+                              child: Text(
+                                "Y",
+                                style: TextStyle(
+                                    color: Color(0xFF707585),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
+                              ))),
+                      Flexible(
+                          flex: 3,
+                          child: FittedBox(
+                              fit: BoxFit.fitHeight,
+                              child: Text(
+                                global.machineObjectModel.result?.move?.axes
+                                    ?.elementAt(1)!
+                                    .userPosition
+                                    ?.toStringAsFixed(2) ??
+                                    "...",
+                                style: const TextStyle(
+                                    color: Color(0xFF707585), fontSize: 50),
+                              ))),
+                    ],
+                  ),
+                )),
+            Flexible(
+                flex: 2,
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(5),
+                  //color: Colors.green,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const Flexible(
+                          flex: 1,
+                          child: FittedBox(
+                              fit: BoxFit.fitHeight,
+                              child: Text(
+                                "Z",
+                                style: TextStyle(
+                                    color: Color(0xFF707585),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
+                              ))),
+                      Flexible(
+                          flex: 3,
+                          child: FittedBox(
+                              fit: BoxFit.fitHeight,
+                              child: Text(
+                                global.machineObjectModel.result?.move?.axes
+                                    ?.elementAt(2)!
+                                    .userPosition
+                                    ?.toStringAsFixed(2) ??
+                                    "...",
+                                style: const TextStyle(
+                                    color: Color(0xFF707585), fontSize: 50),
+                              ))),
+
+                    ],
+                  ),
+                )),
+
+          ],
+        ));
+    throw UnimplementedError();
+  }
+}
+
+
 
 class SpindleSpeed extends StatefulWidget {
   const SpindleSpeed({super.key, this.child});
@@ -1097,13 +1656,14 @@ class SpindleSpeed extends StatefulWidget {
 class SpindleSpeedState extends State<SpindleSpeed> {
 
   TextEditingController SpindleValueController = TextEditingController();
-
+  bool SpindleFanIsOn = false;
+  bool SpindleIsOn = false;
 
   @override
   Widget build(BuildContext context) {
     //global.machineObjectModel.result?.move?.axes?.elementAt(0)!.machinePosition?.toStringAsFixed(2) ?? "...",
     return Container(
-        color: Color(0xFFF0F0F3),
+        color: const Color(0xFFF0F0F3),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -1112,8 +1672,8 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                 child: Container(
                   width: double.infinity,
                   height: double.infinity,
-                  margin: EdgeInsets.all(5),
-                  padding: EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(10),
                   child: Center(
                       child: FittedBox(
                           fit: BoxFit.contain,
@@ -1124,10 +1684,10 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                                         .current
                                         .toString() ??
                                     "???",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 2000, color: Color(0xFF707585)),
                               ),
-                              Text(
+                              const Text(
                                " Trs/min",
                                 style: TextStyle(
                                     fontSize: 800, color: Color(0xFF707585)),
@@ -1138,8 +1698,8 @@ class SpindleSpeedState extends State<SpindleSpeed> {
             Flexible(
                 flex: 2,
                 child: Container(
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(5),
                   height: double.infinity,
                   width: double.infinity,
                   child: Row(
@@ -1148,7 +1708,7 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                       Flexible(
                         flex: 7,
                         child: Neumorphic(
-                          style: NeumorphicStyle(color: Color(0xFFF0F0F3),depth: -5),
+                          style: const NeumorphicStyle(color: Color(0xFFF0F0F3),depth: -5),
                           //color: Colors.green,
                           child: Container(
                               child: TextField(
@@ -1160,11 +1720,11 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                       Flexible(
                           flex: 2,
                           child: NeumorphicButton(
-                            style: NeumorphicStyle(color: Color(0xFFF0F0F3)),
+                            style: const NeumorphicStyle(color: Color(0xFFF0F0F3)),
                             onPressed: () {
                               setState(() {
                                 API_Manager().sendGcodeCommand("M5 P0").then((value) {
-                                  API_Manager().sendGcodeCommand("M3 P0 S"+ SpindleValueController.text.toString()).then((value) {
+                                  API_Manager().sendGcodeCommand("M3 P0 S${SpindleValueController.text}").then((value) {
                                     SpindleValueController.clear();
                                   });
                                 });
@@ -1172,11 +1732,130 @@ class SpindleSpeedState extends State<SpindleSpeed> {
 
                               });
                             },
-                            child: Icon(
+                            child: const Icon(
                               Icons.send,
                               color: Color(0xFF707585),
                             ),
                           ))
+                    ],
+                  ),
+                )),
+            Flexible(
+                flex: 2,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(5),
+                  height: double.infinity,
+                  width: double.infinity,
+                  //color: Colors.blue,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: NeumorphicButton(
+                          margin: const EdgeInsets.all(15),
+                          style: NeumorphicStyle(
+                            depth: global.machineObjectModel.result!.fans![3]!.actualValue!>0?-5:5,//SpindleFanIsOn?-10:10,
+                            color: const Color(0xFFF0F0F3),
+                          ),
+                          onPressed: () {
+                            if(global.machineObjectModel.result!.fans![3]!.actualValue!>0)API_Manager().sendGcodeCommand("M106 P3 S0").then((value) {setState(() {
+
+                            });});
+                            else API_Manager().sendGcodeCommand("M106 P3 S255").then((value) {
+                              setState(() {
+
+                              });});
+                          },
+                          child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(
+                                  Icons.thermostat_outlined,
+                                  color: Color(0xFF707585),
+                                ),
+                                const FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Vent. Broche',
+                                      style: TextStyle(
+                                          color: Color(0xFF707585)),
+                                    ))
+                              ]),
+                        ),
+                      ),
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: NeumorphicButton(
+                          margin: const EdgeInsets.all(15),
+                          style: NeumorphicStyle(
+                            depth: global.machineObjectModel.result!.spindles![0]!.current!>0?-5:5,//SpindleFanIsOn?-10:10,
+                            color: const Color(0xFFF0F0F3),
+                          ),
+                          onPressed: () {
+                            if(global.machineObjectModel.result!.spindles![0]!.current==0)API_Manager().sendGcodeCommand("M5 P0").then((value) {
+                              API_Manager().sendGcodeCommand("M3 P0 S6000");
+                              setState(() {
+
+                              });});
+                            else API_Manager().sendGcodeCommand("M5 P0").then((value) {
+                              setState(() {
+
+                              });});
+                          },
+                          child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(
+                                  Icons.rotate_left,
+                                  color: Color(0xFF707585),
+                                ),
+                                const FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      '10% Broche',
+                                      style: TextStyle(
+                                          color: Color(0xFF707585)),
+                                    ))
+                              ]),
+                        ),
+                      ),
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: NeumorphicButton(
+                          margin: const EdgeInsets.all(15),
+                          style: NeumorphicStyle(
+                            depth: global.machineObjectModel.result!.spindles![0]!.current!>0?5:-5,//SpindleFanIsOn?-10:10,
+                            color: const Color(0xFFF0F0F3),
+                          ),
+                          onPressed: () {
+                            if(global.machineObjectModel.result!.spindles![0]!.current!>0)API_Manager().sendGcodeCommand("M5 P0").then((value) {
+                              setState(() {
+
+                              });});
+                          },
+                          child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                const Icon(
+                                  Icons.do_disturb_alt_outlined,
+                                  color: Color(0xFF707585),
+                                ),
+                                const FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Stop Broche',
+                                      style: TextStyle(
+                                          color: Color(0xFF707585)),
+                                    ))
+                              ]),
+                        ),
+                      )
                     ],
                   ),
                 )),
@@ -1206,7 +1885,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
   Widget build(BuildContext context) {
     //global.machineObjectModel.result?.move?.axes?.elementAt(0)!.machinePosition?.toStringAsFixed(2) ?? "...",
     return Container(
-        color: Color(0xFFF0F0F3),
+        color: const Color(0xFFF0F0F3),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -1216,7 +1895,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(flex:1,child: Text('  Tête')),
+                  const Flexible(flex:1,child: Text('  Tête')),
                   Flexible(
                     flex: 2,
                     child: Row(
@@ -1227,8 +1906,8 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                             child: Container(
                               width: double.infinity,
                               height: double.infinity,
-                              margin: EdgeInsets.all(5),
-                              padding: EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(10),
                               child: Center(
                                   child: FittedBox(
                                       fit: BoxFit.contain,
@@ -1237,10 +1916,10 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                           Text(
                                             global.machineObjectModel.result?.heat?.heaters?[1].current.toString() ??
                                                 "???",
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 20, color: Color(0xFF707585)),
                                           ),
-                                          Text(
+                                          const Text(
                                             " °C",
                                             style: TextStyle(
                                                 fontSize: 20, color: Color(0xFF707585)),
@@ -1251,8 +1930,8 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                         Flexible(
                             flex: 4,
                             child: Container(
-                              padding: EdgeInsets.all(10),
-                              margin: EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(5),
                               height: double.infinity,
                               width: double.infinity,
                               child: Row(
@@ -1261,7 +1940,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                   Flexible(
                                     flex: 4,
                                     child: Neumorphic(
-                                      style: NeumorphicStyle(color: Color(0xFFF0F0F3),depth: -5),
+                                      style: const NeumorphicStyle(color: Color(0xFFF0F0F3),depth: -5),
                                       //color: Colors.green,
                                       child: Container(
                                           child: TextField(
@@ -1273,11 +1952,11 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                   Flexible(
                                       flex: 2,
                                       child: NeumorphicButton(
-                                        style: NeumorphicStyle(color: Color(0xFFF0F0F3)),
+                                        style: const NeumorphicStyle(color: Color(0xFFF0F0F3)),
                                         onPressed: () {
                                           setState(() {
                                             API_Manager().sendGcodeCommand("M5 P0").then((value) {
-                                              API_Manager().sendGcodeCommand("M3 P0 S"+ TemperatureValueController.text.toString()).then((value) {
+                                              API_Manager().sendGcodeCommand("M3 P0 S${TemperatureValueController.text}").then((value) {
                                                 TemperatureValueController.clear();
                                               });
                                             });
@@ -1285,7 +1964,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
 
                                           });
                                         },
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.send,
                                           color: Color(0xFF707585),
                                         ),
@@ -1306,7 +1985,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(flex: 1,child: Text('  Lit')),
+                  const Flexible(flex: 1,child: Text('  Lit')),
                   Flexible(
                     flex: 2,
                     child: Row(
@@ -1317,8 +1996,8 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                             child: Container(
                               width: double.infinity,
                               height: double.infinity,
-                              margin: EdgeInsets.all(5),
-                              padding: EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(10),
                               child: Center(
                                   child: FittedBox(
                                       fit: BoxFit.contain,
@@ -1327,10 +2006,10 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                           Text(
                                             global.machineObjectModel.result?.heat?.heaters?[0].current.toString() ??
                                                 "???",
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 20, color: Color(0xFF707585)),
                                           ),
-                                          Text(
+                                          const Text(
                                             " °C",
                                             style: TextStyle(
                                                 fontSize: 20, color: Color(0xFF707585)),
@@ -1341,8 +2020,8 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                         Flexible(
                             flex: 4,
                             child: Container(
-                              padding: EdgeInsets.all(10),
-                              margin: EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(5),
                               height: double.infinity,
                               width: double.infinity,
                               child: Row(
@@ -1351,7 +2030,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                   Flexible(
                                     flex: 4,
                                     child: Neumorphic(
-                                      style: NeumorphicStyle(color: Color(0xFFF0F0F3),depth: -5),
+                                      style: const NeumorphicStyle(color: Color(0xFFF0F0F3),depth: -5),
                                       //color: Colors.green,
                                       child: Container(
                                           child: TextField(
@@ -1363,11 +2042,11 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                   Flexible(
                                       flex: 2,
                                       child: NeumorphicButton(
-                                        style: NeumorphicStyle(color: Color(0xFFF0F0F3)),
+                                        style: const NeumorphicStyle(color: Color(0xFFF0F0F3)),
                                         onPressed: () {
                                           setState(() {
                                             API_Manager().sendGcodeCommand("M5 P0").then((value) {
-                                              API_Manager().sendGcodeCommand("M3 P0 S"+ TemperatureValueController.text.toString()).then((value) {
+                                              API_Manager().sendGcodeCommand("M3 P0 S${TemperatureValueController.text}").then((value) {
                                                 TemperatureValueController.clear();
                                               });
                                             });
@@ -1375,7 +2054,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
 
                                           });
                                         },
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.send,
                                           color: Color(0xFF707585),
                                         ),
@@ -1395,6 +2074,8 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
     throw UnimplementedError();
   }
 }
+
+
 
 
 class LaserToolPower extends StatefulWidget {
@@ -1414,86 +2095,564 @@ class LaserToolPowerState extends State<LaserToolPower> {
   @override
   Widget build(BuildContext context) {
     //global.machineObjectModel.result?.move?.axes?.elementAt(0)!.machinePosition?.toStringAsFixed(2) ?? "...",
-    return Container(
-        color: Color(0xFFF0F0F3),
-        child:  Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Flexible(
-                flex: 2,
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  margin: EdgeInsets.all(5),
-                  padding: EdgeInsets.all(10),
-                  child: Center(
-                      child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Column(
-                            children: [
-                              Text(
-                                global.machineObjectModel.result?.spindles?[0]
-                                    .current
-                                    .toString() ??
-                                    "???",
-                                style: TextStyle(
-                                    fontSize: 2000, color: Color(0xFF707585)),
-                              ),
-                              Text(
-                                " %",
-                                style: TextStyle(
-                                    fontSize: 800, color: Color(0xFF707585)),
-                              ),
-                            ],
-                          ))),
-                )),
-            Flexible(
-                flex: 2,
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(5),
-                  height: double.infinity,
-                  width: double.infinity,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        flex: 7,
-                        child: Neumorphic(
-                          style: NeumorphicStyle(color: Color(0xFFF0F0F3),depth: -5),
-                          //color: Colors.green,
-                          child: Container(
-                              child: TextField(
-                                controller: LaserValueController,
-                                keyboardType: TextInputType.number,
-                              )),
-                        ),
-                      ),
-                      Flexible(
-                          flex: 2,
-                          child: NeumorphicButton(
-                            style: NeumorphicStyle(color: Color(0xFFF0F0F3)),
-                            onPressed: () {
-                              setState(() {
-                                API_Manager().sendGcodeCommand("M5 P0").then((value) {
-                                  API_Manager().sendGcodeCommand("M3 P0 S"+ LaserValueController.text.toString()).then((value) {
-                                    LaserValueController.clear();
-                                  });
-                                });
+    return Center(
+      child: Container(
+          color: const Color(0xFFF0F0F3),
+          child:  Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
 
-
-                              });
-                            },
-                            child: Icon(
-                              Icons.send,
-                              color: Color(0xFF707585),
-                            ),
-                          ))
-                    ],
+              Flexible(
+                flex: 1,
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: NeumorphicButton(
+                    margin: const EdgeInsets.all(20),
+                    style: NeumorphicStyle(
+                      //depth: global.machineObjectModel.result!.spindles![0]!.current!>0?5:-5,//SpindleFanIsOn?-10:10,
+                      color: const Color(0xFFF0F0F3),
+                    ),
+                    onPressed: ()async {
+                      await API_Manager().sendGcodeCommand('M452 C"nil"');
+                      await API_Manager().sendGcodeCommand('M950 P1 C"out5-"');
+                      await API_Manager().sendGcodeCommand('M42 P1 S0.01');
+                    },
+                    child: Column(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const Icon(
+                            Icons.lightbulb,
+                            color: Color(0xFF707585),
+                          ),
+                          const FittedBox(
+                              fit: BoxFit.fitHeight,
+                              child: Text(
+                                'On',
+                                style: TextStyle(
+                                    color: Color(0xFF707585)),
+                              ))
+                        ]),
                   ),
-                )),
-          ],
-        ));
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: NeumorphicButton(
+                    margin: const EdgeInsets.all(20),
+                    style: NeumorphicStyle(
+                      //depth: global.machineObjectModel.result!.spindles![0]!.current!>0?5:-5,//SpindleFanIsOn?-10:10,
+                      color: const Color(0xFFF0F0F3),
+                    ),
+                    onPressed: ()async {
+                      await API_Manager().sendGcodeCommand('M42 P1 S0');
+                      await API_Manager().sendGcodeCommand('M950 P1 C"nil"');
+                      await API_Manager().sendGcodeCommand('M452 C"out5-" S1');
+                    },
+                    child: Column(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const Icon(
+                            Icons.lightbulb_outlined,
+                            color: Color(0xFF707585),
+                          ),
+                          Text(
+                            'Off',
+                            style: TextStyle(
+                                color: Color(0xFF707585)),
+                          )
+                        ]),
+                  ),
+                ),
+              ),
+            ],
+          )),
+    );
     throw UnimplementedError();
   }
+}
+
+
+
+class CoefVitesse extends StatefulWidget{
+  @override
+  State<CoefVitesse> createState() => CoefVitesseState();
+}
+
+class CoefVitesseState extends State<CoefVitesse>{
+
+
+  double sliderValueSpeedFactor = 0;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sliderValueSpeedFactor = global.objectModelMove.result?.speedFactor??2;
+    sliderValueSpeedFactor = sliderValueSpeedFactor/2;
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 10,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 1,maxHeight: 30),
+            child: Container(
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,maxWidth: 1000),
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 8.0,top: 5.0),
+                      child: Text(
+                        "Coeficient",
+                        style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.bold,fontSize: 15),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                  ),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,),
+                    child: const Padding(
+                      padding: EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        "  vitesse",
+                        style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.w100,fontSize: 15),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Flexible(
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    global.objectModelMove.result?.speedFactor?.toStringAsFixed(1) ??
+                        "???",
+                    style: const TextStyle(
+                        fontSize: 15, color: Color(0xFF707585)),
+                  ),
+                  Row(
+                    mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(onPressed: (){setState(() {
+                        sliderValueSpeedFactor = ((sliderValueSpeedFactor*200-10)/200);
+                        API_Manager().sendGcodeCommand("M220 S${sliderValueSpeedFactor*200}").then((value) {
+                          setState(() {
+
+                          });
+                        });
+                      });}, child: const Text("-",style: TextStyle(fontSize:20,color: Colors.black26 ),)),
+                      Slider(activeColor: const Color(0xFF20917F),
+                          inactiveColor: const Color(0xFF20917F).withOpacity(0.2),
+                          onChangeEnd:(double value){
+                            API_Manager().sendGcodeCommand("M220 S${sliderValueSpeedFactor*200}").then((value) {
+                              setState(() {
+
+                              });
+                            });
+                          },value: sliderValueSpeedFactor, onChanged: (double value){
+                            setState(() {
+                              sliderValueSpeedFactor=value;
+                            });}),
+                      TextButton(onPressed: (){setState(() {
+                        sliderValueSpeedFactor = ((sliderValueSpeedFactor*200+10)/200);
+                        API_Manager().sendGcodeCommand("M220 S${sliderValueSpeedFactor*200}").then((value) {
+                          setState(() {
+
+                          });
+                        });
+                      });}, child: const Text("+",style: TextStyle(fontSize: 20,color: Colors.black26),)),
+                    ],)
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+}
+
+
+
+class VitesseBroche extends StatefulWidget{
+  @override
+  State<VitesseBroche> createState() => VitesseBrocheState();
+}
+
+class VitesseBrocheState extends State<VitesseBroche>{
+
+  double sliderValue= 0;
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sliderValue = global.machineObjectModel.result?.spindles?[0].current??0.1;
+    sliderValue=sliderValue/24000;
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 10,
+      child: Container(
+        margin: const EdgeInsets.all(5),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 1,maxHeight: 30),
+              child: Container(
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,maxWidth: 1000),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8.0,top: 5.0),
+                        child: Text(
+                          "Vitesse",
+                          style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.bold,fontSize: 15),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,),
+                      child: const Padding(
+                        padding: EdgeInsets.only(top: 5.0),
+                        child: Text(
+                          " broche",
+                          style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.w100,fontSize: 15),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        global.machineObjectModel.result?.spindles?[0]
+                            .current
+                            .toString() ??
+                            "???",
+                        style: const TextStyle(
+                            fontSize: 35, color: Color(0xFF707585)),
+                      ),
+                      Row(
+                        mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(onPressed: (){setState(() {
+                            if((sliderValue*24000)>=250)sliderValue = ((sliderValue*24000-250)/24000);
+                            API_Manager().sendGcodeCommand("M5 P0").then((value) {
+                              API_Manager().sendGcodeCommand("M3 P0 S${sliderValue*24000}").then((value) {
+                                setState(() {
+
+                                });
+                              });
+                            });
+                          });}, child: const Text("-",style: TextStyle(fontSize:60,color: Colors.black26 ),)),
+                          Slider(
+                              activeColor: const Color(0xFF20917F),
+                              inactiveColor: const Color(0xFF20917F).withOpacity(0.2),
+                              onChangeEnd:(double value){
+                                API_Manager().sendGcodeCommand("M5 P0").then((value) {
+                                  API_Manager().sendGcodeCommand("M3 P0 S${sliderValue*24000}").then((value) {
+                                    setState(() {
+
+                                    });
+                                  });
+                                });
+                              },value: sliderValue, onChanged: (double value){
+                            setState(() {
+                              sliderValue=value;
+                            });}),
+                          TextButton(onPressed: (){setState(() {
+                            if((sliderValue*24000)<24000)sliderValue = ((sliderValue*24000+250)/24000);
+                            API_Manager().sendGcodeCommand("M5 P0").then((value) {
+                              API_Manager().sendGcodeCommand("M3 P0 S${sliderValue*24000}").then((value) {
+                                setState(() {
+
+                                });
+                              });
+                            });
+                          });}, child: const Text("+",style: TextStyle(fontSize: 50,color: Colors.black26),)),
+                        ],)
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+
+
+
+class BabyStepZ extends StatelessWidget{
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 10,
+      child: Container(
+        margin: const EdgeInsets.all(5),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 1,maxHeight: 30),
+              child: Container(
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,maxWidth: 1000),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8.0,top: 5.0),
+                        child: Text(
+                          "Compensation",
+                          style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.bold,fontSize: 15),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,),
+                      child: const Padding(
+                        padding: EdgeInsets.only(top: 5.0),
+                        child: Text(
+                          " Z",
+                          style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.w100,fontSize: 15),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Flexible(
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(onPressed: (){
+                      API_Manager().sendGcodeCommand("M290 S+0.1");
+                    },style: ElevatedButton.styleFrom(foregroundColor: Colors.white,backgroundColor: const Color(0xFF20917F)), child: Container(width: 50,child: const Text("+ 0.1",textAlign: TextAlign.center,))),
+                    const Padding(padding: EdgeInsets.only(top: 3)),
+                    ElevatedButton(onPressed: (){
+                      API_Manager().sendGcodeCommand("M290 S-0.1");
+                    },style: ElevatedButton.styleFrom(foregroundColor: Colors.white,backgroundColor: const Color(0xFF20917F)), child: Container(width: 50,child: const Text("- 0.1",textAlign: TextAlign.center,))),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+
+
+
+
+
+
+
+class JobInfo extends StatefulWidget {
+  @override
+  State<JobInfo> createState() => JobInfoState ();
+}
+
+class JobInfoState extends State<JobInfo>{
+
+  Duration durationSinceBegining = Duration(seconds: global.objectModelJob.result?.duration?.toInt()??0);
+  Duration durationTotale = Duration(seconds: global.objectModelJob.result?.duration?.toInt()??0);
+  Duration durationLeft = Duration(seconds: global.objectModelJob.result?.timesLeft?.file??0);
+
+  @override
+  void initState ()
+  {
+    super.initState();
+    actualiserJobObjectModel();
+  }
+
+  Future<void> actualiserJobObjectModel() async {
+    Timer.periodic(const Duration(seconds: 2, milliseconds: 3), (timer) {
+      API_Manager()
+          .getMachineJobObjectModel()
+          .then((job) => global.objectModelJob = job);
+      if (mounted) setState(() {});
+      if (global.myEthernet_connection.isConnected == false) timer.cancel();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 10,
+      child: Container(
+        margin: const EdgeInsets.all(5),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 1,maxHeight: 30),
+              child: Container(
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,maxWidth: 1000),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8.0,top: 5.0),
+                        child: Text(
+                          "Job",
+                          style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.bold,fontSize: 15),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,),
+                      child: const Padding(
+                        padding: EdgeInsets.only(top: 5.0),
+                        child: Text(
+                          " en cours",
+                          style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.w100,fontSize: 15),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            "Depuis début",
+                            style: const TextStyle(color: Color(0xFF494949)),
+                          ),
+                          Text(
+                            "${durationSinceBegining.inHours}:${durationSinceBegining.inMinutes}:${durationSinceBegining.inSeconds}",
+                            style: const TextStyle(fontWeight: FontWeight.w300,fontSize: 15,color: Color(0xFF707585)),
+                          ),
+
+                        ],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const Text(
+                            "Durée restante estimée",
+                            style: TextStyle(color: Color(0xFF494949)),
+                          ),
+                          Text(
+                              "${durationLeft.inHours}:${durationLeft.inMinutes}",
+                            style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 15,color: Color(0xFF707585)),
+                          ),
+
+                        ],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            "Pourcentage",
+                            style: const TextStyle(color: Color(0xFF494949)),
+                          ),
+                          Text(
+                            (((global.objectModelJob.result?.filePosition!)!/(global.objectModelJob.result?.file?.size?.toInt()??1))*100).toString(),
+                            style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 15,color: Color(0xFF707585)),
+                          ),
+
+                        ],
+                      ),
+                      // Column(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //   children: [
+                      //     Text(
+                      //       "Pourcentage",
+                      //       style: const TextStyle(color: Color(0xFF494949)),
+                      //     ),
+                      //     Text(
+                      //       global.machineObjectModel.result?.job?.filePosition/global.machineObjectModel.result?.job. ?? "000",
+                      //       style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 15,color: Color(0xFF707585)),
+                      //     ),
+                      //
+                      //   ],
+                      // ),
+
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+    throw UnimplementedError();
+  }
+
 }

@@ -1,36 +1,62 @@
-@JS()
-library app.js;
 
 import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'dart:js' as js;
-import 'dart:js_util';
-import 'package:js/js.dart';
-
-import 'menus/side_menu.dart';
+import 'package:nweb/service/nwc-settings.dart';
 import 'service/API_Manager.dart';
 import 'globals_var.dart' as global;
 import 'screens.dart';
 
-var user = js.JsObject.fromBrowserObject(js.context['bool_connect']);
-
-@JS('connect')
-external connect();
-
-@JS('disconectEvent')
-external disconectEvent();
-
-@JS('readLoop')
-external readLoop();
-
-bool serialConnected = false;
 int pageToShow = 1;
 
 final TextEditingController controllerForTerminal = TextEditingController();
 
-void main() {
+Future<void> actualiserMachineObjectModel() async {
+  Timer.periodic(Duration(milliseconds: 600), (timer) {
+    API_Manager().getdataMachineObjectModel().then((machine) {
+      global.machineObjectModel = machine;
+      global.controllerMachineObjectModel.add(machine);
+      if (global.myEthernet_connection.isConnected == false) timer.cancel();
+    });
+  });
+}
+
+Future<void> actualiserMachineUsedTime() async {
+  Timer.periodic(Duration(minutes:2), (timer) async {
+    await API_Manager().downLoadNwcSettings();
+    global.MyMachineN02Config.GlobalMachineUsedTime=global.MyMachineN02Config.GlobalMachineUsedTime!+2;
+    API_Manager().upLoadAFile("0:/sys/nwc-settings.json", global.MyMachineN02Config.toJson().length.toString(), Uint8List.fromList(machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
+  });
+}
+
+Future<void> actualiserMoveObjectModel() async {
+  Timer.periodic(const Duration(seconds: 3, milliseconds: 3), (timer) {
+    API_Manager().getMachineMoveObjectModel().then((move) => global.objectModelMove = move);
+    if (global.myEthernet_connection.isConnected == false) timer.cancel();
+  });
+}
+
+
+void main()async {
+  await API_Manager().downLoadNwcSettings().then((value) {
+    global.MyMachineN02Config=value;
+  } );
+
+  await API_Manager().sendGcodeCommand("M453").then((_) {
+    API_Manager().getMachineMode().then((value) => global.machineMode = value);
+  });
+
+  API_Manager().getMachineMoveObjectModel().then((move) => global.objectModelMove = move);
+
+  API_Manager().getfileList().then((value) => global.ListofGcodeFile = value);
+
+  API_Manager().getfileListSys().then((value) => global.ListofSysFile=value);
+
+  actualiserMachineObjectModel();
+  actualiserMoveObjectModel();
+  actualiserMachineUsedTime();
+
   runApp(const MyApp());
 }
 
@@ -41,161 +67,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        // When navigating to the "/" route, build the FirstScreen widget.
+        '/': (context) =>  DashboardScreen(notifyParent: (){},),
+        // When navigating to the "/second" route, build the SecondScreen widget.
+        '/dashboard': (context) =>  DashboardScreen(notifyParent: (){}),
+        '/conversationel': (context) =>  ConversationelScreen(),
+        '/programmes': (context) =>  ProgrammeScreen(),
+        '/jobStatus': (context) =>  JobScreen(),
+        '/origin': (context) =>  OriginScreen(notifyParent: (){}),
+        '/parameters': (context) =>  ParametreScreen(),
+        '/admin': (context) =>  AdminScreen(),
+        '/editor': (context) =>  EditorPage(),
+      },
       title: 'Naxe N02',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'RobotoMono'
-      ),
-      home: const MyHomePage(title: 'Machine atelier 1'),
+      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'RobotoMono'),
+      //home: const MyHomePage(title: 'Version 1.0.2'),
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-
-  PageController page = PageController();
-
-  double height = 0;
-  double width = 0;
-
-  StreamController<String> controller = StreamController<String>();
-
-  Future<void> actualiserMachineObjectModel() async {
-    Timer.periodic(Duration(milliseconds: 600), (timer) {
-      API_Manager().getdataMachineObjectModel().then((machine) {
-        global.machineObjectModel = machine;
-        if (mounted)setState(() {});
-        if(global.myEthernet_connection.isConnected==false)timer.cancel();
-      });
-    });
-  }
-
-  Future<void> actualiserMoveObjectModel() async {
-    Timer.periodic(const Duration(seconds: 5,milliseconds: 3), (timer) {
-      API_Manager().getMachineMoveObjectModel().then((move) => global.objectModelMove = move);
-        if (mounted)setState(() {});
-        if(global.myEthernet_connection.isConnected==false)timer.cancel();
-    });
-  }
-
-  Future<void> actualiserMoveObjectModelOneSec() async {
-    Future.delayed(const Duration(seconds: 1,milliseconds: 30), () {
-      API_Manager().getMachineMoveObjectModel().then((move) => global.objectModelMove = move);
-      if (mounted)setState(() {});
-      //if(global.myEthernet_connection.isConnected==false)timer.cancel();
-    });
-  }
-
-  void initState() {
-    API_Manager().CORSInit();
-    actualiserMachineObjectModel();
-    actualiserMoveObjectModel();
-    API_Manager().getfileList().then((value) => global.ListofGcodeFile=value);
-  }
-
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      //drawer: NavDrawer(),
-      appBar: AppBar(
-        backgroundColor: Color(0xFFF0F0F3),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Flexible(
-                flex: 2,
-                child:
-                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
-            Flexible(
-                flex: 10,
-                child: Container(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Spacer(),
-                    Text(
-                      widget.title,
-                      style: TextStyle(color: Color(0xFF707585)),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        child: global.myEthernet_connection.isConnected==true ? Text('Connecté',style: TextStyle(color: Colors.white),)
-                            : Text('Déconnecté'),
-                        style: ElevatedButton.styleFrom(
-                          disabledBackgroundColor: Colors.green,
-                            backgroundColor: global.myEthernet_connection.isConnected==true ? Colors.greenAccent : Colors.redAccent),
-                        onPressed: global.myEthernet_connection.isConnected==false ? () {
-                          actualiserMachineObjectModel();
-                          actualiserMoveObjectModel();
-                          /*
-                          if (!serialConnected)
-                            _connectToSerial();
-                          else
-                            _disconect();*/}:null,
-                      ),
-                    ),
-
-                  ],
-                ))),
-          ],
-        ),
-      ),
-      body: Container(
-        //color: Color(0xFFF0F0F3),
-        child: Row(
-          children: [
-            Flexible(
-              flex: 2,
-              child: Container(
-                margin: EdgeInsets.all(10),
-                child: SideMenu(
-                  onAnyTap: () {
-                    setState(() {
-                      print("hahaha");
-                    });
-                  },
-                ),
-              ),
-            ),
-            Flexible(
-              flex: 10,
-              child: pageToShow == 1
-                  ? DashboardScreen(
-                      notifyParent: () {
-                        setState(() {});
-                        print(offsetSelected);
-                      },
-                    )
-                  : pageToShow == 2
-                      ? ConversationelScreen()
-                      : pageToShow == 3
-                          ? ProgrammeScreen()
-                          : pageToShow == 4
-                              ? ParametreScreen()
-                              : pageToShow == 5
-                                  ? ParametreScreen()
-                                  : Center(child: Text('Start Page')),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

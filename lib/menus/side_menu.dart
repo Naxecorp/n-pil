@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import 'package:nweb/globals_var.dart' as global;
 
+import '../service/API_Manager.dart';
+
 class SideMenu extends StatefulWidget {
   const SideMenu({
     super.key,
@@ -25,9 +27,12 @@ class _SideMenu extends State<SideMenu> {
 
   _SideMenu(this._onAnytap);
 
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width * 0.2,
       child: Column(
         children: [
           Padding(
@@ -35,10 +40,12 @@ class _SideMenu extends State<SideMenu> {
             child: Card(
               child: ListTile(
                 onTap: () {
-                  pageToShow = 1;
-                  return _onAnytap();
+                  pageToShow=1;
+                  Navigator.pushNamed(context, '/dashboard');
+                  //Navigator.pop(context);
+                  //return _onAnytap();
                 },
-                tileColor: pageToShow == 1 ? Color(0xFF9A9A9A) : Colors.white,
+                //tileColor: pageToShow == 1 ? Color(0xFF9A9A9A) : Colors.white,
                 leading: Icon(
                   Icons.home_filled,
                   color: pageToShow == 1 ? Colors.white : Color(0xFF9A9A9A),
@@ -57,8 +64,8 @@ class _SideMenu extends State<SideMenu> {
             child: Card(
               child: ListTile(
                 onTap: () {
-                  pageToShow = 2;
-                  return _onAnytap();
+                  pageToShow=2;
+                  Navigator.pushNamed(context, '/conversationel');
                 },
                 tileColor: pageToShow == 2 ? Color(0xFF9A9A9A) : Colors.white,
                 leading: Icon(
@@ -80,7 +87,8 @@ class _SideMenu extends State<SideMenu> {
               child: ListTile(
                 onTap: () {
                   pageToShow = 3;
-                  return _onAnytap();
+                  API_Manager().getfileList().then((value) => global.ListofGcodeFile = value);
+                  Navigator.pushNamed(context, '/programmes');
                 },
                 tileColor: pageToShow == 3 ? Color(0xFF9A9A9A) : Colors.white,
                 leading: Icon(
@@ -96,28 +104,50 @@ class _SideMenu extends State<SideMenu> {
               ),
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-          //   child: Card(
-          //     color: pageToShow == 4 ? Color(0xFF9A9A9A) : Colors.white,
-          //     child: ListTile(
-          //       onTap: () {
-          //         pageToShow = 4;
-          //         return _onAnytap();
-          //       },
-          //       leading: Icon(
-          //         Icons.computer,
-          //         color: pageToShow == 4 ? Colors.white : Color(0xFF9A9A9A),
-          //       ),
-          //       title: Text(
-          //         'Console',
-          //         style: TextStyle(
-          //             color: pageToShow == 4 ? Colors.white : Color(0xFF9A9A9A),
-          //             fontWeight: FontWeight.bold),
-          //       ),
-          //     ),
-          //   ),
-          // ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            child: Card(
+              color: pageToShow == 4 ? Color(0xFF9A9A9A) : Colors.white,
+              child: ListTile(
+                onTap: () {
+                  pageToShow = 4;
+                  Navigator.pushNamed(context, '/jobStatus');
+                },
+                leading: Icon(
+                  Icons.play_arrow_sharp,
+                  color: pageToShow == 4 ? Colors.white : Color(0xFF9A9A9A),
+                ),
+                title: Text(
+                  'Job Status',
+                  style: TextStyle(
+                      color: pageToShow == 4 ? Colors.white : Color(0xFF9A9A9A),
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            child: Card(
+              color: pageToShow == 6 ? Color(0xFF9A9A9A) : Colors.white,
+              child: ListTile(
+                onTap: () {
+                  pageToShow = 6;
+                  Navigator.pushNamed(context, '/origin');
+                },
+                leading: Icon(
+                  Icons.play_arrow_sharp,
+                  color: pageToShow == 6 ? Colors.white : Color(0xFF9A9A9A),
+                ),
+                title: Text(
+                  "Changement d'outil",
+                  style: TextStyle(
+                      color: pageToShow == 6 ? Colors.white : Color(0xFF9A9A9A),
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
           Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -126,7 +156,7 @@ class _SideMenu extends State<SideMenu> {
               child: ListTile(
                 onTap: () {
                   pageToShow = 5;
-                  return _onAnytap();
+                  Navigator.pushNamed(context, '/parameters');
                 },
                 leading: Icon(
                   Icons.settings,
@@ -141,6 +171,28 @@ class _SideMenu extends State<SideMenu> {
               ),
             ),
           ),
+          global.AdminLogged?Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            child: Card(
+              color: pageToShow == 7 ? Color(0xFF9A9A9A) : Colors.white,
+              child: ListTile(
+                onTap: () {
+                  pageToShow = 7;
+                  Navigator.pushNamed(context, '/admin');
+                },
+                leading: Icon(
+                  Icons.settings,
+                  color: pageToShow == 7 ? Colors.white : Color(0xFF9A9A9A),
+                ),
+                title: Text(
+                  'Admin',
+                  style: TextStyle(
+                      color: pageToShow == 7 ? Colors.white : Color(0xFF9A9A9A),
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ):Container(),
         ],
       ),
     );

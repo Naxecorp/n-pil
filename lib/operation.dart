@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
+import 'dart:math';
 
 
 
@@ -74,16 +75,21 @@ class OperationSurfacage extends Operation{
 @override
 Future<void> construct ()async{
 
-    trajectoires.add(';$label');
-    trajectoires.add('G28');
-    trajectoires.add('G0 X$OriginX Y$OriginY Z$OriginZ');
-    trajectoires.add('G0 Z$OriginZ F1500');
-    trajectoires.add('G0 X' + (((OriginX-(ParamA/2))-ParamDecalage)).toString() + ' Y'+ ((OriginY-(ParamB/2)-ParamDecalage)).toString());
+  trajectoires.add(';$label');
+  trajectoires.add('M453');
+  trajectoires.add('G0 Z10 F1500');
+  //trajectoires.add('G0 X$OriginX Y$OriginY');
+  trajectoires.add('M5');
+  trajectoires.add('M3 P0 S10000');
+  trajectoires.add('G4 S2');
+  //trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
+  //trajectoires.add('G0 Z$OriginZ');
 
+  trajectoires.add('G1 Y'+((OriginY-(ParamB/2))+((ParamDf/2))).toString());
+  trajectoires.add('G1 X'+((OriginX+(ParamA/2))+ParamDecalage).toString());
 
     for(int j = 1;j*ParamAP<=ParamC;j++)
     {
-      trajectoires.add('G1 Z'+(j*ParamAP).toString());
 
       for (int i = 0;(ParamB)-((ParamDf/2)*i)>0;i++)
       {
@@ -92,16 +98,18 @@ Future<void> construct ()async{
         {
           trajectoires.add('G1 Z'+((OriginZ+1).toString()));
           trajectoires.add('G1 X'+((OriginX+(ParamA/2))+ParamDecalage).toString());
-          trajectoires.add('G1 Z'+(j*ParamAP).toString());
+          trajectoires.add('G1 Z-'+(j*ParamAP).toString());
         }
         else trajectoires.add('G1 X'+(OriginX-(ParamA/2)-ParamDecalage).toString());
+
       }
-
+      trajectoires.add('G1 Z-'+(j*ParamAP).toString());
     }
+    trajectoires.add('G0 Z${OriginZ+30}');
+    trajectoires.add('M5');
+    trajectoires.add('G0 X$OriginX Y$OriginY');
     trajectoires.add(';End of $label\n');
-
-
-
+    trajectoires.forEach((element) {print(element);});
   }
 
 
@@ -120,29 +128,48 @@ class OperationPocheCarre extends Operation{
   @override
   Future<void> construct ()async{
 
+    print("origine X: $OriginX");
+    print("origine Y: $OriginY");
+    print("origine Z: $OriginZ");
+
+    print("Param A: $ParamA");
+    print("Param B: $ParamB");
+    print("Param DF: $ParamDf");
+
+
     trajectoires.add(';$label');
-    trajectoires.add('G0 X$OriginX Y$OriginY Z$OriginZ');
-    trajectoires.add('G0 Z1 F1500');
-    trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
-    trajectoires.add('G0 Z0');
+    trajectoires.add('M453');
+    trajectoires.add('G0 Z10 F1500');
+    trajectoires.add('G0 X$OriginX Y$OriginY');
+    trajectoires.add('M5');
+    trajectoires.add('M3 P0 S10000');
+    trajectoires.add('G4 S2');
+    //trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
+    trajectoires.add('G0 Z$OriginZ');
+    trajectoires.add('G1 Z'+(OriginZ+10).toString());
+    //trajectoires.add('G1 X'+(OriginX-(ParamA/2)+(ParamDf/2)).toString()+' Y'+(OriginY-(ParamB/2)+(ParamDf/2)).toString());
 
 
     for(int j = 1;j*ParamAP<=ParamC;j++)
       {
-        trajectoires.add('G1 Z'+(j*ParamAP).toString());
+        trajectoires.add('G1 X'+(OriginX-(ParamA/2)+(ParamDf/2)).toString()+' Y'+(OriginY-(ParamB/2)+(ParamDf/2)).toString());
+        trajectoires.add('G1 Z'+(-j*ParamAP).toString());
 
         for (int i = 1;ParamA-ParamDf*(i-1)>0;i++)
         {
-          trajectoires.add('G1 Y'+(ParamB/2-ParamDf/2*i).toString());
-          trajectoires.add('G1 X'+(ParamA/2-ParamDf/2*i).toString());
-          trajectoires.add('G1 Y'+(-ParamB/2+ParamDf/2*i).toString());
-          trajectoires.add('G1 X'+(-ParamA/2+ParamDf/2*i).toString());
+          trajectoires.add('G1 Y'+(OriginY+(ParamB/2)-((ParamDf/2)*i)).toString());
+          trajectoires.add('G1 X'+(OriginX+(ParamA/2)-((ParamDf/2)*i)).toString());
+          trajectoires.add('G1 Y'+(OriginY-(ParamB/2)+((ParamDf/2)*i)).toString());
+          trajectoires.add('G1 X'+(OriginX-(ParamA/2)+((ParamDf/2)*i)).toString());
         }
-
+        trajectoires.add("G0 Z"+(OriginZ+10).toString());
       }
 
 
     trajectoires.add(';End of $label\n');
+    trajectoires.add('G0 Z10');
+    trajectoires.add('M5');
+    trajectoires.forEach((element) {print(element);});
 
   }
 
@@ -163,10 +190,14 @@ class OperationContournage extends Operation{
 Future<void> construct ()async{
 
   trajectoires.add(';$label');
-  trajectoires.add('G0 X$OriginX Y$OriginY Z$OriginZ');
-  trajectoires.add('G0 Z1 F1500');
-  trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
-  trajectoires.add('G0 Z0');
+  trajectoires.add('M453');
+  trajectoires.add('G0 Z10 F1500');
+  trajectoires.add('G0 X$OriginX Y$OriginY');
+  trajectoires.add('M5');
+  trajectoires.add('M3 P0 S10000');
+  trajectoires.add('G4 S2');
+  //trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
+  trajectoires.add('G0 Z$OriginZ');
 
 
   for(int j = 1;j*ParamAP<=ParamC;j++)
@@ -206,7 +237,14 @@ class OperationLigneDroite extends Operation{
 Future<void> construct ()async{
 
   trajectoires.add(';$label');
-  trajectoires.add('G0 X$OriginX Y$OriginY  F1500');
+  trajectoires.add('M453');
+  trajectoires.add('G0 Z10 F1500');
+  trajectoires.add('G0 X$OriginX Y$OriginY');
+  trajectoires.add('M5');
+  trajectoires.add('M3 P0 S10000');
+  trajectoires.add('G4 S2');
+  //trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
+  trajectoires.add('G0 Z$OriginZ');
 
 
     for(int i=1;i<=NbLigne-1;i++){
@@ -241,25 +279,39 @@ class OperationPocheRonde extends Operation{
 @override
 Future<void> construct ()async{
 
-    trajectoires.add(';$label');
-    trajectoires.add('G0 X$OriginX Y$OriginY Z$OriginZ');
+  trajectoires.add(';$label');
+  trajectoires.add('M453');
+  trajectoires.add('G0 Z10 F1500');
+  trajectoires.add('G0 X$OriginX Y$OriginY');
+  trajectoires.add('M5');
+  trajectoires.add('M3 P0 S10000');
+  trajectoires.add('G4 S2');
+  trajectoires.add('G0 Z$OriginZ');
 
 
     for(int j = 1;j*ParamAP<=ParamC;j++)
     {
-      trajectoires.add('G1 Z'+(j*ParamAP).toString());
+      trajectoires.add('G1 Z-'+(j*ParamAP).toString());
 
-      for (int i = 1;ParamD-(ParamDf/2)*(i-1)>0;i++)
+
+      for (int i = 1;((sqrt(ParamDf))*i)<ParamD;i++)
       {
-        trajectoires.add('G1 X'+(ParamDf/2*i).toString()+' Y'+(ParamDf/2*i).toString());
-        trajectoires.add('G3 I'+(ParamD-ParamDf/2*i).toString()+' J'+(ParamD-ParamDf/2*i).toString());
-
+        trajectoires.add('G1 X'+(OriginX-(ParamDf*i)).toString()+' Y'+(OriginY-(ParamDf*i)).toString());
+        trajectoires.add('G2 I'+((ParamDf/1)*i).toString()+' J'+((ParamDf/1)*i).toString());
       }
+      trajectoires.add('G1 Z'+(OriginZ+5).toString());
+      trajectoires.add('G0 X$OriginX Y$OriginY');
 
     }
 
-
+    trajectoires.add('G0 Z10');
+    trajectoires.add('M5');
     trajectoires.add(';End of $label\n');
+    for(int i=0;i<trajectoires.length;i++)
+      {
+        print(trajectoires.elementAt(i));
+      }
+    
 
   }
 

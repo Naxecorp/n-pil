@@ -19,10 +19,11 @@ class MachineObjectModel {
   Result? result;
 
   factory MachineObjectModel.fromJson(Map<String, dynamic> json) => MachineObjectModel(
-    key: json["key"] == null ? null : json["key"],
-    flags: json["flags"] == null ? null : json["flags"],
+    key: json["key"],
+    flags: json["flags"],
     result: json["result"] == null ? null : Result.fromJson(json["result"]),
   );
+
 
 }
 
@@ -37,12 +38,12 @@ class Result {
     this.sensors,
     this.seqs,
     this.spindles,
-    this.statee,
+    this.state,
     this.tools,
   });
 
   List<Board>? boards;
-  List<Fan>? fans;
+  List<Fan?>? fans;
   Heat? heat;
   List<Input>? inputs;
   Job? job;
@@ -50,21 +51,21 @@ class Result {
   Sensors? sensors;
   Seqs? seqs;
   List<Spindle>? spindles;
-  Statee? statee;
+  StateClass? state;
   List<Tool>? tools;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-    boards: json["boards"] == null ? null : List<Board>.from(json["boards"].map((x) => Board.fromJson(x))),
-    fans: json["fans"] == null ? null : List<Fan>.from(json["fans"].map((x) => Fan.fromJson(x))),
+    boards: json["boards"] == null ? [] : List<Board>.from(json["boards"]!.map((x) => Board.fromJson(x))),
+    fans: json["fans"] == null ? [] : List<Fan?>.from(json["fans"]!.map((x) => x == null ? null : Fan.fromJson(x))),
     heat: json["heat"] == null ? null : Heat.fromJson(json["heat"]),
-    inputs: json["inputs"] == null ? null : List<Input>.from(json["inputs"].map((x) => Input.fromJson(x))),
+    inputs: json["inputs"] == null ? [] : List<Input>.from(json["inputs"]!.map((x) => Input.fromJson(x))),
     job: json["job"] == null ? null : Job.fromJson(json["job"]),
     move: json["move"] == null ? null : Move.fromJson(json["move"]),
     sensors: json["sensors"] == null ? null : Sensors.fromJson(json["sensors"]),
     seqs: json["seqs"] == null ? null : Seqs.fromJson(json["seqs"]),
-    spindles: json["spindles"] == null ? null : List<Spindle>.from(json["spindles"].map((x) => Spindle.fromJson(x))),
-    statee: json["state"] == null ? null : Statee.fromJson(json["state"]),
-    tools: json["tools"] == null ? null : List<Tool>.from(json["tools"].map((x) => Tool.fromJson(x))),
+    spindles: json["spindles"] == null ? [] : List<Spindle>.from(json["spindles"]!.map((x) => Spindle.fromJson(x))),
+    state: json["state"] == null ? null : StateClass.fromJson(json["state"]),
+    tools: json["tools"] == null ? [] : List<Tool>.from(json["tools"]!.map((x) => Tool.fromJson(x))),
   );
 
 
@@ -87,11 +88,7 @@ class Board {
     vIn: json["vIn"] == null ? null : McuTemp.fromJson(json["vIn"]),
   );
 
-  Map<String, dynamic> toJson() => {
-    "mcuTemp": mcuTemp == null ? null : mcuTemp!.toJson(),
-    "v12": v12 == null ? null : v12!.toJson(),
-    "vIn": vIn == null ? null : vIn!.toJson(),
-  };
+
 }
 
 class McuTemp {
@@ -102,11 +99,11 @@ class McuTemp {
   double? current;
 
   factory McuTemp.fromJson(Map<String, dynamic> json) => McuTemp(
-    current: json["current"] == null ? null : json["current"].toDouble(),
+    current: json["current"]?.toDouble(),
   );
 
   Map<String, dynamic> toJson() => {
-    "current": current == null ? null : current,
+    "current": current,
   };
 }
 
@@ -117,21 +114,17 @@ class Fan {
     this.rpm,
   });
 
-  double? actualValue;
-  double? requestedValue;
-  double? rpm;
+  double? actualValue = 0;
+  double? requestedValue= 0;
+  double? rpm = 0;
 
   factory Fan.fromJson(Map<String, dynamic> json) => Fan(
-    actualValue: json["actualValue"] == null ? null : json["actualValue"],
-    requestedValue: json["requestedValue"] == null ? null : json["requestedValue"],
-    rpm: json["rpm"] == null ? null : json["rpm"],
+    actualValue: json["actualValue"],
+    requestedValue: json["requestedValue"],
+    rpm: json["rpm"],
   );
 
-  Map<String, dynamic> toJson() => {
-    "actualValue": actualValue == null ? null : actualValue,
-    "requestedValue": requestedValue == null ? null : requestedValue,
-    "rpm": rpm == null ? null : rpm,
-  };
+
 }
 
 class Heat {
@@ -142,9 +135,12 @@ class Heat {
   List<Heater>? heaters;
 
   factory Heat.fromJson(Map<String, dynamic> json) => Heat(
-    heaters: json["heaters"] == null ? null : List<Heater>.from(json["heaters"].map((x) => Heater.fromJson(x))),
+    heaters: json["heaters"] == null ? [] : List<Heater>.from(json["heaters"]!.map((x) => Heater.fromJson(x))),
   );
 
+  Map<String, dynamic> toJson() => {
+    "heaters": heaters == null ? [] : List<dynamic>.from(heaters!.map((x) => x.toJson())),
+  };
 }
 
 class Heater {
@@ -163,13 +159,20 @@ class Heater {
   String? state;
 
   factory Heater.fromJson(Map<String, dynamic> json) => Heater(
-    active: json["active"] == null ? null : json["active"],
-    avgPwm: json["avgPwm"] == null ? null : json["avgPwm"],
-    current: json["current"] == null ? null : json["current"].toDouble(),
-    standby: json["standby"] == null ? null : json["standby"],
-    state: json["state"] == null ? null : json["state"],
+    active: json["active"],
+    avgPwm: json["avgPwm"],
+    current: json["current"]?.toDouble(),
+    standby: json["standby"],
+    state: json["state"],
   );
 
+  Map<String, dynamic> toJson() => {
+    "active": active,
+    "avgPwm": avgPwm,
+    "current": current,
+    "standby": standby,
+    "state": state,
+  };
 }
 
 class Input {
@@ -183,22 +186,28 @@ class Input {
   double? feedRate;
   bool? inMacro;
   double? lineNumber;
-  Stat? state;
+  StateEnum? state;
 
   factory Input.fromJson(Map<String, dynamic> json) => Input(
-    feedRate: json["feedRate"] == null ? null : json["feedRate"],
-    inMacro: json["inMacro"] == null ? null : json["inMacro"],
-    lineNumber: json["lineNumber"] == null ? null : json["lineNumber"],
-    state: json["state"] == null ? null : statValues.map![json["state"]],
+    feedRate: json["feedRate"],
+    inMacro: json["inMacro"],
+    lineNumber: json["lineNumber"],
+    state: stateEnumValues.map[json["state"]]!,
   );
 
-
+  Map<String, dynamic> toJson() => {
+    "feedRate": feedRate,
+    "inMacro": inMacro,
+    "lineNumber": lineNumber,
+    "state": stateEnumValues.reverse[state],
+  };
 }
 
-enum Stat { IDLE }
+enum StateEnum { WAITING, IDLE }
 
-final statValues = EnumValues({
-  "idle": Stat.IDLE
+final stateEnumValues = EnumValues({
+  "idle": StateEnum.IDLE,
+  "waiting": StateEnum.WAITING
 });
 
 class Job {
@@ -214,20 +223,20 @@ class Job {
     this.warmUpDuration,
   });
 
-  dynamic build;
-  dynamic duration;
-  double? filePosition;
-  dynamic layer;
-  dynamic layerTime;
-  dynamic pauseDuration;
-  dynamic rawExtrusion;
+  Build? build;
+  double? duration = 0;
+  double? filePosition = 0;
+  double? layer = 0;
+  double? layerTime= 0;
+  double? pauseDuration= 0;
+  double? rawExtrusion= 0;
   TimesLeft? timesLeft;
-  dynamic warmUpDuration;
+  double? warmUpDuration= 0;
 
   factory Job.fromJson(Map<String, dynamic> json) => Job(
-    build: json["build"],
+    build: json["build"] == null ? null : Build.fromJson(json["build"]),
     duration: json["duration"],
-    filePosition: json["filePosition"] == null ? null : json["filePosition"],
+    filePosition: json["filePosition"],
     layer: json["layer"],
     layerTime: json["layerTime"],
     pauseDuration: json["pauseDuration"],
@@ -236,16 +245,21 @@ class Job {
     warmUpDuration: json["warmUpDuration"],
   );
 
+}
+
+class Build {
+  Build({
+    this.currentObject,
+  });
+
+  double? currentObject;
+
+  factory Build.fromJson(Map<String, dynamic> json) => Build(
+    currentObject: json["currentObject"],
+  );
+
   Map<String, dynamic> toJson() => {
-    "build": build,
-    "duration": duration,
-    "filePosition": filePosition == null ? null : filePosition,
-    "layer": layer,
-    "layerTime": layerTime,
-    "pauseDuration": pauseDuration,
-    "rawExtrusion": rawExtrusion,
-    "timesLeft": timesLeft == null ? null : timesLeft!.toJson(),
-    "warmUpDuration": warmUpDuration,
+    "currentObject": currentObject,
   };
 }
 
@@ -287,17 +301,17 @@ class Move {
   double? virtualEPos;
 
   factory Move.fromJson(Map<String, dynamic> json) => Move(
-    axes: json["axes"] == null ? null : List<Axe>.from(json["axes"].map((x) => Axe.fromJson(x))),
+    axes: json["axes"] == null ? [] : List<Axe>.from(json["axes"]!.map((x) => Axe.fromJson(x))),
     currentMove: json["currentMove"] == null ? null : CurrentMove.fromJson(json["currentMove"]),
-    extruders: json["extruders"] == null ? null : List<Extruder>.from(json["extruders"].map((x) => Extruder.fromJson(x))),
-    virtualEPos: json["virtualEPos"] == null ? null : json["virtualEPos"],
+    extruders: json["extruders"] == null ? [] : List<Extruder>.from(json["extruders"]!.map((x) => Extruder.fromJson(x))),
+    virtualEPos: json["virtualEPos"],
   );
 
   Map<String, dynamic> toJson() => {
-    "axes": axes == null ? null : List<dynamic>.from(axes!.map((x) => x.toJson())),
-    "currentMove": currentMove == null ? null : currentMove!.toJson(),
-    "extruders": extruders == null ? null : List<dynamic>.from(extruders!.map((x) => x.toJson())),
-    "virtualEPos": virtualEPos == null ? null : virtualEPos,
+    "axes": axes == null ? [] : List<dynamic>.from(axes!.map((x) => x.toJson())),
+    "currentMove": currentMove?.toJson(),
+    "extruders": extruders == null ? [] : List<dynamic>.from(extruders!.map((x) => x.toJson())),
+    "virtualEPos": virtualEPos,
   };
 }
 
@@ -311,13 +325,13 @@ class Axe {
   double? userPosition;
 
   factory Axe.fromJson(Map<String, dynamic> json) => Axe(
-    machinePosition: json["machinePosition"] == null ? null : json["machinePosition"],
-    userPosition: json["userPosition"] == null ? null : json["userPosition"],
+    machinePosition: json["machinePosition"]?.toDouble(),
+    userPosition: json["userPosition"],
   );
 
   Map<String, dynamic> toJson() => {
-    "machinePosition": machinePosition == null ? null : machinePosition,
-    "userPosition": userPosition == null ? null : userPosition,
+    "machinePosition": machinePosition,
+    "userPosition": userPosition,
   };
 }
 
@@ -337,19 +351,19 @@ class CurrentMove {
   double? topSpeed;
 
   factory CurrentMove.fromJson(Map<String, dynamic> json) => CurrentMove(
-    acceleration: json["acceleration"] == null ? null : json["acceleration"],
-    deceleration: json["deceleration"] == null ? null : json["deceleration"],
+    acceleration: json["acceleration"],
+    deceleration: json["deceleration"],
     laserPwm: json["laserPwm"],
-    requestedSpeed: json["requestedSpeed"] == null ? null : json["requestedSpeed"],
-    topSpeed: json["topSpeed"] == null ? null : json["topSpeed"],
+    requestedSpeed: json["requestedSpeed"],
+    topSpeed: json["topSpeed"],
   );
 
   Map<String, dynamic> toJson() => {
-    "acceleration": acceleration == null ? null : acceleration,
-    "deceleration": deceleration == null ? null : deceleration,
+    "acceleration": acceleration,
+    "deceleration": deceleration,
     "laserPwm": laserPwm,
-    "requestedSpeed": requestedSpeed == null ? null : requestedSpeed,
-    "topSpeed": topSpeed == null ? null : topSpeed,
+    "requestedSpeed": requestedSpeed,
+    "topSpeed": topSpeed,
   };
 }
 
@@ -363,13 +377,13 @@ class Extruder {
   double? rawPosition;
 
   factory Extruder.fromJson(Map<String, dynamic> json) => Extruder(
-    position: json["position"] == null ? null : json["position"],
-    rawPosition: json["rawPosition"] == null ? null : json["rawPosition"],
+    position: json["position"],
+    rawPosition: json["rawPosition"],
   );
 
   Map<String, dynamic> toJson() => {
-    "position": position == null ? null : position,
-    "rawPosition": rawPosition == null ? null : rawPosition,
+    "position": position,
+    "rawPosition": rawPosition,
   };
 }
 
@@ -389,14 +403,20 @@ class Sensors {
   List<Probe>? probes;
 
   factory Sensors.fromJson(Map<String, dynamic> json) => Sensors(
-    analog: json["analog"] == null ? null : List<Analog>.from(json["analog"].map((x) => Analog.fromJson(x))),
-    endstops: json["endstops"] == null ? null : List<Endstop>.from(json["endstops"].map((x) => Endstop.fromJson(x))),
-    filamentMonitors: json["filamentMonitors"] == null ? null : List<dynamic>.from(json["filamentMonitors"].map((x) => x)),
-    gpIn: json["gpIn"] == null ? null : List<dynamic>.from(json["gpIn"].map((x) => x)),
-    probes: json["probes"] == null ? null : List<Probe>.from(json["probes"].map((x) => Probe.fromJson(x))),
+    analog: json["analog"] == null ? [] : List<Analog>.from(json["analog"]!.map((x) => Analog.fromJson(x))),
+    endstops: json["endstops"] == null ? [] : List<Endstop>.from(json["endstops"]!.map((x) => Endstop.fromJson(x))),
+    filamentMonitors: json["filamentMonitors"] == null ? [] : List<dynamic>.from(json["filamentMonitors"]!.map((x) => x)),
+    gpIn: json["gpIn"] == null ? [] : List<dynamic>.from(json["gpIn"]!.map((x) => x)),
+    probes: json["probes"] == null ? [] : List<Probe>.from(json["probes"]!.map((x) => Probe.fromJson(x))),
   );
 
-
+  Map<String, dynamic> toJson() => {
+    "analog": analog == null ? [] : List<dynamic>.from(analog!.map((x) => x.toJson())),
+    "endstops": endstops == null ? [] : List<dynamic>.from(endstops!.map((x) => x.toJson())),
+    "filamentMonitors": filamentMonitors == null ? [] : List<dynamic>.from(filamentMonitors!.map((x) => x)),
+    "gpIn": gpIn == null ? [] : List<dynamic>.from(gpIn!.map((x) => x)),
+    "probes": probes == null ? [] : List<dynamic>.from(probes!.map((x) => x.toJson())),
+  };
 }
 
 class Analog {
@@ -407,9 +427,12 @@ class Analog {
   double? lastReading;
 
   factory Analog.fromJson(Map<String, dynamic> json) => Analog(
-    lastReading: json["lastReading"] == null ? null : json["lastReading"].toDouble(),
+    lastReading: json["lastReading"]?.toDouble(),
   );
 
+  Map<String, dynamic> toJson() => {
+    "lastReading": lastReading,
+  };
 }
 
 class Endstop {
@@ -420,11 +443,11 @@ class Endstop {
   bool? triggered;
 
   factory Endstop.fromJson(Map<String, dynamic> json) => Endstop(
-    triggered: json["triggered"] == null ? null : json["triggered"],
+    triggered: json["triggered"],
   );
 
   Map<String, dynamic> toJson() => {
-    "triggered": triggered == null ? null : triggered,
+    "triggered": triggered,
   };
 }
 
@@ -436,9 +459,12 @@ class Probe {
   List<double>? value;
 
   factory Probe.fromJson(Map<String, dynamic> json) => Probe(
-    value: json["value"] == null ? null : List<double>.from(json["value"].map((x) => x)),
+    value: json["value"] == null ? [] : List<double>.from(json["value"]!.map((x) => x)),
   );
 
+  Map<String, dynamic> toJson() => {
+    "value": value == null ? [] : List<dynamic>.from(value!.map((x) => x)),
+  };
 }
 
 class Seqs {
@@ -479,24 +505,42 @@ class Seqs {
   double? volumes;
 
   factory Seqs.fromJson(Map<String, dynamic> json) => Seqs(
-    boards: json["boards"] == null ? null : json["boards"],
-    directories: json["directories"] == null ? null : json["directories"],
-    fans: json["fans"] == null ? null : json["fans"],
-    global: json["global"] == null ? null : json["global"],
-    heat: json["heat"] == null ? null : json["heat"],
-    inputs: json["inputs"] == null ? null : json["inputs"],
-    job: json["job"] == null ? null : json["job"],
-    move: json["move"] == null ? null : json["move"],
-    network: json["network"] == null ? null : json["network"],
-    reply: json["reply"] == null ? null : json["reply"],
-    sensors: json["sensors"] == null ? null : json["sensors"],
-    spindles: json["spindles"] == null ? null : json["spindles"],
-    state: json["state"] == null ? null : json["state"],
-    tools: json["tools"] == null ? null : json["tools"],
-    volChanges: json["volChanges"] == null ? null : List<double>.from(json["volChanges"].map((x) => x)),
-    volumes: json["volumes"] == null ? null : json["volumes"],
+    boards: json["boards"],
+    directories: json["directories"],
+    fans: json["fans"],
+    global: json["global"],
+    heat: json["heat"],
+    inputs: json["inputs"],
+    job: json["job"],
+    move: json["move"],
+    network: json["network"],
+    reply: json["reply"],
+    sensors: json["sensors"],
+    spindles: json["spindles"],
+    state: json["state"],
+    tools: json["tools"],
+    volChanges: json["volChanges"] == null ? [] : List<double>.from(json["volChanges"]!.map((x) => x)),
+    volumes: json["volumes"],
   );
 
+  Map<String, dynamic> toJson() => {
+    "boards": boards,
+    "directories": directories,
+    "fans": fans,
+    "global": global,
+    "heat": heat,
+    "inputs": inputs,
+    "job": job,
+    "move": move,
+    "network": network,
+    "reply": reply,
+    "sensors": sensors,
+    "spindles": spindles,
+    "state": state,
+    "tools": tools,
+    "volChanges": volChanges == null ? [] : List<dynamic>.from(volChanges!.map((x) => x)),
+    "volumes": volumes,
+  };
 }
 
 class Spindle {
@@ -509,14 +553,18 @@ class Spindle {
   String? state;
 
   factory Spindle.fromJson(Map<String, dynamic> json) => Spindle(
-    current: json["current"] == null ? null : json["current"],
-    state: json["state"] == null ? null : json["state"],
+    current: json["current"],
+    state: json["state"],
   );
 
+  Map<String, dynamic> toJson() => {
+    "current": current,
+    "state": state,
+  };
 }
 
-class Statee {
-  Statee({
+class StateClass {
+  StateClass({
     this.currentTool,
     this.gpOut,
     this.laserPwm,
@@ -528,23 +576,31 @@ class Statee {
 
   double? currentTool;
   List<dynamic>? gpOut;
-  dynamic? laserPwm;
+  dynamic laserPwm;
   double? msUpTime;
   String? status;
   DateTime? time;
   double? upTime;
 
-  factory Statee.fromJson(Map<String, dynamic> json) => Statee(
-    currentTool: json["currentTool"] == null ? null : json["currentTool"],
-    gpOut: json["gpOut"] == null ? null : List<dynamic>.from(json["gpOut"].map((x) => x)),
+  factory StateClass.fromJson(Map<String, dynamic> json) => StateClass(
+    currentTool: json["currentTool"],
+    gpOut: json["gpOut"] == null ? [] : List<dynamic>.from(json["gpOut"]!.map((x) => x)),
     laserPwm: json["laserPwm"],
-    msUpTime: json["msUpTime"] == null ? null : json["msUpTime"],
-    status: json["status"] == null ? null : json["status"],
+    msUpTime: json["msUpTime"],
+    status: json["status"],
     time: json["time"] == null ? null : DateTime.parse(json["time"]),
-    upTime: json["upTime"] == null ? null : json["upTime"],
+    upTime: json["upTime"],
   );
 
-
+  Map<String, dynamic> toJson() => {
+    "currentTool": currentTool,
+    "gpOut": gpOut == null ? [] : List<dynamic>.from(gpOut!.map((x) => x)),
+    "laserPwm": laserPwm,
+    "msUpTime": msUpTime,
+    "status": status,
+    "time": time?.toIso8601String(),
+    "upTime": upTime,
+  };
 }
 
 class Tool {
@@ -555,31 +611,34 @@ class Tool {
     this.state,
   });
 
-  List<double>? active;
+  List<dynamic>? active;
   bool? isRetracted;
-  List<double>? standby;
+  List<dynamic>? standby;
   String? state;
 
   factory Tool.fromJson(Map<String, dynamic> json) => Tool(
-    active: json["active"] == null ? null : List<double>.from(json["active"].map((x) => x)),
-    isRetracted: json["isRetracted"] == null ? null : json["isRetracted"],
-    standby: json["standby"] == null ? null : List<double>.from(json["standby"].map((x) => x)),
-    state: json["state"] == null ? null : json["state"],
+    active: json["active"] == null ? [] : List<dynamic>.from(json["active"]!.map((x) => x)),
+    isRetracted: json["isRetracted"],
+    standby: json["standby"] == null ? [] : List<dynamic>.from(json["standby"]!.map((x) => x)),
+    state: json["state"],
   );
 
-
+  Map<String, dynamic> toJson() => {
+    "active": active == null ? [] : List<dynamic>.from(active!.map((x) => x)),
+    "isRetracted": isRetracted,
+    "standby": standby == null ? [] : List<dynamic>.from(standby!.map((x) => x)),
+    "state": state,
+  };
 }
 
 class EnumValues<T> {
-  Map<String, T>? map;
-  Map<T, String>? reverseMap;
+  Map<String, T> map;
+  late Map<T, String> reverseMap;
 
   EnumValues(this.map);
 
-  Map<T, String>? get reverse {
-    if (reverseMap == null) {
-      reverseMap = map!.map((k, v) => new MapEntry(v, k));
-    }
+  Map<T, String> get reverse {
+    reverseMap = map.map((k, v) => MapEntry(v, k));
     return reverseMap;
   }
 }
