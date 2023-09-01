@@ -1886,7 +1886,7 @@ class OriginScreenState extends State<OriginScreen> {
                                           duration: const Duration(milliseconds: 400),
                                         ),
                                       );
-                                      API_Manager().sendGcodeCommand("M120\nG91\nG1 Z10 F3700\nM121\n");
+                                      API_Manager().sendGcodeCommand("G91\nG1 Z50 F3700\nG90\n");
 
 
                                     },
