@@ -171,7 +171,7 @@ class _SideMenu extends State<SideMenu> {
               ),
             ),
           ),
-          global.AdminLogged?Padding(
+          Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
               color: pageToShow == 7 ? Color(0xFF9A9A9A) : Colors.white,
@@ -192,7 +192,7 @@ class _SideMenu extends State<SideMenu> {
                 ),
               ),
             ),
-          ):Container(),
+          ),
         ],
       ),
     );

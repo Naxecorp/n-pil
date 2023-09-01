@@ -1775,6 +1775,12 @@ class OriginScreenState extends State<OriginScreen> {
                                     ),
                                     onPressed: () {
                                       ZSaved = global.machineObjectModel.result!.move!.axes![2].userPosition!;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                     SnackBar(
+                                       content: const Text('Hauteur Enregistrée'),
+                                       duration: const Duration(milliseconds: 400),
+                                       ),
+                                      );
                                     },
                                     child: Column(
                                         mainAxisAlignment:
@@ -1874,6 +1880,15 @@ class OriginScreenState extends State<OriginScreen> {
                                     ),
                                     onPressed: () {
                                       API_Manager().sendGcodeCommand("G10 L20 P1 Z"+ZSaved.toStringAsFixed(2)).then((value) => API_Manager().sendGcodeCommand("G54"));
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: const Text('Hauteur Enregistrée'),
+                                          duration: const Duration(milliseconds: 400),
+                                        ),
+                                      );
+                                      API_Manager().sendGcodeCommand("M120\nG91\nG1 Z10 F3700\nM121\n");
+
+
                                     },
                                     child: Column(
                                         mainAxisAlignment:

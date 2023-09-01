@@ -265,8 +265,7 @@ class DeplacementMachine extends StatefulWidget {
 class _DeplacementMachine extends State<DeplacementMachine> {
 
   bool MovesWithoutEndstop = false;
-  double AccelValue = 100.0;
-  double SpeedValue = 1000.0;
+
 
   @override
   Widget build(BuildContext context) {
@@ -515,23 +514,23 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                         size: 70,
                         iconColor: const Color(0xFF707585),
                         onUpPressed: ()async {
-                          if (MovesWithoutEndstop) await API_Manager().sendGcodeCommand("M120\nG91\nG1 Y$stepValue H2 F$SpeedValue\nM121\n").then((value) => print(value));
-                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Y$stepValue F$SpeedValue\nM121\n");
+                          if (MovesWithoutEndstop) await API_Manager().sendGcodeCommand("M120\nG91\nG1 Y$stepValue H2 F${global.SpeedValue}\nM121\n").then((value) => print(value));
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Y$stepValue F${global.SpeedValue}\nM121\n");
                           API_Manager().sendrr_reply();
                         },
                         onDownPressed: () async{
-                          if (MovesWithoutEndstop)await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 Y-$stepValue F$SpeedValue\nM121\n");
-                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Y-$stepValue F$SpeedValue\nM121\n");
+                          if (MovesWithoutEndstop)await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 Y-$stepValue F${global.SpeedValue}\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Y-$stepValue F${global.SpeedValue}\nM121\n");
                           API_Manager().sendrr_reply();
                         },
                         onLeftPressed: () async{
-                          if (MovesWithoutEndstop)await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 X-$stepValue F$SpeedValue\nM121\n");
-                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 X-$stepValue F$SpeedValue\nM121\n");
+                          if (MovesWithoutEndstop)await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 X-$stepValue F${global.SpeedValue}\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 X-$stepValue F${global.SpeedValue}\nM121\n");
                           API_Manager().sendrr_reply();
                         },
                         onRightPressed: () async{
-                          if (MovesWithoutEndstop) await API_Manager().sendGcodeCommand("M120\nG91\nG1 X$stepValue H2 F$SpeedValue\nM121\n");
-                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 X$stepValue F$SpeedValue\nM121\n");
+                          if (MovesWithoutEndstop) await API_Manager().sendGcodeCommand("M120\nG91\nG1 X$stepValue H2 F${global.SpeedValue}\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 X$stepValue F${global.SpeedValue}\nM121\n");
                           API_Manager().sendrr_reply();
                         },
                       ),
@@ -547,8 +546,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                         size: 70,
                         iconColor: const Color(0xFF707585),
                         onUpPressed: () async {
-                          if (MovesWithoutEndstop) await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 Z$stepValue F$SpeedValue\nM121\n");
-                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Z$stepValue F$SpeedValue\nM121\n");
+                          if (MovesWithoutEndstop) await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 Z$stepValue F${global.SpeedValue}\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Z$stepValue F${global.SpeedValue}\nM121\n");
                           API_Manager().sendrr_reply();
                         },
                         onDownPressed: ()async {
@@ -557,8 +556,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                             Zstepdown = 10;
                           else
                             Zstepdown = stepValue;
-                          if (MovesWithoutEndstop)await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 Z-$Zstepdown F$SpeedValue\nM121\n");
-                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Z-$Zstepdown F$SpeedValue\nM121\n");
+                          if (MovesWithoutEndstop)await API_Manager().sendGcodeCommand("M120\nG91\nG1 H2 Z-$Zstepdown F${global.SpeedValue}\nM121\n");
+                            else await API_Manager().sendGcodeCommand("M120\nG91\nG1 Z-$Zstepdown F${global.SpeedValue}\nM121\n");
                           API_Manager().sendrr_reply();
                         },
                       ),
@@ -609,7 +608,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                       ),
                       onPressed: () {
                         setState(() {
-                          API_Manager().sendGcodeCommand("M120\nG91\nG1 Y500 F$SpeedValue\nM121\n");
+                          API_Manager().sendGcodeCommand("M120\nG91\nG1 Y500 F${global.SpeedValue}\nM121\n");
                         });
                       },
                       child: Column(
@@ -636,7 +635,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                       ),
                       onPressed: () {
                         setState(() {
-                          API_Manager().sendGcodeCommand("M120\nG91\nG1 Y-500 F$SpeedValue\nM121\n");
+                          API_Manager().sendGcodeCommand("M120\nG91\nG1 Y-500 F${global.SpeedValue}\nM121\n");
                         });
                       },
                       child: Column(
@@ -659,7 +658,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                     global.AdminLogged == true ? Container(child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text("Accel: $AccelValue"),
+                        Text("Accel: ${global.Accel}"),
                         NeumorphicButton(
                           margin: const EdgeInsets.all(5),
                           style: NeumorphicStyle(
@@ -667,8 +666,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                           ),
                           onPressed: () {
                             setState(() {
-                              AccelValue = AccelValue+10;
-                              API_Manager().sendGcodeCommand("M201 Y$AccelValue \n");
+                              global.Accel = global.Accel+10;
+                              API_Manager().sendGcodeCommand("M201 Y${global.Accel} \n");
                             });
                           },
                           child: Column(
@@ -695,8 +694,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                           ),
                           onPressed: () {
                             setState(() {
-                              if(AccelValue>10)AccelValue = AccelValue-10;
-                              API_Manager().sendGcodeCommand("M201 Y$AccelValue \n");
+                              if(global.Accel>10)global.Accel = global.Accel-10;
+                              API_Manager().sendGcodeCommand("M201 Y${global.Accel} \n");
                             });
                           },
                           child: Column(
@@ -721,7 +720,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                     global.AdminLogged == true ? Container(child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text("Speed: $SpeedValue"),
+                        Text("Speed: ${global.SpeedValue}"),
                         NeumorphicButton(
                           margin: const EdgeInsets.all(5),
                           style: NeumorphicStyle(
@@ -729,8 +728,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                           ),
                           onPressed: () {
                             setState(() {
-                              SpeedValue = SpeedValue+100;
-                              API_Manager().sendGcodeCommand("M203 Y$SpeedValue \n");
+                              global.SpeedValue = global.SpeedValue+100;
+                              API_Manager().sendGcodeCommand("M203 Y${global.SpeedValue} \n");
                             });
                           },
                           child: Column(
@@ -757,8 +756,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                           ),
                           onPressed: () {
                             setState(() {
-                              if(SpeedValue>100)SpeedValue = SpeedValue-100;
-                              API_Manager().sendGcodeCommand("M203 Y$SpeedValue \n");
+                              if(global.SpeedValue>100)global.SpeedValue = global.SpeedValue-100;
+                              API_Manager().sendGcodeCommand("M203 Y${global.SpeedValue} \n");
                             });
                           },
                           child: Column(

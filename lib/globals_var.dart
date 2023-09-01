@@ -14,7 +14,7 @@ import 'service/nwc-settings.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.0.7"; // Ajout des jerk
+String version = "Version 1.0.8"; // Ajout des jerk
 bool AdminLogged = false;
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
@@ -41,6 +41,6 @@ Stream streamMachineObjectModel = controllerMachineObjectModel.stream;
 String ContentofFileToEdit = "";
 int selectedFileSysIndex = 0;
 
-double Accel = 370;
+double Accel = 250;
 double SpeedValue = 3700;
-double Jerk = 50;
+double Jerk = 350;
