@@ -222,43 +222,65 @@ Future<void> construct ()async{
 
 class OperationLigneDroite extends Operation{
 
-  double ParamA = 10;
-  double ParamC = 1;
+  double ParamA = 0; // Y
+  double ParamDf = 0; // X
 
-  double ParamDf = 3;
-  double ParamAP = 0.3;
+  double ParamC = 1; // pronfondeur
+  double ParamAP = 0.3; // profondeur de passe
 
-  double NbLigne = 2;
-  double Interligne = 3;
 
-  OperationLigneDroite({required super.OriginZ, required super.OriginY, required super.OriginX,super.label, required this.ParamA,required this.ParamC,required this.ParamDf,required this.ParamAP,required this.NbLigne,required this.Interligne});
+  OperationLigneDroite({required super.OriginZ, required super.OriginY, required super.OriginX,super.label, required this.ParamA,required this.ParamC,required this.ParamDf,required this.ParamAP});
 
 @override
-Future<void> construct ()async{
-
+Future<void> construct ()async {
   trajectoires.add(';$label');
   trajectoires.add('M453');
   trajectoires.add('G0 Z10 F1500');
-  trajectoires.add('G0 X$OriginX Y$OriginY');
   trajectoires.add('M5');
   trajectoires.add('M3 P0 S10000');
   trajectoires.add('G4 S2');
-  //trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
-  trajectoires.add('G0 Z$OriginZ');
 
-
-    for(int i=1;i<=NbLigne-1;i++){
-    trajectoires.add('G0 Z'+(OriginZ).toString()+' F1500');
-    trajectoires.add('G1 Y'+(OriginY+ParamA).toString());
-    trajectoires.add('G0 Z'+(OriginZ+1).toString()+' F1500');
-    trajectoires.add('G0 Y'+(OriginY).toString());
-    trajectoires.add('G0 X'+(OriginX+(i)*Interligne).toString());
+  if(ParamDf == 0) {
+    for (double i = ParamAP; i <= ParamC; i += ParamAP) {
+      trajectoires.add('G0 X$OriginX Y$OriginY');
+      trajectoires.add('G0 Z' + (-i).toString());
+      trajectoires.add('G1 Y' + (OriginY + ParamA).toString());
+      trajectoires.add('G0 Z2');
     }
+    trajectoires.add('G0 X$OriginX Y$OriginY');
+    trajectoires.add('G0 Z'+(-ParamC).toString());
+    trajectoires.add('G1 Y'+ (OriginY+ParamA).toString());
+  }
+  else if (ParamA == 0)
+    {
+      for (double i = ParamAP; i <= ParamC; i += ParamAP) {
+        trajectoires.add('G0 X$OriginX Y$OriginY');
+        trajectoires.add('G0 Z' + (-i).toString());
+        trajectoires.add('G1 X' + (OriginX + ParamDf).toString());
+        trajectoires.add('G0 Z2');
+      }
+      trajectoires.add('G0 X$OriginX Y$OriginY');
+      trajectoires.add('G0 Z'+(-ParamC).toString());
+      trajectoires.add('G1 X'+ (OriginX+ParamDf).toString());
+    }
+  else{
+    for (double i = ParamAP; i <= ParamC; i += ParamAP) {
+      trajectoires.add('G0 X$OriginX Y$OriginY');
+      trajectoires.add('G0 Z' + (-i).toString());
+      trajectoires.add('G1 X'+(OriginX + ParamDf).toString()+' Y'+(OriginY + ParamA).toString());
+      trajectoires.add('G0 Z2');
+    }
+    trajectoires.add('G0 X$OriginX Y$OriginY');
+    trajectoires.add('G0 Z'+(-ParamC).toString());
+    trajectoires.add('G1 X'+ (OriginX+ParamDf).toString()+' Y'+(OriginY + ParamA).toString());
+  }
 
-
-  trajectoires.add('G0 Z'+(OriginZ+1).toString()+' F1500');
-  trajectoires.add('G0 X$OriginX Y$OriginY Z200');
+  trajectoires.add('G0 Z10');
+  trajectoires.add('M5');
+  trajectoires.add('G0 X$OriginX Y$OriginY');
   trajectoires.add(';End of $label\n');
+  trajectoires.forEach((element) {print(element);});
+
 
 }
 

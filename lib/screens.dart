@@ -587,6 +587,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                       ? () {
                                           API_Manager().sendGcodeCommand(
                                               'M32 "0:/gcodes/' + ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString() + '"');
+                                          Navigator.pushNamed(context, '/jobstatus');
                                         }
                                       : null,
                                   child:  SizedBox(
@@ -1079,15 +1080,6 @@ class ParametreScreenState extends State<ParametreScreen> {
     super.dispose();
   }
 }
-
-
-
-
-
-
-
-
-
 
 
 
