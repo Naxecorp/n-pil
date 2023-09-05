@@ -228,8 +228,10 @@ class OperationLigneDroite extends Operation{
   double ParamC = 1; // pronfondeur
   double ParamAP = 0.3; // profondeur de passe
 
+  double ParamDe = 0; // Décalage
 
-  OperationLigneDroite({required super.OriginZ, required super.OriginY, required super.OriginX,super.label, required this.ParamA,required this.ParamC,required this.ParamDf,required this.ParamAP});
+
+  OperationLigneDroite({required super.OriginZ, required super.OriginY, required super.OriginX,super.label, required this.ParamA,required this.ParamC,required this.ParamDf,required this.ParamAP,required this.ParamDe});
 
 @override
 Future<void> construct ()async {
@@ -242,26 +244,26 @@ Future<void> construct ()async {
 
   if(ParamDf == 0) {
     for (double i = ParamAP; i <= ParamC; i += ParamAP) {
-      trajectoires.add('G0 X$OriginX Y$OriginY');
+      trajectoires.add('G0 Y' + (OriginY ).toString()+' X'+(OriginX + ParamDe).toString());
       trajectoires.add('G0 Z' + (-i).toString());
-      trajectoires.add('G1 Y' + (OriginY + ParamA).toString());
+      trajectoires.add('G1 Y' + (OriginY + ParamA).toString()+' X'+(OriginX + ParamDe).toString());
       trajectoires.add('G0 Z2');
     }
-    trajectoires.add('G0 X$OriginX Y$OriginY');
+    trajectoires.add('G0 Y'+ (OriginY).toString()+' X'+(OriginX + ParamDe).toString());
     trajectoires.add('G0 Z'+(-ParamC).toString());
-    trajectoires.add('G1 Y'+ (OriginY+ParamA).toString());
+    trajectoires.add('G1 Y'+ (OriginY+ParamA).toString()+' X'+(OriginX + ParamDe).toString());
   }
   else if (ParamA == 0)
     {
       for (double i = ParamAP; i <= ParamC; i += ParamAP) {
-        trajectoires.add('G0 X$OriginX Y$OriginY');
+        trajectoires.add('G0 Y'+ (OriginY + ParamDe).toString()+' X'+(OriginX).toString());
         trajectoires.add('G0 Z' + (-i).toString());
-        trajectoires.add('G1 X' + (OriginX + ParamDf).toString());
+        trajectoires.add('G1 Y' + (OriginY + ParamDe).toString()+' X'+(OriginX + ParamDf).toString());
         trajectoires.add('G0 Z2');
       }
-      trajectoires.add('G0 X$OriginX Y$OriginY');
+      trajectoires.add('G0 Y'+ (OriginY + ParamDe).toString()+' X'+(OriginX).toString());
       trajectoires.add('G0 Z'+(-ParamC).toString());
-      trajectoires.add('G1 X'+ (OriginX+ParamDf).toString());
+      trajectoires.add('G1 Y' + (OriginY + ParamDe).toString()+' X'+(OriginX + ParamDf).toString());
     }
   else{
     for (double i = ParamAP; i <= ParamC; i += ParamAP) {

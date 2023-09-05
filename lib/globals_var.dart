@@ -44,3 +44,5 @@ int selectedFileSysIndex = 0;
 double Accel = 250;
 double SpeedValue = 3700;
 double Jerk = 350;
+
+String globalTimeValue =''; // chrono du dashboard

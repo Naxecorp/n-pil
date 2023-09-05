@@ -584,10 +584,9 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                   onPressed: global.machineObjectModel.result
                                               ?.state?.status ==
                                           "idle"
-                                      ? () {
-                                          API_Manager().sendGcodeCommand(
-                                              'M32 "0:/gcodes/' + ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString() + '"');
-                                          Navigator.pushNamed(context, '/jobstatus');
+                                      ? () async {
+                                    await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' + ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString() + '"');
+                                          Navigator.pushNamed(context, '/jobStatus');
                                         }
                                       : null,
                                   child:  SizedBox(

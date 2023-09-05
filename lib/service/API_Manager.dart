@@ -221,7 +221,7 @@ class API_Manager {
 
     var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_model?key=job&flags=d99vn');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 1));
+      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 10));
       global.myEthernet_connection.isConnected=true;
       if (response.statusCode == 200) {
         final ObjectModelJob myObjectModelJob = objectModelJobFromJson(response.body);

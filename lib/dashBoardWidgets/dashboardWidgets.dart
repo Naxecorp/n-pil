@@ -6,6 +6,7 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../globals_var.dart' as global;
 import 'package:nweb/service/API_Manager.dart';
+import '../globals_var.dart';
 import '../widgetUtils/touche.dart';
 import '../widgetUtils/my_jostick.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
@@ -2510,11 +2511,18 @@ class JobInfo extends StatefulWidget {
   State<JobInfo> createState() => JobInfoState ();
 }
 
-class JobInfoState extends State<JobInfo>{
+class JobInfoState extends State<JobInfo> {
+  int secondsElapsedSinceBeginning = 0; // Temps écoulé depuis le début en secondes
+  double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
+  late Timer timer;
 
-  Duration durationSinceBegining = Duration(seconds: global.objectModelJob.result?.duration?.toInt()??0);
-  Duration durationTotale = Duration(seconds: global.objectModelJob.result?.duration?.toInt()??0);
-  Duration durationLeft = Duration(seconds: global.objectModelJob.result?.timesLeft?.file??0);
+
+  String formatDuration(int seconds) {
+    int hours = seconds ~/ 3600;
+    int minutes = (seconds % 3600) ~/ 60;
+    int remainingSeconds = seconds % 60;
+    return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}";
+  }
 
   @override
   void initState ()
@@ -2524,17 +2532,50 @@ class JobInfoState extends State<JobInfo>{
   }
 
   Future<void> actualiserJobObjectModel() async {
-    Timer.periodic(const Duration(seconds: 2, milliseconds: 3), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!isJobPaused) {
+        setState(() {
+          secondsElapsedSinceBeginning++;
+          // Calculez le temps et stockez-le dans la variable globale ici
+          int hours = secondsElapsedSinceBeginning ~/ 3600;
+          int minutes = (secondsElapsedSinceBeginning % 3600) ~/ 60;
+          int seconds = secondsElapsedSinceBeginning % 60;
+          globalTimeValue =
+          "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(
+              2, '0')}:${seconds.toString().padLeft(2, '0')}";
+        });
+      }
       API_Manager()
           .getMachineJobObjectModel()
-          .then((job) => global.objectModelJob = job);
-      if (mounted) setState(() {});
+          .then((job) {
+        global.objectModelJob = job;
+        // Mettez à jour le pourcentage complet de la tâche ici
+        pourcentageComplet =
+            (global.objectModelJob.result?.filePosition ?? 0) /
+                (global.objectModelJob.result?.file?.size?.toInt() ?? 1) *
+                100;
+      });
       if (global.myEthernet_connection.isConnected == false) timer.cancel();
     });
   }
 
   @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
+    int hours = secondsElapsedSinceBeginning ~/ 3600;
+    int minutes = (secondsElapsedSinceBeginning % 3600) ~/ 60;
+    int seconds = secondsElapsedSinceBeginning % 60;
+
+    int tempsRestantEnSecondes =
+    ((secondsElapsedSinceBeginning / pourcentageComplet) * 100)
+        .toInt();
+
     return Card(
       elevation: 10,
       child: Container(
@@ -2544,30 +2585,45 @@ class JobInfoState extends State<JobInfo>{
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 1,maxHeight: 30),
+              constraints: const BoxConstraints(minHeight: 1, maxHeight: 30),
               child: Container(
                 width: double.infinity,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,maxWidth: 1000),
+                      constraints: const BoxConstraints(
+                        maxHeight: 35,
+                        minHeight: 15,
+                        maxWidth: 1000,
+                      ),
                       child: const Padding(
-                        padding: EdgeInsets.only(left: 8.0,top: 5.0),
+                        padding: EdgeInsets.only(left: 8.0, top: 5.0),
                         child: Text(
                           "Job",
-                          style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.bold,fontSize: 15),
+                          style: TextStyle(
+                            color: Color(0xFF707585),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                           textAlign: TextAlign.start,
                         ),
                       ),
                     ),
                     ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,),
+                      constraints: const BoxConstraints(
+                        maxHeight: 35,
+                        minHeight: 15,
+                      ),
                       child: const Padding(
                         padding: EdgeInsets.only(top: 5.0),
                         child: Text(
                           " en cours",
-                          style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.w100,fontSize: 15),
+                          style: TextStyle(
+                            color: Color(0xFF707585),
+                            fontWeight: FontWeight.w100,
+                            fontSize: 15,
+                          ),
                           textAlign: TextAlign.start,
                         ),
                       ),
@@ -2593,12 +2649,16 @@ class JobInfoState extends State<JobInfo>{
                             style: const TextStyle(color: Color(0xFF494949)),
                           ),
                           Text(
-                            "${durationSinceBegining.inHours}:${durationSinceBegining.inMinutes}:${durationSinceBegining.inSeconds}",
-                            style: const TextStyle(fontWeight: FontWeight.w300,fontSize: 15,color: Color(0xFF707585)),
+                            globalTimeValue,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w300,
+                              fontSize: 15,
+                              color: Color(0xFF707585),
+                            ),
                           ),
-
                         ],
                       ),
+
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -2607,7 +2667,7 @@ class JobInfoState extends State<JobInfo>{
                             style: TextStyle(color: Color(0xFF494949)),
                           ),
                           Text(
-                              "${durationLeft.inHours}:${durationLeft.inMinutes}",
+                            "${formatDuration(tempsRestantEnSecondes)}",
                             style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 15,color: Color(0xFF707585)),
                           ),
 
@@ -2621,27 +2681,12 @@ class JobInfoState extends State<JobInfo>{
                             style: const TextStyle(color: Color(0xFF494949)),
                           ),
                           Text(
-                            (((global.objectModelJob.result?.filePosition!)!/(global.objectModelJob.result?.file?.size?.toInt()??1))*100).toString(),
+                            "${(((global.objectModelJob.result?.filePosition!)!/(global.objectModelJob.result?.file?.size?.toInt()??1))*100).round().toString()}%",
                             style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 15,color: Color(0xFF707585)),
                           ),
 
                         ],
                       ),
-                      // Column(
-                      //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      //   children: [
-                      //     Text(
-                      //       "Pourcentage",
-                      //       style: const TextStyle(color: Color(0xFF494949)),
-                      //     ),
-                      //     Text(
-                      //       global.machineObjectModel.result?.job?.filePosition/global.machineObjectModel.result?.job. ?? "000",
-                      //       style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 15,color: Color(0xFF707585)),
-                      //     ),
-                      //
-                      //   ],
-                      // ),
-
                     ],
                   ),
                 ),

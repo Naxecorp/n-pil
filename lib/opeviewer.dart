@@ -1519,6 +1519,7 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
   double _Interligne = 3;
   double _ParamDf = 0;
   double _ParamAP = 0.3;
+  double _ParamDe = 0;
 
 
   @override
@@ -1630,58 +1631,6 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
                         ),
                       ],
                     ),
-/*                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Container(
-                          width: 100,
-                          padding: EdgeInsets.symmetric(horizontal: 4),
-                          child: Text(
-                            'Nombre de ligne ',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              color: Color(0xFF5A5A5A),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 100,
-                          child: OwnTextField(
-                            label: _Nbligne,
-                            onChanged: (text) {
-                              _Nbligne = double.parse(text);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Container(
-                          width: 100,
-                          padding: EdgeInsets.symmetric(horizontal: 4),
-                          child: Text(
-                            'Espace interligne',
-                            textAlign: TextAlign.justify,
-                            style: TextStyle(
-                              color: Color(0xFF5A5A5A),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 100,
-                          child: OwnTextField(
-                            label: _Interligne,
-                            onChanged: (text) {
-                              _Interligne = double.parse(text);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),*/
 
                     const SizedBox(height: 15),
                     Row(
@@ -1709,6 +1658,33 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            'Décalage ',
+                            textAlign: TextAlign.justify,
+                            style: TextStyle(
+                              color: Color(0xFF5A5A5A),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          child: OwnTextField(
+                            label: _ParamDe,
+                            onChanged: (text) {
+                              _ParamDe = double.parse(text);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+
                   ],
                 ),
               ),
@@ -1801,6 +1777,7 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
                               ParamC: _ParamC,
                               ParamDf: _ParamDf,
                               ParamAP: _ParamAP,
+                              ParamDe: _ParamDe,
                               //NbLigne: _Nbligne,
                               //Interligne: _Interligne,
                               label: "Lignes droites " +
@@ -1833,6 +1810,7 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
 
  */
 }
+
 
 
 
