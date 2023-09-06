@@ -2513,7 +2513,7 @@ class JobInfoState extends State<JobInfo> {
   late Timer timer;
   double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
   String globalTimeValue = "00:00:00"; // Variable pour stocker le temps global
-  bool isJobPaused = false; // Vous devez définir cette variable en fonction de votre logique
+  bool isJobPaused = false;
   bool isPercentage = false; //dit si le programme a été a 100%
 
 
@@ -2565,7 +2565,6 @@ class JobInfoState extends State<JobInfo> {
       if (!isJobPaused) {
         setState(() {
           secondsElapsedSinceBeginning++;
-          // Calculez le temps et stockez-le dans la variable globale ici
           int hours = secondsElapsedSinceBeginning ~/ 3600;
           int minutes = (secondsElapsedSinceBeginning % 3600) ~/ 60;
           int seconds = secondsElapsedSinceBeginning % 60;
@@ -2576,13 +2575,11 @@ class JobInfoState extends State<JobInfo> {
 
       API_Manager().getMachineJobObjectModel().then((job) {
         global.objectModelJob = job;
-        // Mettez à jour le pourcentage complet de la tâche ici
         pourcentageComplet =
             (global.objectModelJob.result?.filePosition ?? 0) / (global.objectModelJob.result?.file?.size?.toInt() ?? 1) * 100;
 
-        // Vérifiez si le pourcentage atteint 100% et affichez le popup
         if (global.machineObjectModel.result?.state?.status == "idle" && !isPopupDisplayed && isPercentage == true) {
-          isPopupDisplayed = true; // Marquez le popup comme déjà affiché
+          isPopupDisplayed = true;
           showCompletionPopup(context);
         }
         if(pourcentageComplet == 100){
@@ -2716,7 +2713,7 @@ class JobInfoState extends State<JobInfo> {
                             style: const TextStyle(color: Color(0xFF494949)),
                           ),
                           Text(
-                            "${pourcentageComplet.round().toString()}%", // a tester avec pourcentageComplet
+                            "${pourcentageComplet.round().toString()}%", 
                             style: const TextStyle(
                                 fontWeight: FontWeight.w100,
                                 fontSize: 15,
