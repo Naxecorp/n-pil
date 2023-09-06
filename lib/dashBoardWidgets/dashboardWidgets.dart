@@ -2531,6 +2531,14 @@ class JobInfoState extends State<JobInfo> {
                 Navigator.of(context).pop();
               },
             ),
+            ElevatedButton(
+              child: Text("Recommencer Programme"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                API_Manager().sendGcodeCommand('M32 "0:/gcodes/' + progName + '"');
+                Navigator.pushNamed(context, '/jobStatus');
+              },
+            ),
           ],
         );
       },

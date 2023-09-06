@@ -586,6 +586,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                           "idle"
                                       ? () async {
                                     await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' + ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString() + '"');
+                                          progName = ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString();
                                           Navigator.pushNamed(context, '/jobStatus');
                                         }
                                       : null,
