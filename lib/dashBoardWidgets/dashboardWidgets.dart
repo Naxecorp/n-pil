@@ -10,6 +10,8 @@ import '../globals_var.dart';
 import '../widgetUtils/touche.dart';
 import '../widgetUtils/my_jostick.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 class EndCourses extends StatefulWidget {
   const EndCourses({super.key});
@@ -2501,21 +2503,39 @@ class BabyStepZ extends StatelessWidget{
 }
 
 
-
-
-
-
-
 class JobInfo extends StatefulWidget {
   @override
-  State<JobInfo> createState() => JobInfoState ();
+  State<JobInfo> createState() => JobInfoState();
 }
 
 class JobInfoState extends State<JobInfo> {
   int secondsElapsedSinceBeginning = 0; // Temps écoulé depuis le début en secondes
-  double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
   late Timer timer;
+  double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
+  String globalTimeValue = "00:00:00"; // Variable pour stocker le temps global
+  bool isJobPaused = false; // Vous devez définir cette variable en fonction de votre logique
+  bool isPercentage = false; //dit si le programme a été a 100%
 
+
+  void showCompletionPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Tâche terminée"),
+          content: Text("Le programme est terminé. Durée du programme : $globalTimeValue"),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   String formatDuration(int seconds) {
     int hours = seconds ~/ 3600;
@@ -2525,11 +2545,12 @@ class JobInfoState extends State<JobInfo> {
   }
 
   @override
-  void initState ()
-  {
+  void initState() {
     super.initState();
     actualiserJobObjectModel();
   }
+
+  bool isPopupDisplayed = false;
 
   Future<void> actualiserJobObjectModel() async {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -2541,19 +2562,24 @@ class JobInfoState extends State<JobInfo> {
           int minutes = (secondsElapsedSinceBeginning % 3600) ~/ 60;
           int seconds = secondsElapsedSinceBeginning % 60;
           globalTimeValue =
-          "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(
-              2, '0')}:${seconds.toString().padLeft(2, '0')}";
+          "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
         });
       }
-      API_Manager()
-          .getMachineJobObjectModel()
-          .then((job) {
+
+      API_Manager().getMachineJobObjectModel().then((job) {
         global.objectModelJob = job;
         // Mettez à jour le pourcentage complet de la tâche ici
         pourcentageComplet =
-            (global.objectModelJob.result?.filePosition ?? 0) /
-                (global.objectModelJob.result?.file?.size?.toInt() ?? 1) *
-                100;
+            (global.objectModelJob.result?.filePosition ?? 0) / (global.objectModelJob.result?.file?.size?.toInt() ?? 1) * 100;
+
+        // Vérifiez si le pourcentage atteint 100% et affichez le popup
+        if (global.machineObjectModel.result?.state?.status == "idle" && !isPopupDisplayed && isPercentage == true) {
+          isPopupDisplayed = true; // Marquez le popup comme déjà affiché
+          showCompletionPopup(context);
+        }
+        if(pourcentageComplet == 100){
+          isPercentage = true;
+        }
       });
       if (global.myEthernet_connection.isConnected == false) timer.cancel();
     });
@@ -2565,16 +2591,16 @@ class JobInfoState extends State<JobInfo> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     int hours = secondsElapsedSinceBeginning ~/ 3600;
     int minutes = (secondsElapsedSinceBeginning % 3600) ~/ 60;
     int seconds = secondsElapsedSinceBeginning % 60;
 
-    int tempsRestantEnSecondes =
-    ((secondsElapsedSinceBeginning / pourcentageComplet) * 100)
-        .toInt();
+    int tempsTotalEnSecondes = (secondsElapsedSinceBeginning / (pourcentageComplet / 100)).toInt();
+    int tempsRestantEnSecondes = tempsTotalEnSecondes - secondsElapsedSinceBeginning;
+
+
 
     return Card(
       elevation: 10,
@@ -2658,7 +2684,6 @@ class JobInfoState extends State<JobInfo> {
                           ),
                         ],
                       ),
-
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -2668,9 +2693,11 @@ class JobInfoState extends State<JobInfo> {
                           ),
                           Text(
                             "${formatDuration(tempsRestantEnSecondes)}",
-                            style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 15,color: Color(0xFF707585)),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w100,
+                                fontSize: 15,
+                                color: Color(0xFF707585)),
                           ),
-
                         ],
                       ),
                       Column(
@@ -2681,10 +2708,12 @@ class JobInfoState extends State<JobInfo> {
                             style: const TextStyle(color: Color(0xFF494949)),
                           ),
                           Text(
-                            "${(((global.objectModelJob.result?.filePosition!)!/(global.objectModelJob.result?.file?.size?.toInt()??1))*100).round().toString()}%",
-                            style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 15,color: Color(0xFF707585)),
+                            "${pourcentageComplet.round().toString()}%", // a tester avec pourcentageComplet
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w100,
+                                fontSize: 15,
+                                color: Color(0xFF707585)),
                           ),
-
                         ],
                       ),
                     ],
@@ -2696,7 +2725,5 @@ class JobInfoState extends State<JobInfo> {
         ),
       ),
     );
-    throw UnimplementedError();
   }
-
 }
