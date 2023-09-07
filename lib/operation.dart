@@ -76,7 +76,7 @@ class OperationSurfacage extends Operation {
   Future<void> construct() async {
     trajectoires.add(';$label');
     trajectoires.add('M453');
-    trajectoires.add('M106 P3 S255');
+     
     trajectoires.add('G0 Z10 F1500');
     trajectoires.add('M5');
     trajectoires.add('M3 P0 S10000');
@@ -116,7 +116,7 @@ class OperationSurfacage extends Operation {
     trajectoires.add(';End of $label\n');
     trajectoires.forEach((element) {print(element);
     });
-    trajectoires.add('M106 P3 S0');
+     
   }
 
 }
@@ -146,7 +146,7 @@ class OperationPocheCarre extends Operation {
 
     trajectoires.add(';$label');
     trajectoires.add('M453');
-    trajectoires.add('M106 P3 S255');
+     
     trajectoires.add('G0 Z10 F1500');
     trajectoires.add('G0 X$OriginX Y$OriginY');
     trajectoires.add('M5');
@@ -213,7 +213,7 @@ class OperationPocheCarre extends Operation {
         .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2)).toString()}');
 
     trajectoires.add('G0 Z10');
-    trajectoires.add('M106 P3 S0');
+     
     trajectoires.add('M5');
     trajectoires.add(';End of $label\n');
     trajectoires.forEach((element) {
@@ -276,7 +276,7 @@ Future<void> construct ()async {
   trajectoires.add(';$label');
   trajectoires.add('M453');
   trajectoires.add('G0 Z10 F1500');
-  trajectoires.add('M106 P3 S255');
+   
   trajectoires.add('M5');
   trajectoires.add('M3 P0 S10000');
   trajectoires.add('G4 S2');
@@ -318,7 +318,7 @@ Future<void> construct ()async {
 
   trajectoires.add('G0 Z10');
   trajectoires.add('M5');
-  trajectoires.add('M106 P3 S0');
+   
   trajectoires.add('G0 X$OriginX Y$OriginY');
   trajectoires.add(';End of $label\n');
   trajectoires.forEach((element) {print(element);});
@@ -345,7 +345,7 @@ Future<void> construct ()async{
 
   trajectoires.add(';$label');
   trajectoires.add('M453');
-  trajectoires.add('M106 P3 S255');
+   
   trajectoires.add('G0 Z10 F1500');
   trajectoires.add('G0 X$OriginX Y$OriginY');
   trajectoires.add('M5');
@@ -370,7 +370,7 @@ Future<void> construct ()async{
     }
 
     trajectoires.add('G0 Z10');
-    trajectoires.add('M106 P3 S0');
+     
     trajectoires.add('M5');
     trajectoires.add(';End of $label\n');
 

@@ -586,6 +586,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                           "idle"
                                       ? () async {
                                     await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' + ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString() + '"');
+                                          API_Manager().sendGcodeCommand('M106 P3 S255');
                                           progName = ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString();
                                           Navigator.pushNamed(context, '/jobStatus');
                                         }
@@ -1503,7 +1504,7 @@ class JobScreenState extends State<JobScreen> {
                                           API_Manager().sendGcodeCommand("M24");
                                         } else {
                                           API_Manager().sendGcodeCommand("M5");
-                                          API_Manager().sendGcodeCommand("M3 P1 S$SpindleSpeedBeforePause");
+                                          API_Manager().sendGcodeCommand("M3 P0 S$SpindleSpeedBeforePause");
                                           API_Manager().sendGcodeCommand("M25");
                                         }
                                         setState(() {});
