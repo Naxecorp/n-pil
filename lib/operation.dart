@@ -44,21 +44,22 @@ class Operation {
 
 }
 
-class OperationSurfacage extends Operation{
+class OperationSurfacage extends Operation {
 
 
-  double ParamA=10;
-  double ParamB=10;
-  double ParamC=1;
-  double ParamDf=3;
-  double ParamAP=0.3;
-  double ParamDecalage=4;
+  double ParamA = 10;
+  double ParamB = 10;
+  double ParamC = 1;
+  double ParamDf = 3;
+  double ParamAP = 0.3;
+  double ParamDecalage = 4;
 
-  OperationSurfacage({required super.OriginZ, required super.OriginY, required super.OriginX,super.label, required this.ParamA,required this.ParamB,required this.ParamC,required this.ParamDf,required this.ParamAP,required this.ParamDecalage});
+  OperationSurfacage(
+      {required super.OriginZ, required super.OriginY, required super.OriginX, super.label, required this.ParamA, required this.ParamB, required this.ParamC, required this.ParamDf, required this.ParamAP, required this.ParamDecalage});
 
 
   @override
-  void showValues(){
+  void showValues() {
     print('OriginX: $OriginX');
     print('OriginY: $OriginY');
     print('OriginZ: $OriginZ');
@@ -68,52 +69,57 @@ class OperationSurfacage extends Operation{
     print('ParamDf: $ParamDf');
     print('ParamAp: $ParamAP');
     print('ParamamDecalage: $ParamDecalage');
-
   }
 
 
-@override
-Future<void> construct ()async{
+  @override
+  Future<void> construct() async {
+    trajectoires.add(';$label');
+    trajectoires.add('M453');
+    trajectoires.add('G0 Z10 F1500');
+    trajectoires.add('M5');
+    trajectoires.add('M3 P0 S10000');
+    trajectoires.add('G4 S2');
 
-  trajectoires.add(';$label');
-  trajectoires.add('M453');
-  trajectoires.add('G0 Z10 F1500');
-  //trajectoires.add('G0 X$OriginX Y$OriginY');
-  trajectoires.add('M5');
-  trajectoires.add('M3 P0 S10000');
-  trajectoires.add('G4 S2');
-  //trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
-  //trajectoires.add('G0 Z$OriginZ');
+    for (double i = ParamAP; i <= ParamC; i += ParamAP) {
+      for (double j = (OriginY + ParamA + ParamDecalage); j > OriginY; j -= (ParamDf / 2)) {
+        trajectoires.add('G0 X${(OriginX + ParamB + ParamDecalage).toString()} Y$j');
+        trajectoires.add('G1 Z${(-i).toString()}');
+        trajectoires.add('G1 X${OriginX - ParamDecalage}');
+        trajectoires.add('G0 Z5');
 
-  trajectoires.add('G1 Y'+((OriginY-(ParamB/2))+((ParamDf/2))).toString());
-  trajectoires.add('G1 X'+((OriginX+(ParamA/2))+ParamDecalage).toString());
-
-    for(int j = 1;j*ParamAP<=ParamC;j++)
-    {
-
-      for (int i = 0;(ParamB)-((ParamDf/2)*i)>0;i++)
-      {
-        trajectoires.add('G1 Y'+((OriginY-(ParamB/2))+((ParamDf/2))*i).toString());
-        if (i.isEven)
-        {
-          trajectoires.add('G1 Z'+((OriginZ+1).toString()));
-          trajectoires.add('G1 X'+((OriginX+(ParamA/2))+ParamDecalage).toString());
-          trajectoires.add('G1 Z-'+(j*ParamAP).toString());
+        if (j < OriginY + (ParamDf / 2)) {
+          trajectoires.add('G0 X${(OriginX + ParamB + ParamDecalage).toString()} Y${(OriginY-ParamDecalage).toString()}');
+          trajectoires.add('G1 Z${(-i).toString()}');
+          trajectoires.add('G1 X${OriginX - ParamDecalage}');
+          trajectoires.add('G0 Z5');
         }
-        else trajectoires.add('G1 X'+(OriginX-(ParamA/2)-ParamDecalage).toString());
-
       }
-      trajectoires.add('G1 Z-'+(j*ParamAP).toString());
     }
-    trajectoires.add('G0 Z${OriginZ+30}');
+    for (double t = (OriginY + ParamA + ParamDecalage); t > OriginY; t -= (ParamDf / 2)) {
+      trajectoires.add('G0 X${(OriginX + ParamB + ParamDecalage).toString()} Y$t');
+      trajectoires.add('G1 Z${(OriginZ - ParamC).toString()}');
+      trajectoires.add('G1 X${(OriginX - ParamDecalage).toString()}');
+      trajectoires.add('G0 Z5');
+
+      if (t < OriginY + (ParamDf / 2)) {
+        trajectoires.add('G0 X${(OriginX + ParamB + ParamDecalage).toString()} Y${(OriginY-ParamDecalage).toString()}');
+        trajectoires.add('G1 Z${(OriginZ - ParamC).toString()}');
+        trajectoires.add('G1 X${(OriginX - ParamDecalage).toString()}');
+        trajectoires.add('G0 Z5');
+      }
+    }
+    trajectoires.add('G0 Z${(OriginZ + 30).toString()}');
     trajectoires.add('M5');
     trajectoires.add('G0 X$OriginX Y$OriginY');
     trajectoires.add(';End of $label\n');
-    trajectoires.forEach((element) {print(element);});
+    trajectoires.forEach((element) {
+      print(element);
+    });
   }
 
-
 }
+
 
 class OperationPocheCarre extends Operation{
 

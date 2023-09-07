@@ -2539,6 +2539,14 @@ class JobInfoState extends State<JobInfo> {
                 Navigator.pushNamed(context, '/jobStatus');
               },
             ),
+            ElevatedButton(
+              child: Text("Dégager tête"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                API_Manager().sendGcodeCommand("G53 G0 Z180").then((value) => API_Manager().sendGcodeCommand("G53 G0 X0 Y550"));
+                Navigator.pushNamed(context, '/dashboard');
+              },
+            ),
           ],
         );
       },
