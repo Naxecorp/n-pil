@@ -344,29 +344,6 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 15),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Z ',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 111, 111, 111),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 40,
-                            ),
-                          ),
-                          Container(
-                            width: 100,
-                            child: OwnTextField(
-                              label: _ParamZ,
-                              onChanged: (text) {
-                                _ParamZ = double.parse(text);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
                       const Spacer(),
                       Container(
                         alignment: Alignment.bottomLeft,
