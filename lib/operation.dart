@@ -98,23 +98,22 @@ class OperationSurfacage extends Operation {
     }
     for (double t = (OriginY + ParamA + ParamDecalage); t > OriginY; t -= (ParamDf / 2)) {
       trajectoires.add('G0 X${(OriginX + ParamB + ParamDecalage).toString()} Y$t');
-      trajectoires.add('G1 Z${(OriginZ - ParamC).toString()}');
+      trajectoires.add('G1 Z${(0 - ParamC).toString()}');
       trajectoires.add('G1 X${(OriginX - ParamDecalage).toString()}');
       trajectoires.add('G0 Z5');
 
       if (t < OriginY + (ParamDf / 2)) {
         trajectoires.add('G0 X${(OriginX + ParamB + ParamDecalage).toString()} Y${(OriginY-ParamDecalage).toString()}');
-        trajectoires.add('G1 Z${(OriginZ - ParamC).toString()}');
+        trajectoires.add('G1 Z${(0 - ParamC).toString()}');
         trajectoires.add('G1 X${(OriginX - ParamDecalage).toString()}');
         trajectoires.add('G0 Z5');
       }
     }
-    trajectoires.add('G0 Z${(OriginZ + 30).toString()}');
+    trajectoires.add('G0 Z50');
     trajectoires.add('M5');
     trajectoires.add('G0 X$OriginX Y$OriginY');
     trajectoires.add(';End of $label\n');
-    trajectoires.forEach((element) {
-      print(element);
+    trajectoires.forEach((element) {print(element);
     });
   }
 
@@ -202,19 +201,11 @@ Future<void> construct ()async{
   trajectoires.add('M5');
   trajectoires.add('M3 P0 S10000');
   trajectoires.add('G4 S2');
-  //trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
-  trajectoires.add('G0 Z$OriginZ');
+
 
 
   for(int j = 1;j*ParamAP<=ParamC;j++)
   {
-    trajectoires.add('G1 Z'+(j*ParamAP).toString());
-
-    trajectoires.add('G1 Y'+(ParamB/2-ParamDf/2).toString());
-    trajectoires.add('G1 X'+(ParamA/2-ParamDf/2).toString());
-    trajectoires.add('G1 Y'+(-ParamB/2+ParamDf/2).toString());
-    trajectoires.add('G1 X'+(-ParamA/2+ParamDf/2).toString());
-
 
   }
 
