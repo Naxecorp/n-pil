@@ -1094,6 +1094,7 @@ class JobScreen extends StatefulWidget {
 class JobScreenState extends State<JobScreen> {
   double sliderValue = 0;
   double sliderValueSpeedFactor = 0;
+  double? SpindleSpeedBeforePause = 0;
 
   void actualiser(){
 
@@ -1498,8 +1499,11 @@ class JobScreenState extends State<JobScreen> {
                                       onPressed: () {
                                         String tempStatus = global.machineObjectModel.result?.state?.status.toString()?? "";
                                         if (tempStatus == "paused") {
+                                          SpindleSpeedBeforePause = global.machineObjectModel.result?.spindles?[0]?.current;
                                           API_Manager().sendGcodeCommand("M24");
                                         } else {
+                                          API_Manager().sendGcodeCommand("M5");
+                                          API_Manager().sendGcodeCommand("M3 P1 S$SpindleSpeedBeforePause");
                                           API_Manager().sendGcodeCommand("M25");
                                         }
                                         setState(() {});
