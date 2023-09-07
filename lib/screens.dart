@@ -1547,6 +1547,8 @@ class JobScreenState extends State<JobScreen> {
                                       onPressed:
                                       global.machineObjectModel.result?.state?.status.toString() == "paused" ? () {
                                         API_Manager().sendGcodeCommand("M0");
+                                        API_Manager().sendGcodeCommand("M106 P3 S0");
+
                                       }
                                           : null,
                                       style: ElevatedButton.styleFrom(
