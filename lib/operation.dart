@@ -120,7 +120,7 @@ class OperationSurfacage extends Operation {
 }
 
 
-class OperationPocheCarre extends Operation{
+class OperationPocheCarre extends Operation {
 
   double ParamA = 50;
   double ParamB = 100;
@@ -128,11 +128,11 @@ class OperationPocheCarre extends Operation{
   double ParamDf = 3;
   double ParamAP = 0.3;
 
-  OperationPocheCarre({required super.OriginZ, required super.OriginY, required super.OriginX,super.label, required this.ParamA,required this.ParamB,required this.ParamC,required this.ParamDf,required this.ParamAP});
+  OperationPocheCarre(
+      {required super.OriginZ, required super.OriginY, required super.OriginX, super.label, required this.ParamA, required this.ParamB, required this.ParamC, required this.ParamDf, required this.ParamAP});
 
   @override
-  Future<void> construct ()async{
-
+  Future<void> construct() async {
     print("origine X: $OriginX");
     print("origine Y: $OriginY");
     print("origine Z: $OriginZ");
@@ -149,36 +149,73 @@ class OperationPocheCarre extends Operation{
     trajectoires.add('M5');
     trajectoires.add('M3 P0 S10000');
     trajectoires.add('G4 S2');
-    //trajectoires.add('G0 X' + (((ParamA/2)*-1)+ParamDf/2).toString() + ' Y'+ (((ParamB/2)*-1)+ParamDf/2).toString());
-    trajectoires.add('G0 Z$OriginZ');
-    trajectoires.add('G1 Z'+(OriginZ+10).toString());
-    //trajectoires.add('G1 X'+(OriginX-(ParamA/2)+(ParamDf/2)).toString()+' Y'+(OriginY-(ParamB/2)+(ParamDf/2)).toString());
 
+    for (double i = ParamAP; i <= ParamC; i += ParamAP) {
+      trajectoires.add('G1 Z${(0 - i).toString()}');
 
-    for(int j = 1;j*ParamAP<=ParamC;j++)
-      {
-        trajectoires.add('G1 X'+(OriginX-(ParamA/2)+(ParamDf/2)).toString()+' Y'+(OriginY-(ParamB/2)+(ParamDf/2)).toString());
-        trajectoires.add('G1 Z'+(-j*ParamAP).toString());
-
-        for (int i = 1;ParamA-ParamDf*(i-1)>0;i++)
-        {
-          trajectoires.add('G1 Y'+(OriginY+(ParamB/2)-((ParamDf/2)*i)).toString());
-          trajectoires.add('G1 X'+(OriginX+(ParamA/2)-((ParamDf/2)*i)).toString());
-          trajectoires.add('G1 Y'+(OriginY-(ParamB/2)+((ParamDf/2)*i)).toString());
-          trajectoires.add('G1 X'+(OriginX-(ParamA/2)+((ParamDf/2)*i)).toString());
-        }
-        trajectoires.add("G0 Z"+(OriginZ+10).toString());
+      for (double d = (ParamDf / 2); d < (ParamA / 2) - ParamDf ||
+          d < (ParamB / 2) - ParamDf; d += (ParamDf / 2)) {
+        trajectoires.add(
+            'G1 X${(OriginX + d).toString()} Y${(OriginY + d).toString()}');
+        trajectoires.add(
+            'G1 X${(OriginX - d).toString()} Y${(OriginY + d).toString()}');
+        trajectoires.add(
+            'G1 X${(OriginX - d).toString()} Y${(OriginY - d).toString()}');
+        trajectoires.add(
+            'G1 X${(OriginX + d).toString()} Y${(OriginY - d).toString()}');
+        trajectoires.add(
+            'G1 X${(OriginX + d).toString()} Y${(OriginY + d).toString()}');
       }
+      trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+          .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2))
+          .toString()}');
+      trajectoires.add('G1 X${(OriginX - (ParamB / 2) + (ParamDf / 2))
+          .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2))
+          .toString()}');
+      trajectoires.add('G1 X${(OriginX - (ParamB / 2) + (ParamDf / 2))
+          .toString()} Y${(OriginY - (ParamA / 2) + (ParamDf / 2))
+          .toString()}');
+      trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+          .toString()} Y${(OriginY - (ParamA / 2) + (ParamDf / 2))
+          .toString()}');
+      trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+          .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2))
+          .toString()}');
+    }
 
+    trajectoires.add('G1 Z${(-ParamC).toString()}');
 
-    trajectoires.add(';End of $label\n');
+    for (double d = (ParamDf / 2); d < (ParamA / 2) - ParamDf ||
+        d < (ParamB / 2) - ParamDf; d += (ParamDf / 2)) {
+      trajectoires.add(
+          'G1 X${(OriginX + d).toString()} Y${(OriginY + d).toString()}');
+      trajectoires.add(
+          'G1 X${(OriginX - d).toString()} Y${(OriginY + d).toString()}');
+      trajectoires.add(
+          'G1 X${(OriginX - d).toString()} Y${(OriginY - d).toString()}');
+      trajectoires.add(
+          'G1 X${(OriginX + d).toString()} Y${(OriginY - d).toString()}');
+      trajectoires.add(
+          'G1 X${(OriginX + d).toString()} Y${(OriginY + d).toString()}');
+    }
+    trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+        .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2)).toString()}');
+    trajectoires.add('G1 X${(OriginX - (ParamB / 2) + (ParamDf / 2))
+        .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2)).toString()}');
+    trajectoires.add('G1 X${(OriginX - (ParamB / 2) + (ParamDf / 2))
+        .toString()} Y${(OriginY - (ParamA / 2) + (ParamDf / 2)).toString()}');
+    trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+        .toString()} Y${(OriginY - (ParamA / 2) + (ParamDf / 2)).toString()}');
+    trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+        .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2)).toString()}');
+
     trajectoires.add('G0 Z10');
     trajectoires.add('M5');
-    trajectoires.forEach((element) {print(element);});
-
+    trajectoires.add(';End of $label\n');
+    trajectoires.forEach((element) {
+      print(element);
+    });
   }
-
-
 }
 
 class OperationContournage extends Operation{

@@ -2543,7 +2543,7 @@ class JobInfoState extends State<JobInfo> {
               child: Text("Dégager tête"),
               onPressed: () {
                 Navigator.of(context).pop();
-                API_Manager().sendGcodeCommand("G53 G0 Z180").then((value) => API_Manager().sendGcodeCommand("G53 G0 X0 Y550"));
+                API_Manager().sendGcodeCommand("G53 G0 Z189").then((value) => API_Manager().sendGcodeCommand("G53 G0 X0 Y550"));
                 Navigator.pushNamed(context, '/dashboard');
               },
             ),
