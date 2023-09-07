@@ -586,6 +586,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                           "idle"
                                       ? () async {
                                     await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' + ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString() + '"');
+                                          API_Manager().sendGcodeCommand('M106 P3 S255');
                                           progName = ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString();
                                           Navigator.pushNamed(context, '/jobStatus');
                                         }
@@ -1094,6 +1095,7 @@ class JobScreen extends StatefulWidget {
 class JobScreenState extends State<JobScreen> {
   double sliderValue = 0;
   double sliderValueSpeedFactor = 0;
+  double? SpindleSpeedBeforePause = 0;
 
   void actualiser(){
 
@@ -1498,8 +1500,11 @@ class JobScreenState extends State<JobScreen> {
                                       onPressed: () {
                                         String tempStatus = global.machineObjectModel.result?.state?.status.toString()?? "";
                                         if (tempStatus == "paused") {
+                                          SpindleSpeedBeforePause = global.machineObjectModel.result?.spindles?[0]?.current;
                                           API_Manager().sendGcodeCommand("M24");
                                         } else {
+                                          API_Manager().sendGcodeCommand("M5");
+                                          API_Manager().sendGcodeCommand("M3 P0 S$SpindleSpeedBeforePause");
                                           API_Manager().sendGcodeCommand("M25");
                                         }
                                         setState(() {});
@@ -1542,6 +1547,8 @@ class JobScreenState extends State<JobScreen> {
                                       onPressed:
                                       global.machineObjectModel.result?.state?.status.toString() == "paused" ? () {
                                         API_Manager().sendGcodeCommand("M0");
+                                        API_Manager().sendGcodeCommand("M106 P3 S0");
+
                                       }
                                           : null,
                                       style: ElevatedButton.styleFrom(
