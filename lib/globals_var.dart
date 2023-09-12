@@ -14,11 +14,7 @@ import 'service/nwc-settings.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-<<<<<<< HEAD
-String version = "Version 1.0.10"; // Axe conversationnel
-=======
-String version = "Version 1.0.1O"; //poche carre
->>>>>>> test
+String version = "Version 1.0.13"; //popup demarrage prog
 bool AdminLogged = false;
 
 MachineObjectModel machineObjectModel = MachineObjectModel();

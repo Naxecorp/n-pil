@@ -17,7 +17,6 @@ Future<void> actualiserMachineObjectModel() async {
     API_Manager().getdataMachineObjectModel().then((machine) {
       global.machineObjectModel = machine;
       global.controllerMachineObjectModel.add(machine);
-      if (global.myEthernet_connection.isConnected == false) timer.cancel();
     });
   });
 }
@@ -33,7 +32,6 @@ Future<void> actualiserMachineUsedTime() async {
 Future<void> actualiserMoveObjectModel() async {
   Timer.periodic(const Duration(seconds: 3, milliseconds: 3), (timer) {
     API_Manager().getMachineMoveObjectModel().then((move) => global.objectModelMove = move);
-    if (global.myEthernet_connection.isConnected == false) timer.cancel();
   });
 }
 

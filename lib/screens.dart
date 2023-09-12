@@ -308,6 +308,58 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     });
   }
 
+  void StartProgPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Êtes vous sûr?"),
+          content: Text("Programme sélectionné : ${(ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString())}"),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("Non"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text("Set la position actuel a '0' puis démarre le programme"),
+              onPressed: () async {
+                  await API_Manager()
+                      .sendGcodeCommand("G10 L20 P1 X0 Y0 Z0");
+                  await API_Manager().sendGcodeCommand("G10 L20 P1");
+
+                  await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
+                      ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name
+                          .toString() + '"');
+                  await API_Manager().sendGcodeCommand('M106 P3 S255');
+                  progName =
+                      ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name
+                          .toString();
+                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, '/jobStatus');
+              }
+            ),
+            ElevatedButton(
+              child: Text("Démarrer"),
+              onPressed: () async {
+                await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
+                    ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name
+                        .toString() + '"');
+                await API_Manager().sendGcodeCommand('M106 P3 S255');
+                progName =
+                    ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name
+                        .toString();
+                Navigator.of(context).pop();
+                Navigator.pushNamed(context, '/jobStatus');
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -584,11 +636,8 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                   onPressed: global.machineObjectModel.result
                                               ?.state?.status ==
                                           "idle"
-                                      ? () async {
-                                    await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' + ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString() + '"');
-                                          API_Manager().sendGcodeCommand('M106 P3 S255');
-                                          progName = ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString();
-                                          Navigator.pushNamed(context, '/jobStatus');
+                                      ? () {
+                                    StartProgPopup(context);
                                         }
                                       : null,
                                   child:  SizedBox(
@@ -1497,14 +1546,14 @@ class JobScreenState extends State<JobScreen> {
                                   child: Padding(
                                     padding:  EdgeInsets.all(5.0),
                                     child: ElevatedButton(
-                                      onPressed: () {
+                                      onPressed: () async {
                                         String tempStatus = global.machineObjectModel.result?.state?.status.toString()?? "";
                                         if (tempStatus == "paused") {
-                                          SpindleSpeedBeforePause = global.machineObjectModel.result?.spindles?[0]?.current;
+                                          await API_Manager().sendGcodeCommand("M3 P0 S$SpindleSpeedBeforePause");
                                           API_Manager().sendGcodeCommand("M24");
                                         } else {
+                                          SpindleSpeedBeforePause = global.machineObjectModel.result?.spindles?[0]?.current;
                                           API_Manager().sendGcodeCommand("M5");
-                                          API_Manager().sendGcodeCommand("M3 P0 S$SpindleSpeedBeforePause");
                                           API_Manager().sendGcodeCommand("M25");
                                         }
                                         setState(() {});
@@ -1994,7 +2043,7 @@ class AdminScreenState extends State<AdminScreen>
                           onFieldSubmitted: (value){
                             if(MDP.text==global.pwd){
                               global.AdminLogged=true;
-                              global.Title="ADMIN MODE";
+                              global.Title="ADMIN MODE | $version";
                               Navigator.pop(context, '/admin');
                             }
 
@@ -2007,7 +2056,7 @@ class AdminScreenState extends State<AdminScreen>
                           onPressed: () {
                             if(MDP.text==global.pwd){
                               global.AdminLogged=true;
-                              global.Title="ADMIN MODE";
+                              global.Title="ADMIN MODE | $version";
                               Navigator.pop(context, '/admin');
                             }
                           },

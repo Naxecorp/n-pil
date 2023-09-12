@@ -170,7 +170,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                           child: const Text(
                             'B (mm) ',
                             style: TextStyle(
-                              color: Color.fromARGB(255, 27, 109, 160),
+                              color: Color.fromARGB(255, 64, 152, 124),
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
@@ -195,7 +195,7 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                           child: const Text(
                             'C (mm) ',
                             style: TextStyle(
-                              color: Colors.black45,
+                              color: Color.fromARGB(255, 75, 96, 209),
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
@@ -459,7 +459,7 @@ class OpePocheCarreState extends State {
                           child: const Text(
                             'B (mm) ',
                             style: TextStyle(
-                              color: Color.fromARGB(255, 27, 109, 160),
+                              color: Color.fromARGB(255, 64, 152, 124),
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
@@ -484,7 +484,7 @@ class OpePocheCarreState extends State {
                           child: const Text(
                             'C (mm) ',
                             style: TextStyle(
-                              color: Colors.black45,
+                              color: Color.fromARGB(255, 75, 96, 209),
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
@@ -719,7 +719,7 @@ class OpePocheRondeState extends State {
                           child: const Text(
                             'Diametre (mm) ',
                             style: TextStyle(
-                              color: Color.fromARGB(255, 27, 109, 160),
+                              color: Colors.black45,
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
@@ -744,7 +744,7 @@ class OpePocheRondeState extends State {
                           child: const Text(
                             'C (mm) ',
                             style: TextStyle(
-                              color: Colors.black45,
+                              color: Color.fromARGB(255, 75, 96, 209),
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
@@ -908,12 +908,16 @@ class OpePocheRondeState extends State {
                                   label: "Poche Ronde " +
                                       ListOfOperationCurrent.length
                                           .toString()));
+                              setState(() {
+
+
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: const Text('Opération ajoutée'),
                                   duration: const Duration(milliseconds: 400),
                                 ),
                               );
+                              });
                             });
                           },
                         ),

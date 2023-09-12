@@ -22,7 +22,7 @@ class _ArretUrgenceState extends State<ArretUrgence> {
     return GestureDetector(
       onTap: ()async{
         await API_Manager().sendGcodeCommand("M112");
-        API_Manager().sendGcodeCommand("M999");
+        Navigator.pushNamed(context, '/dashboard');
         return notifyParent();
       },
       child: Center(
