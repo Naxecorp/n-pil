@@ -258,6 +258,8 @@ class ProgrammeScreen extends StatefulWidget {
 
 class ProgrammeScreenState extends State<ProgrammeScreen>
     with TickerProviderStateMixin {
+
+
   late AnimationController ProgressBarcontroller;
   bool isLoading = false;
 
@@ -690,6 +692,25 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  void loadingPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Redémarrage en cours"),
+          content: CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
+          actions: <Widget>[
+          ],
+        );
+      },
+    );
+  Timer(Duration(seconds: 12), () {
+  Navigator.of(context).pop(); // Ferme la boîte de dialogue
+  });
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -744,6 +765,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                         Spacer(),
                         ElevatedButton(onPressed:global.machineObjectModel.result?.state?.status?.toString()=="halted"?(){
                           API_Manager().sendGcodeCommand("M999");
+                          loadingPopup(context);
                         }:null
                             , child: Text("Aquiter AU"))
                       ],

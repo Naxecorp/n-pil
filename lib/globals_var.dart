@@ -14,7 +14,7 @@ import 'service/nwc-settings.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.0.13"; //popup demarrage prog
+String version = "Version 1.1.0"; //version stable
 bool AdminLogged = false;
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
