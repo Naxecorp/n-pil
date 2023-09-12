@@ -157,7 +157,7 @@ class OperationPocheCarre extends Operation {
       trajectoires.add('G1 Z${(0 - i).toString()}');
 
       for (double d = (ParamDf / 2); d < (ParamA / 2) - ParamDf ||
-          d < (ParamB / 2) - ParamDf; d += (ParamDf / 2)) {
+          d < (ParamA / 2) - ParamDf; d += (ParamDf / 2)) {
         trajectoires.add(
             'G1 X${(OriginX + d).toString()} Y${(OriginY + d).toString()}');
         trajectoires.add(
@@ -169,19 +169,19 @@ class OperationPocheCarre extends Operation {
         trajectoires.add(
             'G1 X${(OriginX + d).toString()} Y${(OriginY + d).toString()}');
       }
-      trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+      trajectoires.add('G1 X${(OriginX + (ParamA / 2) - (ParamDf / 2))
           .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2))
           .toString()}');
-      trajectoires.add('G1 X${(OriginX - (ParamB / 2) + (ParamDf / 2))
+      trajectoires.add('G1 X${(OriginX - (ParamA / 2) + (ParamDf / 2))
           .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2))
           .toString()}');
-      trajectoires.add('G1 X${(OriginX - (ParamB / 2) + (ParamDf / 2))
+      trajectoires.add('G1 X${(OriginX - (ParamA / 2) + (ParamDf / 2))
           .toString()} Y${(OriginY - (ParamA / 2) + (ParamDf / 2))
           .toString()}');
-      trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+      trajectoires.add('G1 X${(OriginX + (ParamA / 2) - (ParamDf / 2))
           .toString()} Y${(OriginY - (ParamA / 2) + (ParamDf / 2))
           .toString()}');
-      trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+      trajectoires.add('G1 X${(OriginX + (ParamA / 2) - (ParamDf / 2))
           .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2))
           .toString()}');
     }
@@ -189,7 +189,7 @@ class OperationPocheCarre extends Operation {
     trajectoires.add('G1 Z${(-ParamC).toString()}');
 
     for (double d = (ParamDf / 2); d < (ParamA / 2) - ParamDf ||
-        d < (ParamB / 2) - ParamDf; d += (ParamDf / 2)) {
+        d < (ParamA / 2) - ParamDf; d += (ParamDf / 2)) {
       trajectoires.add(
           'G1 X${(OriginX + d).toString()} Y${(OriginY + d).toString()}');
       trajectoires.add(
@@ -201,15 +201,15 @@ class OperationPocheCarre extends Operation {
       trajectoires.add(
           'G1 X${(OriginX + d).toString()} Y${(OriginY + d).toString()}');
     }
-    trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+    trajectoires.add('G1 X${(OriginX + (ParamA / 2) - (ParamDf / 2))
         .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2)).toString()}');
-    trajectoires.add('G1 X${(OriginX - (ParamB / 2) + (ParamDf / 2))
+    trajectoires.add('G1 X${(OriginX - (ParamA / 2) + (ParamDf / 2))
         .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2)).toString()}');
-    trajectoires.add('G1 X${(OriginX - (ParamB / 2) + (ParamDf / 2))
+    trajectoires.add('G1 X${(OriginX - (ParamA / 2) + (ParamDf / 2))
         .toString()} Y${(OriginY - (ParamA / 2) + (ParamDf / 2)).toString()}');
-    trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+    trajectoires.add('G1 X${(OriginX + (ParamA / 2) - (ParamDf / 2))
         .toString()} Y${(OriginY - (ParamA / 2) + (ParamDf / 2)).toString()}');
-    trajectoires.add('G1 X${(OriginX + (ParamB / 2) - (ParamDf / 2))
+    trajectoires.add('G1 X${(OriginX + (ParamA / 2) - (ParamDf / 2))
         .toString()} Y${(OriginY + (ParamA / 2) - (ParamDf / 2)).toString()}');
 
     trajectoires.add('G0 Z10');

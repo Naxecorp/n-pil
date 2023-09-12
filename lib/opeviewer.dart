@@ -432,7 +432,7 @@ class OpePocheCarreState extends State {
                         Container(
                           width: 100,
                           child: const Text(
-                            'A (mm) ',
+                            'A/B (mm) ',
                             style: TextStyle(
                               color: Color.fromARGB(255, 124, 51, 43),
                               fontWeight: FontWeight.bold,
@@ -451,7 +451,7 @@ class OpePocheCarreState extends State {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 15),
+/*                    const SizedBox(height: 15),
                     Row(
                       children: [
                         Container(
@@ -475,7 +475,7 @@ class OpePocheCarreState extends State {
                           ),
                         ),
                       ],
-                    ),
+                    ),*/
                     const SizedBox(height: 15),
                     Row(
                       children: [
