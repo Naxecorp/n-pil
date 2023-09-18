@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
@@ -14,6 +15,51 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
+
+  <style>
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .loader {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid rgb(240,240,243);
+      border-right: 16px solid rgb(33,145,128);
+      border-bottom: 16px solid rgb(240,240,243);
+      border-left: 16px solid rgb(33,145,128);
+      width: 120px;
+      height: 120px;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
   <base href="$FLUTTER_BASE_HREF">
 
   <script>
@@ -46,6 +92,11 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
+<div class="loading">
+  <div class="loader"></div>
+</div>
+
+<script src="main.dart.js" type="application/javascript"></script>
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js

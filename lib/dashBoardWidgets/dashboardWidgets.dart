@@ -268,6 +268,10 @@ class DeplacementMachine extends StatefulWidget {
 class _DeplacementMachine extends State<DeplacementMachine> {
 
   bool MovesWithoutEndstop = false;
+  bool zCapteur = false;
+  bool xCapteur = false;
+  bool yCapteur = false;
+
 
 
   @override
@@ -290,103 +294,148 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Flexible(
-                            flex: 1,
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: const EdgeInsets.all(15),
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
+                      Flexible(
+                      flex: 1,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Stack(
+                          alignment: Alignment.topCenter,
+                          children: <Widget>[
+                            if (xCapteur == true) // ajouter le lien avec les capteurs machine
+                              Container(
+                                width: 16,
+                                height: 13,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.red,
                                 ),
-                                onPressed: ()async {
-                                  await API_Manager()
-                                      .sendGcodeCommand("G28 X")
-                                      .then((value) => print(value));
-
-                                },
-                                child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                              ),
+                            NeumorphicButton(
+                              margin: const EdgeInsets.all(15),
+                              style: const NeumorphicStyle(
+                                color: Color(0xFFF0F0F3),
+                              ),
+                              onPressed: () async {
+                                await API_Manager()
+                                    .sendGcodeCommand("G28 X")
+                                    .then((value) => print(value));
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: const [
+                                  Icon(
+                                    Icons.home_filled,
+                                    color: Color(0xFF707585),
+                                  ),
+                                  FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: Text(
+                                      'Axe X',
+                                      style: TextStyle(color: Color(0xFF707585)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                        Flexible(
+                          flex: 1,
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: Stack(
+                              alignment: Alignment.topCenter,
+                              children: <Widget>[
+                                if (yCapteur == true)
+                                  Container(
+                                  width: 16,
+                                  height: 13,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                NeumorphicButton(
+                                  margin: const EdgeInsets.all(15),
+                                  style: const NeumorphicStyle(
+                                    color: Color(0xFFF0F0F3),
+                                  ),
+                                  onPressed: () async {
+                                    await API_Manager()
+                                        .sendGcodeCommand("G28 Y")
+                                        .then((value) => print(value));
+                                  },
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: const [
                                       Icon(
                                         Icons.home_filled,
                                         color: Color(0xFF707585),
                                       ),
                                       FittedBox(
-                                          fit: BoxFit.contain,
-                                          child: Text(
-                                            'Axe X',
-                                            style: TextStyle(
-                                                color: Color(0xFF707585)),
-                                          ))
-                                    ]),
-                              ),
-                            )),
-                        Flexible(
-                            flex: 1,
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: const EdgeInsets.all(15),
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
+                                        fit: BoxFit.contain,
+                                        child: Text(
+                                          'Axe Y',
+                                          style: TextStyle(color: Color(0xFF707585)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                onPressed: () {
-                                  API_Manager()
-                                      .sendGcodeCommand("G28 Y")
-                                      .then((value) => print(value));
-                                },
-                                child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      const Icon(
+                              ],
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: Stack(
+                              alignment: Alignment.topCenter,
+                              children: <Widget>[
+                                if (zCapteur == true)
+                                  Container(
+                                  width: 16,
+                                  height: 13,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                // Bouton
+                                NeumorphicButton(
+                                  margin: const EdgeInsets.all(15),
+                                  style: const NeumorphicStyle(
+                                    color: Color(0xFFF0F0F3),
+                                  ),
+                                  onPressed: () async {
+                                    await API_Manager()
+                                        .sendGcodeCommand("G28 Z")
+                                        .then((value) => print(value));
+                                  },
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: const [
+                                      Icon(
                                         Icons.home_filled,
                                         color: Color(0xFF707585),
                                       ),
-                                      const FittedBox(
-                                          fit: BoxFit.fitHeight,
-                                          child: Text(
-                                            'Axe Y',
-                                            style: TextStyle(
-                                                color: Color(0xFF707585)),
-                                          ))
-                                    ]),
-                              ),
-                            )),
-                        Flexible(
-                            flex: 1,
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: const EdgeInsets.all(15),
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                onPressed: () {
-                                  API_Manager()
-                                      .sendGcodeCommand("G28 Z")
-                                      .then((value) => print(value));
-                                },
-                                child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      const Icon(
-                                        Icons.home_filled,
-                                        color: Color(0xFF707585),
+                                      FittedBox(
+                                        fit: BoxFit.contain,
+                                        child: Text(
+                                          'Axe Z',
+                                          style: TextStyle(color: Color(0xFF707585)),
+                                        ),
                                       ),
-                                      const FittedBox(
-                                          fit: BoxFit.fitHeight,
-                                          child: Text(
-                                            'Axe Z',
-                                            style: TextStyle(
-                                                color: Color(0xFF707585)),
-                                          ))
-                                    ]),
-                              ),
-                            )),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
