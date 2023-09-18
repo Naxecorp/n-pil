@@ -154,9 +154,9 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           child: OwnTextField(
-                            label: _ParamA,
+                            label: _ParamB,
                             onChanged: (text) {
-                              _ParamA = double.parse(text);
+                              _ParamB = double.parse(text);
                             },
                           ),
                         ),
@@ -179,9 +179,9 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         Container(
                           width: 100,
                           child: OwnTextField(
-                            label: _ParamB,
+                            label: _ParamA,
                             onChanged: (text) {
-                              _ParamB = double.parse(text);
+                              _ParamA = double.parse(text);
                             },
                           ),
                         ),
@@ -432,7 +432,7 @@ class OpePocheCarreState extends State {
                         Container(
                           width: 100,
                           child: const Text(
-                            'A/B (mm) ',
+                            'A (mm) ',
                             style: TextStyle(
                               color: Color.fromARGB(255, 124, 51, 43),
                               fontWeight: FontWeight.bold,
@@ -451,7 +451,7 @@ class OpePocheCarreState extends State {
                         ),
                       ],
                     ),
-/*                    const SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Row(
                       children: [
                         Container(
@@ -475,7 +475,7 @@ class OpePocheCarreState extends State {
                           ),
                         ),
                       ],
-                    ),*/
+                    ),
                     const SizedBox(height: 15),
                     Row(
                       children: [

@@ -2430,9 +2430,15 @@ class VitesseBrocheState extends State<VitesseBroche>{
 
 }
 
+class BabyStepZ extends StatefulWidget {
+  @override
+  _BabyStepZState createState() => _BabyStepZState();
+}
 
 
-class BabyStepZ extends StatelessWidget{
+class _BabyStepZState extends State<BabyStepZ> {
+
+  double compensation = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -2473,6 +2479,17 @@ class BabyStepZ extends StatelessWidget{
                         ),
                       ),
                     ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 35,minHeight: 15,maxWidth: 1000),
+                      child:  Padding(
+                        padding: EdgeInsets.only(left: 100.0,top: 5.0),
+                        child: Text(
+                         "$compensation",
+                          style: TextStyle(color: Color(0xFF707585),fontWeight: FontWeight.bold,fontSize: 15),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -2485,10 +2502,12 @@ class BabyStepZ extends StatelessWidget{
                   children: [
                     ElevatedButton(onPressed: (){
                       API_Manager().sendGcodeCommand("M290 S+0.1");
+                      compensation +=0.1;
                     },style: ElevatedButton.styleFrom(foregroundColor: Colors.white,backgroundColor: const Color(0xFF20917F)), child: Container(width: 50,child: const Text("+ 0.1",textAlign: TextAlign.center,))),
                     const Padding(padding: EdgeInsets.only(top: 3)),
                     ElevatedButton(onPressed: (){
                       API_Manager().sendGcodeCommand("M290 S-0.1");
+                      compensation -=0.1;
                     },style: ElevatedButton.styleFrom(foregroundColor: Colors.white,backgroundColor: const Color(0xFF20917F)), child: Container(width: 50,child: const Text("- 0.1",textAlign: TextAlign.center,))),
                   ],
                 ),

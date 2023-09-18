@@ -2159,8 +2159,10 @@ class AdminScreenState extends State<AdminScreen>
     });
   }
 
-
-
+  bool containsSpecialCharacters(String text) {
+    final RegExp specialCharacters = RegExp(r'[!@#\$%^&*(),.?":{}|<>]');
+    return specialCharacters.hasMatch(text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -2258,17 +2260,40 @@ class AdminScreenState extends State<AdminScreen>
                         flex: 4,
                         child: Container(
                           height: double.infinity,
-                          padding:  EdgeInsets.symmetric(vertical: 10),
+                          padding: EdgeInsets.symmetric(vertical: 10),
                           child: ElevatedButton(
-                            child:  Text('Télécharger Programme'),
+                            child: Text('Télécharger Programme'),
                             onPressed: () {
-                              if(global.AdminLogged){
-                                downloadFile("http://${global.MyMachineN02Config.IP}/rr_download?name=0:/sys/", ListofSysFile!.elementAt(selectedFileIndex)!.name.toString());
+                              if (global.AdminLogged) {
+                                String fileName = ListofSysFile!.elementAt(selectedFileIndex)!.name.toString();
+                                if (!containsSpecialCharacters(fileName)) {
+                                  downloadFile("http://${global.MyMachineN02Config.IP}/rr_download?name=0:/sys/", fileName);
+                                } else {
+                                  // Afficher une erreur ou prendre une action en cas de caractères spéciaux
+                                  // par exemple, afficher une boîte de dialogue
+                                  showDialog(
+                                    context: context, // Remplacez 'context' par votre contexte réel
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text('Erreur'),
+                                        content: Text('Le nom de fichier contient des caractères spéciaux.'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
                               }
-                              else null;
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent),
+                              backgroundColor: Colors.blueAccent,
+                            ),
                           ),
                         ),
                       ),

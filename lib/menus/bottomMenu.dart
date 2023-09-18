@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nweb/OpeListView.dart';
 import '../screens.dart';
 import 'package:nweb/service/API_Manager.dart';
@@ -159,74 +160,94 @@ class Menu2 extends StatefulWidget {
   State<Menu2> createState() => _Menu2(onAnyTap);
 }
 
+
 class _Menu2 extends State<Menu2> {
+  String fileName = "Prog1"; // Initialisez le nom de fichier ici
+  TextEditingController textController = TextEditingController();
 
-  String FileName="Prog1";
+  @override
+  void initState() {
+    super.initState();
+    textController.text = fileName; // Initialisez le contrôleur avec la valeur initiale
+  }
 
-  Future<void> askForNameFile()async {
-    String _FileName="";
+  Future<void> askForNameFile() async {
     showDialog(
       context: context,
-      builder: (BuildContext context)
-    {
-      // return object of type Dialog
-      return AlertDialog(
-        title: Text("Définir un nom de programme"),
-        content: Container(
-          height: 80,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: TextFormField(
-                  initialValue: "Prog1",
-                  onChanged: (text) {
-                    _FileName = text;
-                  },
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(),
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      gapPadding: 5.0,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Définir un nom de programme"),
+          content: Container(
+            height: 80,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  child: TextFormField(
+                    controller: textController,
+                    keyboardType: TextInputType.text,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'[a-zA-Z0-9\s]')), // Permet seulement les lettres, chiffres et espaces
+                    ],
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(),
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        gapPadding: 5.0,
+                      ),
                     ),
+                    onFieldSubmitted: (value) {
+                      // Traitez ici la validation ou le traitement avec la valeur entrée
+                      fileName = value; // Mettez à jour le nom du fichier
+                      Navigator.of(context).pop(); // Fermez la boîte de dialogue
+                      // Faites ce que vous devez faire avec fileName ici
+                      List<String> buffer = [];
+                      ListOfOperationCurrent.forEach((element) {
+                        element.construct();
+                        element.trajectoires.forEach((element2) {
+                          buffer.add(element2);
+                        });
+                      });
+                      String bufferJoined = buffer.join("\n");
+                      API_Manager()
+                          .upLoadAFile(
+                          "0:/gcodes/$fileName.gcode",
+                          buffer
+                              .toString()
+                              .codeUnits
+                              .length
+                              .toString(),
+                          Uint8List.fromList(bufferJoined.codeUnits))
+                          .then((notused) {
+                        API_Manager()
+                            .getfileList()
+                            .then((value) => global.ListofGcodeFile = value);
+                      });
+                    },
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        actions: <Widget>[
-          // usually buttons at the bottom of the dialog
-          TextButton(
-            child: Text("Annuler"),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
+          actions: <Widget>[
+            TextButton(
+              child: Text("Annuler"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
               child: Text("Ok"),
               onPressed: () {
-                FileName = _FileName;
-                Navigator.of(context).pop();
-                List<String> Buffer = [];
-                ListOfOperationCurrent.forEach((element) {
-                  element.construct();
-                  element.trajectoires.forEach((element2) {
-                    Buffer.add(element2);
-                  });
-                });
-                String Bufferjoined = Buffer.join("\n");
-                API_Manager().upLoadAFile("0:/gcodes/$FileName.gcode", Buffer.toString().codeUnits.length.toString(), Uint8List.fromList(Bufferjoined.codeUnits)).then((notused) {
-                  API_Manager().getfileList().then((value) => global.ListofGcodeFile=value);
-                }
-                );
-              }
-          ),
-        ],
-      );
-    });
+                // Ne rien faire ici, la validation est gérée dans onFieldSubmitted
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
 
