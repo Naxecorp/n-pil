@@ -2266,31 +2266,9 @@ class AdminScreenState extends State<AdminScreen>
                             onPressed: () {
                               if (global.AdminLogged) {
                                 String fileName = ListofSysFile!.elementAt(selectedFileIndex)!.name.toString();
-                                if (!containsSpecialCharacters(fileName)) {
                                   downloadFile("http://${global.MyMachineN02Config.IP}/rr_download?name=0:/sys/", fileName);
-                                } else {
-                                  // Afficher une erreur ou prendre une action en cas de caractères spéciaux
-                                  // par exemple, afficher une boîte de dialogue
-                                  showDialog(
-                                    context: context, // Remplacez 'context' par votre contexte réel
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: Text('Erreur'),
-                                        content: Text('Le nom de fichier contient des caractères spéciaux.'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: Text('OK'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
                                 }
-                              }
-                            },
+                              },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
                             ),
