@@ -291,9 +291,16 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
   }
 
   var selectedGcodeFileIndex = 0;
+  String filename = "";
+
+  bool containsSpecialCharacters(String text) {
+    final RegExp specialCharacters = RegExp(r'[!@#\$%^&*,?":{}|<>]');
+    return specialCharacters.hasMatch(text);
+  }
 
   void _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
+
     if (result == null) {
       isLoading = false;
       return;
@@ -302,12 +309,43 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     setState(() {
       isLoading = true;
     });
-    API_Manager().upLoadAFile("0:/gcodes/" + result.files.first.name.toString(), result.files.first.bytes!.length.toString(), result.files.first.bytes!).then((notused) {
-      API_Manager().getfileList().then((value) => global.ListofGcodeFile = value);
-      setState(() {
-        isLoading = false;
+
+    filename = result.files.first.name.toString();
+    if (!containsSpecialCharacters(filename)) {
+      API_Manager()
+          .upLoadAFile(
+              "0:/gcodes/" + result.files.first.name.toString(),
+              result.files.first.bytes!.length.toString(),
+              result.files.first.bytes!)
+          .then((notused) {
+        API_Manager()
+            .getfileList()
+            .then((value) => global.ListofGcodeFile = value);
+        setState(() {
+          isLoading = false;
+        });
       });
-    });
+    } else {
+      isLoading = false;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Erreur'),
+            content: Text('Le nom de fichier contient des caractères spéciaux.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void StartProgPopup(BuildContext context) {
