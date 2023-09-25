@@ -2197,9 +2197,170 @@ class AdminScreenState extends State<AdminScreen>
     });
   }
 
+  void goodDiag(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Votre machine fonctionne correctement"),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("Ok"),
+              onPressed: ()  {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void badDiag(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Veuillez verifiez les éléments mécaniques et relancer. Si le probleme perciste merci de contacter Naxe."),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("Ok"),
+              onPressed: ()  {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> testDiagX() async {
+    API_Manager().sendGcodeCommand("G28 X F500"); //1
+    API_Manager().sendGcodeCommand("G1 H3 X-10"); //2
+    await Future.delayed(Duration(seconds: 6));
+    double init = global.machineObjectModel.result!.move!.axes![0]
+        .userPosition!; //3
+    print(init);
+    API_Manager().sendGcodeCommand("G1 X170 F3000"); //4
+    for (int i = 0; i < 10; i++) {
+      API_Manager().sendGcodeCommand("G1 H3 X175");
+      API_Manager().sendGcodeCommand("G1 H3 X165");
+    }
+    API_Manager().sendGcodeCommand("G1 H3 X-500 F500");
+    await Future.delayed(Duration(seconds: 45));
+    double after = global.machineObjectModel.result!.move!.axes![0]
+        .userPosition!; //7
+    if (after < (init - 0.5) || after > (init + 0.5)) {
+      badDiag(context);
+    }else{
+      goodDiag(context);
+    }
+  }
+  Future<void> testDiagY() async {
+    API_Manager().sendGcodeCommand("G28 Y F500"); //1
+    API_Manager().sendGcodeCommand("G1 H3 Y-10"); //2
+    await Future.delayed(Duration(seconds: 6));
+    double init = global.machineObjectModel.result!.move!.axes![1]
+        .userPosition!; //3
+    print(init);
+    await API_Manager().sendGcodeCommand("G1 Y170 F3000"); //4
+    for (int i = 0; i < 10; i++) {
+       API_Manager().sendGcodeCommand("G1 H3 Y175");
+       API_Manager().sendGcodeCommand("G1 H3 Y165");
+    }
+    API_Manager().sendGcodeCommand("G1 H3 Y-500 F500");
+
+    await Future.delayed(Duration(seconds: 45));
+    double after = global.machineObjectModel.result!.move!.axes![1]
+        .userPosition!; //7
+    if (after < (init - 0.5) || after > (init + 0.5)) {
+      badDiag(context);
+      API_Manager().sendGcodeCommand("G1 Y0");
+    }else{
+      goodDiag(context);
+      API_Manager().sendGcodeCommand("G1 Y0");
+    }
+  }
+
+
   bool containsSpecialCharacters(String text) {
     final RegExp specialCharacters = RegExp(r'[!@#\$%^&*(),.?":{}|<>]');
     return specialCharacters.hasMatch(text);
+  }
+  void loadingPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Diagnostique en cours"),
+          content: CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
+          actions: <Widget>[
+          ],
+        );
+      },
+    );
+    Timer(Duration(seconds: 45), () {
+      Navigator.of(context).pop(); // Ferme la boîte de dialogue
+    });
+  }
+
+  void popupDiagnostiqueX(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Voulez vous lancer le test diagnostique de l'axe X?"),
+            content: Text(""),
+            actions: <Widget>[
+              ElevatedButton(
+                child: Text("Oui"),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  //loadingPopup(context);
+                  testDiagX();
+                  Navigator.pushNamed(context, '/dashboard');
+                },
+              ),
+              ElevatedButton(
+                child: Text("Non"),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+      },
+    );
+  }
+  void popupDiagnostiqueY(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Voulez vous lancer le test diagnostique de l'axe Y?"),
+          content: Text(""),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("Oui"),
+              onPressed: (){
+                Navigator.of(context).pop();
+                //loadingPopup(context);
+                testDiagY();
+                Navigator.pushNamed(context, '/dashboard');
+              },
+            ),
+            ElevatedButton(
+              child: Text("Non"),
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -2281,6 +2442,44 @@ class AdminScreenState extends State<AdminScreen>
                               if(global.AdminLogged){
                                 isLoading = true;
                                 _pickFile();
+                              }
+                              else null;
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:  Color(0xFF2B879B)),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 5,
+                        child: Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          padding:  EdgeInsets.symmetric(vertical: 10),
+                          child: ElevatedButton(
+                            child:  Text('Diagnostique X'),
+                            onPressed: () {
+                              if(global.AdminLogged){
+                                popupDiagnostiqueX(context);
+                              }
+                              else null;
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:  Color(0xFF2B879B)),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 5,
+                        child: Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          padding:  EdgeInsets.symmetric(vertical: 10),
+                          child: ElevatedButton(
+                            child:  Text('Diagnostique Y'),
+                            onPressed: () {
+                              if(global.AdminLogged){
+                                popupDiagnostiqueY(context);
                               }
                               else null;
                             },
@@ -2546,6 +2745,9 @@ class EditorPage extends StatelessWidget {
     ),
   ];
 
+
+
+
   @override
   void initState(){
 
@@ -2588,3 +2790,214 @@ class EditorPage extends StatelessWidget {
   }
 }
 
+ // PAGE SET POSITION
+/*
+class SetPos extends StatefulWidget {
+  @override
+  _SetPosState createState() => _SetPosState();
+}
+
+class _SetPosState extends State<SetPos> {
+  double? xa = 0.0;
+  double? ya = 0.0;
+  double? za = 150.0;
+
+  double? xb = 0.0;
+  double? yb = 0.0;
+  double? zb = 150.0;
+
+  double? xc = 0.0;
+  double? yc = 0.0;
+  double? zc = 150.0;
+
+  @override
+  void initState() {
+    //setCustomPos();
+  }
+
+  void setCustomPosa() {
+    xa = global.machineObjectModel.result?.move?.axes?[0]
+        .userPosition ?? 0;
+    ya = global.machineObjectModel.result?.move?.axes?[1]
+        .userPosition ?? 0;
+    za = global.machineObjectModel.result!.move?.axes?[2]
+        .userPosition ?? 0;
+  }
+
+  Future<void> goCustomPosa() async {
+    await API_Manager().sendGcodeCommand("G0 Z20");
+    await API_Manager().sendGcodeCommand("G0 X$xa Y$ya");
+    await API_Manager().sendGcodeCommand("G0 Z$za");
+  }
+
+  void setCustomPosb() {
+    xb = global.machineObjectModel.result?.move?.axes?[0]
+        .userPosition ?? 0;
+    yb = global.machineObjectModel.result?.move?.axes?[1]
+        .userPosition ?? 0;
+    zb = global.machineObjectModel.result!.move?.axes?[2]
+        .userPosition ?? 0;
+  }
+
+  Future<void> goCustomPosb() async {
+    await API_Manager().sendGcodeCommand("G0 Z20");
+    await API_Manager().sendGcodeCommand("G0 X$xb Y$yb");
+    await API_Manager().sendGcodeCommand("G0 Z$zb");
+  }
+
+  void setCustomPosc() {
+    xc = global.machineObjectModel.result?.move?.axes?[0]
+        .userPosition ?? 0;
+    yc = global.machineObjectModel.result?.move?.axes?[1]
+        .userPosition ?? 0;
+    zc = global.machineObjectModel.result!.move?.axes?[2]
+        .userPosition ?? 0;
+  }
+
+  Future<void> goCustomPosc() async {
+    await API_Manager().sendGcodeCommand("G0 Z20");
+    await API_Manager().sendGcodeCommand("G0 X$xc Y$yc");
+    await API_Manager().sendGcodeCommand("G0 Z$zc");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      drawer: SideMenu(
+        onAnyTap: () {
+          setState(() {});
+        },
+      ),
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Color(0xFF20917F)),
+        backgroundColor: Color(0xFFF0F0F3),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Flexible(
+              flex: 2,
+              child: Container(child: Image(image: AssetImage('iconnaxe.png'))),
+            ),
+            Flexible(
+              flex: 10,
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Spacer(),
+                    SizedBox(
+                      width: 300,
+                      child: TextField(
+                        controller: ManualGcodeComand,
+                        decoration: InputDecoration(
+                          hintText: "Gcode",
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(),
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                            gapPadding: 5.0,
+                          ),
+                        ),
+                        onSubmitted: (Commande) {
+                          setState(() {
+                            ManualGcodeComand.clear();
+                            API_Manager().sendGcodeCommand(Commande).then((
+                                value) {
+                              API_Manager().sendrr_reply().then((response) {
+                                global.ReplyList.add(response);
+                              });
+                            });
+                          });
+                          print(Commande);
+                        },
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      global.Title,
+                      style: TextStyle(color: Color(0xFF707585)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Valeurs personnalisées :"),
+                Text("X: ${xa ?? 0}"),
+                Text("Y: ${ya ?? 0}"),
+                Text("Z: ${za ?? 150}"),
+                ElevatedButton(
+                  onPressed: () {
+                    setCustomPosa();
+                  },
+                  child: Text("Set la position actuelle"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    goCustomPosa();
+                  },
+                  child: Text("Aller à la position personnalisée"),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Valeurs personnalisées :"),
+                Text("X: ${xb ?? 0}"),
+                Text("Y: ${yb ?? 0}"),
+                Text("Z: ${zb ?? 150}"),
+                ElevatedButton(
+                  onPressed: () {
+                    setCustomPosb();
+                  },
+                  child: Text("Set la position actuelle"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    goCustomPosb();
+                  },
+                  child: Text("Aller à la position personnalisée"),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Valeurs personnalisées :"),
+                Text("X: ${xc ?? 0}"),
+                Text("Y: ${yc ?? 0}"),
+                Text("Z: ${zc ?? 150}"),
+                ElevatedButton(
+                  onPressed: () {
+                    setCustomPosc();
+                  },
+                  child: Text("Set la position actuelle"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    goCustomPosc();
+                  },
+                  child: Text("Aller à la position personnalisée"),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+*/

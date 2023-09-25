@@ -78,6 +78,7 @@ class MyApp extends StatelessWidget {
         '/parameters': (context) =>  ParametreScreen(),
         '/admin': (context) =>  AdminScreen(),
         '/editor': (context) =>  EditorPage(),
+        //'/setpos':(context) => SetPos(),
       },
       title: 'Naxe N02',
       theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'RobotoMono'),

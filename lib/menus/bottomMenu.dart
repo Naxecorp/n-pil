@@ -238,12 +238,6 @@ class _Menu2 extends State<Menu2> {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
-              child: Text("Ok"),
-              onPressed: () {
-                // Ne rien faire ici, la validation est gérée dans onFieldSubmitted
-              },
-            ),
           ],
         );
       },

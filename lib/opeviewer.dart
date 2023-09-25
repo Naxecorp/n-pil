@@ -108,8 +108,8 @@ class OpeSurfacageState extends State<OpeSurfacage> {
   double _ParamB = 10;
   double _ParamC = 0.1;
 
-  double _ParamX = 50;
-  double _ParamY = 50;
+  double _ParamX = 0;
+  double _ParamY = 0;
   double _ParamZ = 10;
 
   double _ParamDf = 3;
@@ -398,8 +398,8 @@ class OpePocheCarreState extends State {
   double _ParamB = 10;
   double _ParamC = 5;
 
-  double _ParamX = 50;
-  double _ParamY = 50;
+  double _ParamX = 0;
+  double _ParamY = 0;
   double _ParamZ = 0;
 
   double _ParamDf = 3;
@@ -683,8 +683,8 @@ class OpePocheRondeState extends State {
   double _ParamD = 10;
   double _ParamC = 3;
 
-  double _ParamX = 50;
-  double _ParamY = 50;
+  double _ParamX = 0;
+  double _ParamY = 0;
   double _ParamZ = 0;
 
   double _ParamDf = 3;
@@ -1492,8 +1492,8 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
   double _ParamA = 0;
   double _ParamC = 1;
 
-  double _ParamX = 50;
-  double _ParamY = 50;
+  double _ParamX = 0;
+  double _ParamY = 0;
   double _ParamZ = 0;
 
   double _Nbligne = 3;

@@ -47,9 +47,9 @@ class Operation {
 class OperationSurfacage extends Operation {
 
 
-  double ParamA = 10;
-  double ParamB = 10;
-  double ParamC = 1;
+  double ParamA = 10; // Y
+  double ParamB = 10; // X
+  double ParamC = 1;  // Z
   double ParamDf = 3;
   double ParamAP = 0.3;
   double ParamDecalage = 4;
@@ -439,3 +439,4 @@ class OperationDb9 extends Operation{
 
 
 }
+

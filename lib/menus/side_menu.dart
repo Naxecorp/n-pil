@@ -45,7 +45,7 @@ class _SideMenu extends State<SideMenu> {
                   //Navigator.pop(context);
                   //return _onAnytap();
                 },
-                //tileColor: pageToShow == 1 ? Color(0xFF9A9A9A) : Colors.white,
+                tileColor: pageToShow == 1 ? Color(0xFF9A9A9A) : Colors.white,
                 leading: Icon(
                   Icons.home_filled,
                   color: pageToShow == 1 ? Colors.white : Color(0xFF9A9A9A),
@@ -148,6 +148,28 @@ class _SideMenu extends State<SideMenu> {
               ),
             ),
           ),
+/*          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            child: Card(
+              color: pageToShow == 8 ? Color(0xFF9A9A9A) : Colors.white,
+              child: ListTile(
+                onTap: () {
+                  pageToShow = 8;
+                  Navigator.pushNamed(context, '/setpos');
+                },
+                leading: Icon(
+                  Icons.play_arrow_sharp,
+                  color: pageToShow == 8 ? Colors.white : Color(0xFF9A9A9A),
+                ),
+                title: Text(
+                  "Set Position",
+                  style: TextStyle(
+                      color: pageToShow == 8 ? Colors.white : Color(0xFF9A9A9A),
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),*/
           Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
