@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:nweb/service/API_Manager.dart';
+import 'package:nweb/service/API/API_Manager.dart';
 
 class ArretUrgence extends StatefulWidget {
   const ArretUrgence({super.key, this.title, required this.notifyParent});
@@ -20,7 +20,7 @@ class _ArretUrgenceState extends State<ArretUrgence> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ()async{
+      onTap: () async {
         await API_Manager().sendGcodeCommand("M112");
         Navigator.pushNamed(context, '/dashboard');
         return notifyParent();
@@ -46,13 +46,13 @@ class _ArretUrgenceState extends State<ArretUrgence> {
                   color: Colors.redAccent),
               child: Center(
                   child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                'Arret immédiat',
-                style: TextStyle(color: Colors.white),
-                maxLines: 2,
-              ),
-                  )),
+                fit: BoxFit.contain,
+                child: Text(
+                  'Arret immédiat',
+                  style: TextStyle(color: Colors.white),
+                  maxLines: 2,
+                ),
+              )),
             )),
       ),
     );

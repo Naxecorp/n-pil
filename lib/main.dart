@@ -1,12 +1,19 @@
-
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:nweb/service/nwc-settings.dart';
-import 'service/API_Manager.dart';
+import 'package:nweb/screen/conversationel_screen.dart';
+import 'package:nweb/service/nwc-settings/nwc-settings.dart';
+import 'screen/admin_screen.dart';
+import 'screen/dashboard_screen.dart';
+import 'screen/editor_screen.dart';
+import 'screen/job_screen.dart';
+import 'screen/origin_screen.dart';
+import 'screen/parametre_screen.dart';
+import 'screen/programme_screen.dart';
+import 'service/API/API_Manager.dart';
 import 'globals_var.dart' as global;
-import 'screens.dart';
+import 'screen/screens.dart';
 
 int pageToShow = 1;
 
@@ -22,34 +29,42 @@ Future<void> actualiserMachineObjectModel() async {
 }
 
 Future<void> actualiserMachineUsedTime() async {
-  Timer.periodic(Duration(minutes:2), (timer) async {
+  Timer.periodic(Duration(minutes: 2), (timer) async {
     await API_Manager().downLoadNwcSettings();
-    global.MyMachineN02Config.GlobalMachineUsedTime=global.MyMachineN02Config.GlobalMachineUsedTime!+2;
-    API_Manager().upLoadAFile("0:/sys/nwc-settings.json", global.MyMachineN02Config.toJson().length.toString(), Uint8List.fromList(machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
+    global.MyMachineN02Config.GlobalMachineUsedTime =
+        global.MyMachineN02Config.GlobalMachineUsedTime! + 2;
+    API_Manager().upLoadAFile(
+        "0:/sys/nwc-settings.json",
+        global.MyMachineN02Config.toJson().length.toString(),
+        Uint8List.fromList(
+            machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
   });
 }
 
 Future<void> actualiserMoveObjectModel() async {
   Timer.periodic(const Duration(seconds: 3, milliseconds: 3), (timer) {
-    API_Manager().getMachineMoveObjectModel().then((move) => global.objectModelMove = move);
+    API_Manager()
+        .getMachineMoveObjectModel()
+        .then((move) => global.objectModelMove = move);
   });
 }
 
-
-void main()async {
+void main() async {
   await API_Manager().downLoadNwcSettings().then((value) {
-    global.MyMachineN02Config=value;
-  } );
+    global.MyMachineN02Config = value;
+  });
 
   await API_Manager().sendGcodeCommand("M453").then((_) {
     API_Manager().getMachineMode().then((value) => global.machineMode = value);
   });
 
-  API_Manager().getMachineMoveObjectModel().then((move) => global.objectModelMove = move);
+  API_Manager()
+      .getMachineMoveObjectModel()
+      .then((move) => global.objectModelMove = move);
 
   API_Manager().getfileList().then((value) => global.ListofGcodeFile = value);
 
-  API_Manager().getfileListSys().then((value) => global.ListofSysFile=value);
+  API_Manager().getfileListSys().then((value) => global.ListofSysFile = value);
 
   actualiserMachineObjectModel();
   actualiserMoveObjectModel();
@@ -68,16 +83,18 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) =>  DashboardScreen(notifyParent: (){},),
+        '/': (context) => DashboardScreen(
+              notifyParent: () {},
+            ),
         // When navigating to the "/second" route, build the SecondScreen widget.
-        '/dashboard': (context) =>  DashboardScreen(notifyParent: (){}),
-        '/conversationel': (context) =>  ConversationelScreen(),
-        '/programmes': (context) =>  ProgrammeScreen(),
-        '/jobStatus': (context) =>  JobScreen(),
-        '/origin': (context) =>  OriginScreen(notifyParent: (){}),
-        '/parameters': (context) =>  ParametreScreen(),
-        '/admin': (context) =>  AdminScreen(),
-        '/editor': (context) =>  EditorPage(),
+        '/dashboard': (context) => DashboardScreen(notifyParent: () {}),
+        '/conversationel': (context) => ConversationelScreen(),
+        '/programmes': (context) => ProgrammeScreen(),
+        '/jobStatus': (context) => JobScreen(),
+        '/origin': (context) => OriginScreen(notifyParent: () {}),
+        '/parameters': (context) => ParametreScreen(),
+        '/admin': (context) => AdminScreen(),
+        '/editor': (context) => EditorPage(),
         //'/setpos':(context) => SetPos(),
       },
       title: 'Naxe N02',

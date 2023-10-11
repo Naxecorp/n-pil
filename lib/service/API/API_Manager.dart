@@ -1,23 +1,16 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'ObjectModelManager.dart';
-import 'ObjectModelMoveManager.dart';
-import 'ObjectModelJobManager.dart';
+import '../ObjectModelManager.dart';
+import '../ObjectModelMoveManager.dart';
+import '../ObjectModelJobManager.dart';
 import 'package:nweb/globals_var.dart' as global;
-import 'SystemsFiles.dart';
-import 'gCodeProgram.dart';
+import '../system/SystemsFiles.dart';
+import '../gCode/ListGcodeProgram.dart';
+import '../gCode/gCodeProgram.dart';
 
-import 'nwc-settings.dart';
-
-class Ethernet_Connection{
-
-  bool? isConnected=false;
-
-  Ethernet_Connection({
-    this.isConnected,
-  });
-}
+import '../nwc-settings/nwc-settings.dart';
+import '../system/SystemsFilesElement.dart';
 
 class API_Manager {
   Future<MachineObjectModel> getdataMachineObjectModel() async {
@@ -31,10 +24,13 @@ class API_Manager {
       "Connection": "keep-alive",
     };
 
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_model?flags=d99fn');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_model?flags=d99fn');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected=true;
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         final MachineObjectModel Machine =
             machineObjectModelFromJson(response.body);
@@ -45,8 +41,10 @@ class API_Manager {
       }
     } catch (e) {
       print(e.toString());
-      if (e.toString()=="XMLHttpRequest error.")global.myEthernet_connection.isConnected=false;
-      if (e.toString().startsWith("TimeoutException"))global.myEthernet_connection.isConnected=false;
+      if (e.toString() == "XMLHttpRequest error.")
+        global.myEthernet_connection.isConnected = false;
+      if (e.toString().startsWith("TimeoutException"))
+        global.myEthernet_connection.isConnected = false;
       return MachineObjectModel();
     }
   }
@@ -64,10 +62,11 @@ class API_Manager {
 
     var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/$toto');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected=true;
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
-
       } else {
         print('Fail to get data, error : ' + response.statusCode.toString());
       }
@@ -79,7 +78,6 @@ class API_Manager {
   }
 
   Future<String> sendGcodeCommand(String command) async {
-
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
       "Content-Type": "application/json",
@@ -90,10 +88,13 @@ class API_Manager {
       "Connection": "keep-alive",
     };
 
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_gcode?gcode=$command');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_gcode?gcode=$command');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected=true;
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         return 'ok';
       } else {
@@ -126,7 +127,7 @@ class API_Manager {
           .timeout(Duration(seconds: 10));
       if (response.statusCode == 200) {
         print(response.body);
-        if(response.body.length<2)return "response is empty";
+        if (response.body.length < 2) return "response is empty";
         return response.body;
       } else {
         print(
@@ -139,10 +140,7 @@ class API_Manager {
     }
   }
 
-
-
   Future<global.MachineMode> getMachineMode() async {
-
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
       "Content-Type": "application/json",
@@ -153,18 +151,23 @@ class API_Manager {
       "Connection": "keep-alive",
     };
 
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_model?key=state.machineMode');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_model?key=state.machineMode');
 
     try {
       var response = await http
-          .get(uri,headers: requestHeaders)
+          .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 2));
       if (response.statusCode == 200) {
         print(response.body);
-        if(response.body.toString().contains("FFF")) return global.MachineMode.fff;
-        if(response.body.toString().contains("CNC")) return global.MachineMode.cnc;
-        if(response.body.toString().contains("Laser")) return global.MachineMode.laser;
-        else return global.MachineMode.unknow;
+        if (response.body.toString().contains("FFF"))
+          return global.MachineMode.fff;
+        if (response.body.toString().contains("CNC"))
+          return global.MachineMode.cnc;
+        if (response.body.toString().contains("Laser"))
+          return global.MachineMode.laser;
+        else
+          return global.MachineMode.unknow;
       } else {
         print(
             'Fail to Send commnand, error : ' + response.statusCode.toString());
@@ -177,7 +180,6 @@ class API_Manager {
   }
 
   Future<ObjectModelMove> getMachineMoveObjectModel() async {
-
     Map<String, String> requestHeaders = {
       "Content-Type": "application/json",
       "Accept": "*/*",
@@ -187,13 +189,16 @@ class API_Manager {
       "Connection": "keep-alive",
     };
 
-
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_model?key=move&flags=d99vn');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_model?key=move&flags=d99vn');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected=true;
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
-        final ObjectModelMove myObjectModelMove = objectModelMoveFromJson(response.body);
+        final ObjectModelMove myObjectModelMove =
+            objectModelMoveFromJson(response.body);
         return myObjectModelMove;
       } else {
         print('Fail to get data, error : ' + response.statusCode.toString());
@@ -208,7 +213,6 @@ class API_Manager {
   }
 
   Future<ObjectModelJob> getMachineJobObjectModel() async {
-
     Map<String, String> requestHeaders = {
       "Content-Type": "application/json",
       "Accept": "*/*",
@@ -218,13 +222,16 @@ class API_Manager {
       "Connection": "keep-alive",
     };
 
-
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_model?key=job&flags=d99vn');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_model?key=job&flags=d99vn');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 10));
-      global.myEthernet_connection.isConnected=true;
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 10));
+      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
-        final ObjectModelJob myObjectModelJob = objectModelJobFromJson(response.body);
+        final ObjectModelJob myObjectModelJob =
+            objectModelJobFromJson(response.body);
         return myObjectModelJob;
       } else {
         print('Fail to get data, error : ' + response.statusCode.toString());
@@ -238,7 +245,7 @@ class API_Manager {
     }
   }
 
-  Future<List<FileElement?>?>getfileList()async{
+  Future<List<FileElement?>?> getfileList() async {
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
       "Content-Type": "application/json",
@@ -248,15 +255,19 @@ class API_Manager {
       "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
       "Connection": "keep-alive",
     };
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_filelist?dir=0:/gcodes&first=0');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_filelist?dir=0:/gcodes&first=0');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected=true;
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         print("les g codes :");
         print(response.body);
-        final ReturnedListGcodeProgram myReturnedListGcodeProgram = returnedListGcodeProgramFromJson(response.body);
-        return myReturnedListGcodeProgram.files ;
+        final ReturnedListGcodeProgram myReturnedListGcodeProgram =
+            returnedListGcodeProgramFromJson(response.body);
+        return myReturnedListGcodeProgram.files;
       } else {
         print('Fail to get data, error : ' + response.statusCode.toString());
         return <FileElement>[];
@@ -267,10 +278,9 @@ class API_Manager {
       //if (e.toString().startsWith("TimeoutException"))global.myEthernet_connection.isConnected=false;
       return <FileElement>[];
     }
-
   }
 
-  Future<List<SysFileElement?>?>getfileListSys()async{
+  Future<List<SysFileElement?>?> getfileListSys() async {
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
       "Content-Type": "application/json,text/plain",
@@ -280,17 +290,20 @@ class API_Manager {
       "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
       "Connection": "keep-alive",
     };
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_filelist?dir=0:/sys/&first=0');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_filelist?dir=0:/sys/&first=0');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected=true;
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      global.myEthernet_connection.isConnected = true;
       print("system files list:");
       if (response.statusCode == 200) {
         print(response.body);
-        final SystemsFiles myReturnedListofFiles = systemsFilesFromJson(response.body);
-        return myReturnedListofFiles.files ;
+        final SystemsFiles myReturnedListofFiles =
+            systemsFilesFromJson(response.body);
+        return myReturnedListofFiles.files;
       } else {
-
         print('Fail to get data, error : ' + response.statusCode.toString());
         return <SysFileElement>[];
       }
@@ -300,11 +313,10 @@ class API_Manager {
       //if (e.toString().startsWith("TimeoutException"))global.myEthernet_connection.isConnected=false;
       return <SysFileElement>[];
     }
-
   }
 
-  Future<String> upLoadAFile(String path,String ContentLength,Uint8List FileContent) async {
-
+  Future<String> upLoadAFile(
+      String path, String ContentLength, Uint8List FileContent) async {
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
       "Content-Type": "application/json",
@@ -314,16 +326,16 @@ class API_Manager {
       "Accept-Encoding": "gzip, deflate",
       "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
       "Connection": "keep-alive",
-
     };
 
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_upload?name=$path');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_upload?name=$path');
 
     try {
       var response = await http
-          .post(uri, headers: requestHeaders,body: FileContent)
+          .post(uri, headers: requestHeaders, body: FileContent)
           .timeout(Duration(seconds: 30));
-      global.myEthernet_connection.isConnected=true;
+      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         print(response.body.toString());
         return 'ok';
@@ -338,7 +350,7 @@ class API_Manager {
     }
   }
 
-  Future<String> deleteAFile(String FileName,String path) async {
+  Future<String> deleteAFile(String FileName, String path) async {
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
       "Content-Type": "application/json",
@@ -349,15 +361,16 @@ class API_Manager {
       "Connection": "keep-alive",
     };
 
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_delete?name=0:/$path/$FileName');
-    http://192.168.1.73/rr_delete?name=0%3A%2Fgcodes%2Ftest5.gcode
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_delete?name=0:/$path/$FileName');
+    http: //192.168.1.73/rr_delete?name=0%3A%2Fgcodes%2Ftest5.gcode
 
     try {
       var response = await http
-          .get(uri,headers: requestHeaders)
+          .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 10));
       if (response.statusCode == 200) {
-         return "ok";
+        return "ok";
       } else {
         print(
             'Fail to Send commnand, error : ' + response.statusCode.toString());
@@ -371,7 +384,7 @@ class API_Manager {
 
   Future<String> downLoadAFile(String path, String FileName) async {
     Map<String, String> requestHeaders = {
-    "Access-Control-Allow-Headers": "*",
+      "Access-Control-Allow-Headers": "*",
       "Content-Type": "application/json",
       "Accept": "*/*",
       "Accept-Encoding": "gzip, deflate",
@@ -379,10 +392,13 @@ class API_Manager {
       "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
       "Connection": "keep-alive",
     };
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_download?name=0:/$path/$FileName');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_download?name=0:/$path/$FileName');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected=true;
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         print(response.body);
         return response.body;
@@ -407,12 +423,16 @@ class API_Manager {
       "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
       "Connection": "keep-alive",
     };
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/rr_download?name=0:/sys/nwc-settings.json');
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_download?name=0:/sys/nwc-settings.json');
     try {
-      var response = await http.get(uri,headers: requestHeaders).timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected=true;
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
-        final MachineN02Config Myconfig = returnedMachineN02ConfigFromJson(response.body);
+        final MachineN02Config Myconfig =
+            returnedMachineN02ConfigFromJson(response.body);
         //print(response.body);
         return Myconfig;
       } else {
@@ -425,5 +445,4 @@ class API_Manager {
       return global.MyMachineN02Config;
     }
   }
-
 }

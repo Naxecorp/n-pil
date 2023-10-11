@@ -1,12 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'operations/operation.dart';
 import 'opeviewer.dart';
-import 'operation.dart';
-
+import 'operations/operation.dart';
 
 List<Operation> ListOfOperationCurrent = <Operation>[];
-int selectedIndex=0;
-
+int selectedIndex = 0;
 
 class OpeListView extends StatefulWidget {
   final VoidCallback? onAnyTap;
@@ -27,24 +26,27 @@ class _OpeListView extends State<OpeListView> {
 
   @override
   Widget build(BuildContext context) {
-    if (ListOfOperationCurrent.length>0) {
+    if (ListOfOperationCurrent.length > 0) {
       return Container(
         child: Row(
-      children: [
-        Flexible(
-            flex: 2,
-            child: OpeListSide(
-              onAnyTap: () {
-                setState(() {});
-                return _onAnyTap!();
-              },
-            )),
-        Flexible(
-            flex: 7,
-            child: GeneralOpeViewer()),
-      ],
-    ));
-    } else return Container(height:double.infinity, child: Center(child: Text('Aucune opération')),);
+          children: [
+            Flexible(
+                flex: 2,
+                child: OpeListSide(
+                  onAnyTap: () {
+                    setState(() {});
+                    return _onAnyTap!();
+                  },
+                )),
+            Flexible(flex: 7, child: GeneralOpeViewer()),
+          ],
+        ),
+      );
+    } else
+      return Container(
+        height: double.infinity,
+        child: Center(child: Text('Aucune opération')),
+      );
   }
 }
 
@@ -112,37 +114,38 @@ class _OpeListSide extends State<OpeListSide> {
             ),
           ),
           Flexible(
-              flex: 15,
-              child: ListView.builder(
-                itemCount: ListOfOperationCurrent.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    elevation: 4,
-                    child: ListTile(
-                      tileColor: Colors.white,
-                      //selectedColor: Colors.orange,
-                      selectedTileColor: Colors.black26,
-                      selected: index == selectedIndex,
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                          print(index);
-                        });
-                        return _onAnyTap!();
-                      },
+            flex: 15,
+            child: ListView.builder(
+              itemCount: ListOfOperationCurrent.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  elevation: 4,
+                  child: ListTile(
+                    tileColor: Colors.white,
+                    //selectedColor: Colors.orange,
+                    selectedTileColor: Colors.black26,
+                    selected: index == selectedIndex,
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = index;
+                        print(index);
+                      });
+                      return _onAnyTap!();
+                    },
 
-                      leading: Icon(
-                        Icons.insert_drive_file,
-                        color: Colors.blue,
-                      ),
-                      title: Text(
-                        ListOfOperationCurrent.elementAt(index).label.toString(),
-                        style: TextStyle(color: Colors.black),
-                      ),
+                    leading: Icon(
+                      Icons.insert_drive_file,
+                      color: Colors.blue,
                     ),
-                  ); },
-
-              ))
+                    title: Text(
+                      ListOfOperationCurrent.elementAt(index).label.toString(),
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                );
+              },
+            ),
+          )
         ],
       ),
     );

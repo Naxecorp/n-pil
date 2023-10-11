@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../screens.dart';
+import '../screen/screens.dart';
 
 class FamilyMenu extends StatefulWidget {
   const FamilyMenu({
@@ -31,7 +31,7 @@ class _FamilyMenu extends State<FamilyMenu> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(
-            flex:2,
+            flex: 2,
             child: Container(
               //color: Colors.yellow,
               padding: EdgeInsets.all(10),
@@ -43,14 +43,27 @@ class _FamilyMenu extends State<FamilyMenu> {
                     flex: 1,
                     child: const FittedBox(
                       fit: BoxFit.fitWidth,
-                      child: Text("Famille",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 100,color: Color(0xFF707585)),textAlign: TextAlign.start,),
+                      child: Text(
+                        "Famille",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 100,
+                            color: Color(0xFF707585)),
+                        textAlign: TextAlign.start,
+                      ),
                     ),
                   ),
                   Flexible(
                     flex: 1,
                     child: const FittedBox(
                       fit: BoxFit.fitWidth,
-                      child: Text("d'usinage",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 100,color: Color(0xFF707585)),),
+                      child: Text(
+                        "d'usinage",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 100,
+                            color: Color(0xFF707585)),
+                      ),
                     ),
                   ),
                 ],
@@ -66,16 +79,17 @@ class _FamilyMenu extends State<FamilyMenu> {
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     child: Card(
                       child: ListTile(
-                        tileColor: FamillyToShow=='classique'?Color(0xFF9A9A9A):Colors.white,
+                        tileColor: FamillyToShow == 'classique'
+                            ? Color(0xFF9A9A9A)
+                            : Colors.white,
                         onTap: () {
-                          FamillyToShow='classique';
-                          setState(() {
-
-                          });
+                          FamillyToShow = 'classique';
+                          setState(() {});
                           return onAnytap();
                         },
                         leading: Image(
-                          image: AssetImage('assets/Icon Usinage classique.png'),
+                          image:
+                              AssetImage('assets/Icon Usinage classique.png'),
                         ),
                         title: Text(
                           'Usinage classique',
@@ -91,12 +105,12 @@ class _FamilyMenu extends State<FamilyMenu> {
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     child: Card(
                       child: ListTile(
-                        tileColor: FamillyToShow=='connecteur'?Color(0xFF9A9A9A):Colors.white,
+                        tileColor: FamillyToShow == 'connecteur'
+                            ? Color(0xFF9A9A9A)
+                            : Colors.white,
                         onTap: () {
-                          FamillyToShow='connecteur';
-                          setState(() {
-
-                          });
+                          FamillyToShow = 'connecteur';
+                          setState(() {});
                           return onAnytap();
                         },
                         leading: Image(
@@ -116,12 +130,12 @@ class _FamilyMenu extends State<FamilyMenu> {
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     child: Card(
                       child: ListTile(
-                        tileColor: FamillyToShow=='autres'?Color(0xFF9A9A9A):Colors.white,
+                        tileColor: FamillyToShow == 'autres'
+                            ? Color(0xFF9A9A9A)
+                            : Colors.white,
                         onTap: () {
-                          FamillyToShow='autres';
-                          setState(() {
-
-                          });
+                          FamillyToShow = 'autres';
+                          setState(() {});
                           return onAnytap();
                         },
                         leading: Icon(
@@ -142,12 +156,12 @@ class _FamilyMenu extends State<FamilyMenu> {
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     child: Card(
                       child: ListTile(
-                        tileColor: FamillyToShow=='personalises'?Color(0xFF9A9A9A):Colors.white,
+                        tileColor: FamillyToShow == 'personalises'
+                            ? Color(0xFF9A9A9A)
+                            : Colors.white,
                         onTap: () {
-                          FamillyToShow='personalises';
-                          setState(() {
-
-                          });
+                          FamillyToShow = 'personalises';
+                          setState(() {});
                           return onAnytap();
                         },
                         leading: Icon(

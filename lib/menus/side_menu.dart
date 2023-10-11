@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import 'package:nweb/globals_var.dart' as global;
 
-import '../service/API_Manager.dart';
+import '../service/API/API_Manager.dart';
 
 class SideMenu extends StatefulWidget {
   const SideMenu({
@@ -27,8 +27,6 @@ class _SideMenu extends State<SideMenu> {
 
   _SideMenu(this._onAnytap);
 
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,7 +38,7 @@ class _SideMenu extends State<SideMenu> {
             child: Card(
               child: ListTile(
                 onTap: () {
-                  pageToShow=1;
+                  pageToShow = 1;
                   Navigator.pushNamed(context, '/dashboard');
                   //Navigator.pop(context);
                   //return _onAnytap();
@@ -64,7 +62,7 @@ class _SideMenu extends State<SideMenu> {
             child: Card(
               child: ListTile(
                 onTap: () {
-                  pageToShow=2;
+                  pageToShow = 2;
                   Navigator.pushNamed(context, '/conversationel');
                 },
                 tileColor: pageToShow == 2 ? Color(0xFF9A9A9A) : Colors.white,
@@ -87,7 +85,9 @@ class _SideMenu extends State<SideMenu> {
               child: ListTile(
                 onTap: () {
                   pageToShow = 3;
-                  API_Manager().getfileList().then((value) => global.ListofGcodeFile = value);
+                  API_Manager()
+                      .getfileList()
+                      .then((value) => global.ListofGcodeFile = value);
                   Navigator.pushNamed(context, '/programmes');
                 },
                 tileColor: pageToShow == 3 ? Color(0xFF9A9A9A) : Colors.white,
