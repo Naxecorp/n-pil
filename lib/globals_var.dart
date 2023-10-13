@@ -18,7 +18,7 @@ import 'service/system/SystemsFilesElement.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.2.1"; // demarrage Jean + Nettoyage 1 fichier/class
+String version = "Version 1.2.2"; // demarrage Jean + Nettoyage 1 fichier/class
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;

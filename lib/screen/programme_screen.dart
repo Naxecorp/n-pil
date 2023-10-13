@@ -60,7 +60,8 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
   String filename = "";
 
   bool containsSpecialCharacters(String text) {
-    final RegExp specialCharacters = RegExp(r'[!@#\$%^&*,?":{}|<>]');
+    final RegExp specialCharacters =
+        RegExp(r'[!@#\$%^&*,?":{}|<>éèàÉÈÊËÀÁÂÄÇçÙÚÛÜüûùîïÌÏÍÒÖÓÔŸÝ]');
     return specialCharacters.hasMatch(text);
   }
 
