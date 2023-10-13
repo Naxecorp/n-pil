@@ -155,436 +155,422 @@ class JobScreenState extends State<JobScreen> {
                   ),
                 )),
             Flexible(
-                flex: 6,
-                child: Container(
-                  //color: Colors.green,
-                  child: Row(
-                    children: [
-                      Flexible(
-                        flex: 6,
-                        child: Column(
-                          children: [
-                            Flexible(flex: 1, child: JobInfo()),
-                            Flexible(
-                                flex: 1,
-                                child: Container(
-                                  height: double.infinity,
-                                  //color: Colors.white,
-                                  margin: EdgeInsets.all(0),
-                                  child: Window(
-                                    title1: "Capteurs",
-                                    title2: " machine",
-                                    child: Container(
-                                        child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Flexible(
-                                            flex: 1,
-                                            child: Container(
-                                              margin: EdgeInsets.all(1),
-                                              //color: Colors.green,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(
-                                                    "Status",
-                                                    style: TextStyle(
-                                                        color:
-                                                            Color(0xFF707585),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Text(
-                                                      global
-                                                              .machineObjectModel
-                                                              .result
-                                                              ?.state
-                                                              ?.status
-                                                              .toString() ??
-                                                          "???",
-                                                      style: TextStyle(
-                                                          color: Color(
-                                                              0xFF707585))),
-                                                ],
-                                              ),
-                                            )),
-                                        Flexible(
-                                            flex: 1,
-                                            child: Container(
-                                              margin: EdgeInsets.all(1),
-                                              //color: Colors.green,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(
-                                                    "MCU Température",
-                                                    style: TextStyle(
-                                                        color:
-                                                            Color(0xFF707585),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                          global.machineObjectModel
-                                                                  .result?.boards
-                                                                  ?.elementAt(0)
-                                                                  .mcuTemp
-                                                                  ?.current
-                                                                  ?.toStringAsFixed(
-                                                                      1) ??
-                                                              "...",
-                                                          style: TextStyle(
-                                                              color: Color(
-                                                                  0xFF707585))),
-                                                      Text("°C",
-                                                          style: TextStyle(
-                                                              color: Color(
-                                                                  0xFF707585)))
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            )),
-                                        Flexible(
-                                            flex: 1,
-                                            child: Container(
-                                              margin: EdgeInsets.all(1),
-                                              //color: Colors.green,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(
-                                                    "V12",
-                                                    style: TextStyle(
-                                                        color:
-                                                            Color(0xFF707585),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                        global.machineObjectModel
-                                                                .result?.boards
-                                                                ?.elementAt(0)
-                                                                .v12
-                                                                ?.current
-                                                                ?.toStringAsFixed(
-                                                                    1) ??
-                                                            "...",
-                                                        style: TextStyle(
-                                                            color: Color(
-                                                                0xFF707585)),
-                                                      ),
-                                                      Text(" V",
-                                                          style: TextStyle(
-                                                              color: Color(
-                                                                  0xFF707585))),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            )),
-                                        Flexible(
-                                            flex: 1,
-                                            child: Container(
-                                              margin: EdgeInsets.all(1),
-                                              //color: Colors.green,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(
-                                                    "Vin",
-                                                    style: TextStyle(
-                                                        color:
-                                                            Color(0xFF707585),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                          global.machineObjectModel
-                                                                  .result?.boards
-                                                                  ?.elementAt(0)
-                                                                  .vIn
-                                                                  ?.current
-                                                                  ?.toStringAsFixed(
-                                                                      1) ??
-                                                              "...",
-                                                          style: TextStyle(
-                                                              color: Color(
-                                                                  0xFF707585))),
-                                                      Text(" V",
-                                                          style: TextStyle(
-                                                              color: Color(
-                                                                  0xFF707585))),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            )),
-                                      ],
-                                    )),
-                                  ),
-                                )),
-                            Flexible(
-                                flex: 1,
-                                child: Container(
-                                  height: double.infinity,
-                                  //color: Colors.white,
-                                  margin: EdgeInsets.all(0),
-                                  child: Window(
-                                    title1: "Coordonées",
-                                    title2: " machine",
-                                    child: CoordoneesMachine(),
-                                  ),
-                                )),
-                            Flexible(
-                                flex: 1,
-                                child: Container(
-                                  height: double.infinity,
-                                  //color: Colors.white,
-                                  margin: EdgeInsets.all(0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Flexible(
-                                          flex: 4,
-                                          child: Window(
-                                            title1: "Coordonées",
-                                            title2: " outil",
-                                            child: CoordoneesOutilSansBouton(),
-                                          )),
-                                      Flexible(
-                                          flex: 2,
-                                          child: Window(
-                                            title1: "Vitesse",
-                                            title2: " demandée",
-                                            child: Center(
-                                                child: Text(
-                                                    "${global.machineObjectModel.result?.move?.currentMove?.requestedSpeed.toString() ?? "..."} mm/s")),
-                                          )),
-                                    ],
-                                  ),
-                                )),
-                            Flexible(
-                                flex: 2,
-                                child: Container(
-                                  height: double.infinity,
-                                  //color: Colors.white,
-                                  margin: EdgeInsets.all(0),
-                                  child: Row(
+              flex: 6,
+              child: Container(
+                //color: Colors.green,
+                child: Row(
+                  children: [
+                    Flexible(
+                      flex: 6,
+                      child: Column(
+                        children: [
+                          Flexible(flex: 1, child: JobInfo()),
+                          Flexible(
+                              flex: 1,
+                              child: Container(
+                                height: double.infinity,
+                                //color: Colors.white,
+                                margin: EdgeInsets.all(0),
+                                child: Window(
+                                  title1: "Capteurs",
+                                  title2: " machine",
+                                  child: Container(
+                                      child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Flexible(
                                           flex: 1,
                                           child: Container(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            //color: Colors.pink,
+                                            margin: EdgeInsets.all(1),
+                                            //color: Colors.green,
                                             child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
                                               children: [
-                                                Flexible(
-                                                    flex: 1,
-                                                    child: Container(
-                                                      width: double.infinity,
-                                                      height: double.infinity,
-                                                      child: CoefVitesse(),
-                                                    )),
-                                                Flexible(
-                                                    flex: 1,
-                                                    child: Container(
-                                                      width: double.infinity,
-                                                      height: double.infinity,
-                                                      child: BabyStepZ(),
-                                                    ))
+                                                Text(
+                                                  "Status",
+                                                  style: TextStyle(
+                                                      color: Color(0xFF707585),
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Text(
+                                                    global
+                                                            .machineObjectModel
+                                                            .result
+                                                            ?.state
+                                                            ?.status
+                                                            .toString() ??
+                                                        "???",
+                                                    style: TextStyle(
+                                                        color:
+                                                            Color(0xFF707585))),
                                               ],
                                             ),
                                           )),
                                       Flexible(
                                           flex: 1,
                                           child: Container(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            child: VitesseBroche(),
-                                          ))
+                                            margin: EdgeInsets.all(1),
+                                            //color: Colors.green,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Text(
+                                                  "MCU Température",
+                                                  style: TextStyle(
+                                                      color: Color(0xFF707585),
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                        global.machineObjectModel
+                                                                .result?.boards
+                                                                ?.elementAt(0)
+                                                                .mcuTemp
+                                                                ?.current
+                                                                ?.toStringAsFixed(
+                                                                    1) ??
+                                                            "...",
+                                                        style: TextStyle(
+                                                            color: Color(
+                                                                0xFF707585))),
+                                                    Text("°C",
+                                                        style: TextStyle(
+                                                            color: Color(
+                                                                0xFF707585)))
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          )),
+                                      Flexible(
+                                          flex: 1,
+                                          child: Container(
+                                            margin: EdgeInsets.all(1),
+                                            //color: Colors.green,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Text(
+                                                  "V12",
+                                                  style: TextStyle(
+                                                      color: Color(0xFF707585),
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      global.machineObjectModel
+                                                              .result?.boards
+                                                              ?.elementAt(0)
+                                                              .v12
+                                                              ?.current
+                                                              ?.toStringAsFixed(
+                                                                  1) ??
+                                                          "...",
+                                                      style: TextStyle(
+                                                          color: Color(
+                                                              0xFF707585)),
+                                                    ),
+                                                    Text(" V",
+                                                        style: TextStyle(
+                                                            color: Color(
+                                                                0xFF707585))),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          )),
+                                      Flexible(
+                                          flex: 1,
+                                          child: Container(
+                                            margin: EdgeInsets.all(1),
+                                            //color: Colors.green,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Text(
+                                                  "Vin",
+                                                  style: TextStyle(
+                                                      color: Color(0xFF707585),
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                        global.machineObjectModel
+                                                                .result?.boards
+                                                                ?.elementAt(0)
+                                                                .vIn
+                                                                ?.current
+                                                                ?.toStringAsFixed(
+                                                                    1) ??
+                                                            "...",
+                                                        style: TextStyle(
+                                                            color: Color(
+                                                                0xFF707585))),
+                                                    Text(" V",
+                                                        style: TextStyle(
+                                                            color: Color(
+                                                                0xFF707585))),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          )),
+                                    ],
+                                  )),
+                                ),
+                              )),
+                          Flexible(
+                              flex: 1,
+                              child: Container(
+                                height: double.infinity,
+                                //color: Colors.white,
+                                margin: EdgeInsets.all(0),
+                                child: Window(
+                                  title1: "Coordonées",
+                                  title2: " machine",
+                                  child: CoordoneesMachine(),
+                                ),
+                              )),
+                          Flexible(
+                              flex: 1,
+                              child: Container(
+                                height: double.infinity,
+                                //color: Colors.white,
+                                margin: EdgeInsets.all(0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Flexible(
+                                        flex: 4,
+                                        child: Window(
+                                          title1: "Coordonées",
+                                          title2: " outil",
+                                          child: CoordoneesOutilSansBouton(),
+                                        )),
+                                    Flexible(
+                                        flex: 2,
+                                        child: Window(
+                                          title1: "Vitesse",
+                                          title2: " demandée",
+                                          child: Center(
+                                              child: Text(
+                                                  "${global.machineObjectModel.result?.move?.currentMove?.requestedSpeed.toString() ?? "..."} mm/s")),
+                                        )),
+                                  ],
+                                ),
+                              )),
+                          Flexible(
+                            flex: 2,
+                            child: Container(
+                              height: double.infinity,
+                              //color: Colors.white,
+                              margin: EdgeInsets.all(0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Flexible(
+                                    flex: 1,
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      //color: Colors.pink,
+                                      child: Column(
+                                        children: [
+                                          Flexible(
+                                              flex: 1,
+                                              child: Container(
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                child: CoefVitesse(),
+                                              )),
+                                          Flexible(
+                                              flex: 1,
+                                              child: Container(
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                child: BabyStepZ(),
+                                              ))
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      child: VitesseBroche(),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 50.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    String tempStatus = global
+                                            .machineObjectModel
+                                            .result
+                                            ?.state
+                                            ?.status
+                                            .toString() ??
+                                        "";
+                                    if (tempStatus == "paused") {
+                                      await API_Manager().sendGcodeCommand(
+                                          "M3 P0 S$SpindleSpeedBeforePause");
+                                      API_Manager().sendGcodeCommand("M24");
+                                    } else {
+                                      SpindleSpeedBeforePause = global
+                                          .machineObjectModel
+                                          .result
+                                          ?.spindles?[0]
+                                          ?.current;
+                                      API_Manager().sendGcodeCommand("M5");
+                                      API_Manager().sendGcodeCommand("M25");
+                                    }
+                                    setState(() {});
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF2B519B)),
+                                  child: Row(
+                                    children: [
+                                      Flexible(
+                                        flex: 2,
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          height: double.infinity,
+                                          decoration: BoxDecoration(
+                                              color: global.machineObjectModel
+                                                          .result?.state?.status
+                                                          .toString() ==
+                                                      "paused"
+                                                  ? Colors.orange
+                                                  : Colors.grey,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(20))),
+                                        ),
+                                      ),
+                                      Flexible(
+                                          flex: 20,
+                                          child: Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text('Pause Cycle'),
+                                          )),
                                     ],
                                   ),
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                              flex: 1,
+                              child: Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: ElevatedButton(
+                                  onPressed: global.machineObjectModel.result
+                                              ?.state?.status
+                                              .toString() ==
+                                          "paused"
+                                      ? () {
+                                          API_Manager().sendGcodeCommand("M0");
+                                          API_Manager()
+                                              .sendGcodeCommand("M106 P3 S0");
+                                        }
+                                      : null,
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFFCE711A)),
+                                  child: Row(
+                                    children: [
+                                      Flexible(
+                                        flex: 2,
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          height: double.infinity,
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(20))),
+                                        ),
+                                      ),
+                                      Flexible(
+                                          flex: 20,
+                                          child: Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text('Stop Cycle'),
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                                flex: 1,
+                                child: Container(
+                                  height: double.infinity,
                                 )),
+                            Flexible(
+                                flex: 1,
+                                child: Container(
+                                  height: double.infinity,
+                                )),
+                            Flexible(
+                              flex: 2,
+                              child: Container(
+                                height: double.infinity,
+                                child: ArretUrgence(
+                                  notifyParent: () {},
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      Flexible(
-                          flex: 2,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 50.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(5.0),
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        String tempStatus = global
-                                                .machineObjectModel
-                                                .result
-                                                ?.state
-                                                ?.status
-                                                .toString() ??
-                                            "";
-                                        if (tempStatus == "paused") {
-                                          await API_Manager().sendGcodeCommand(
-                                              "M3 P0 S$SpindleSpeedBeforePause");
-                                          API_Manager().sendGcodeCommand("M24");
-                                        } else {
-                                          SpindleSpeedBeforePause = global
-                                              .machineObjectModel
-                                              .result
-                                              ?.spindles?[0]
-                                              ?.current;
-                                          API_Manager().sendGcodeCommand("M5");
-                                          API_Manager().sendGcodeCommand("M25");
-                                        }
-                                        setState(() {});
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color(0xFF2B519B)),
-                                      child: Row(
-                                        children: [
-                                          Flexible(
-                                            flex: 2,
-                                            child: Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 10),
-                                              height: double.infinity,
-                                              decoration: BoxDecoration(
-                                                  color: global
-                                                              .machineObjectModel
-                                                              .result
-                                                              ?.state
-                                                              ?.status
-                                                              .toString() ==
-                                                          "paused"
-                                                      ? Colors.orange
-                                                      : Colors.grey,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(20))),
-                                            ),
-                                          ),
-                                          Flexible(
-                                              flex: 20,
-                                              child: Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('Pause Cycle'),
-                                              )),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(5.0),
-                                    child: ElevatedButton(
-                                      onPressed: global.machineObjectModel
-                                                  .result?.state?.status
-                                                  .toString() ==
-                                              "paused"
-                                          ? () {
-                                              API_Manager()
-                                                  .sendGcodeCommand("M0");
-                                              API_Manager().sendGcodeCommand(
-                                                  "M106 P3 S0");
-                                            }
-                                          : null,
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color(0xFFCE711A)),
-                                      child: Row(
-                                        children: [
-                                          Flexible(
-                                            flex: 2,
-                                            child: Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 10),
-                                              height: double.infinity,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.grey,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(20))),
-                                            ),
-                                          ),
-                                          Flexible(
-                                              flex: 20,
-                                              child: Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('Stop Cycle'),
-                                              )),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                    flex: 1,
-                                    child: Container(
-                                      height: double.infinity,
-                                    )),
-                                Flexible(
-                                    flex: 1,
-                                    child: Container(
-                                      height: double.infinity,
-                                    )),
-                                Flexible(
-                                    flex: 2,
-                                    child: Container(
-                                      height: double.infinity,
-                                      child: ArretUrgence(
-                                        notifyParent: () {},
-                                      ),
-                                    ),),
-                              ],
-                            ),
-                          ),)
-                    ],
-                  ),
-                ),)
+                    )
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),

@@ -118,36 +118,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     Spacer(),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Color(0xFF707585),
-                      ),
-                      onPressed: () => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: Text(global.Title),
-                          content: RichText(
-                            text: const TextSpan(
-                              text: 'Features :\n',
-                              style: TextStyle(
-                                decoration: TextDecoration.underline,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: "to",
-                                )
-                              ],
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, 'Fermer'),
-                              child: const Text('Fermer'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      child: Text(global.Title),
+                    Text(
+                      global.Title,
+                      style: TextStyle(color: Color(0xFF707585)),
                     ),
                     Spacer(),
                     ElevatedButton(

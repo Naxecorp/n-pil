@@ -123,6 +123,9 @@ class AdminScreenState extends State<AdminScreen>
 
   @override
   void initState() {
+    API_Manager()
+        .getfileListSys()
+        .then((value) => global.ListofSysFile = value);
     if (!global.AdminLogged) {
       Future.delayed(Duration(milliseconds: 500), () {
         AdminModeLogger();

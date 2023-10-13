@@ -24,8 +24,11 @@ class VitesseBrocheState extends State<VitesseBroche> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    sliderValue = global.machineObjectModel.result?.spindles?[0].current ?? 0.1;
-    sliderValue = sliderValue / 24000;
+    Timer(Duration(milliseconds: 2500), () {
+      sliderValue =
+          global.machineObjectModel.result?.spindles?[0].current ?? 0.1;
+      sliderValue = sliderValue / 24000;
+    });
   }
 
   @override
@@ -101,47 +104,44 @@ class VitesseBrocheState extends State<VitesseBroche> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  if ((sliderValue * 24000) >= 250)
-                                    sliderValue =
-                                        ((sliderValue * 24000 - 250) / 24000);
-                                  if (sliderValue * 24000 > 12000) {
-                                    API_Manager()
-                                        .sendGcodeCommand("M5 P0")
-                                        .then((value) {
-                                      API_Manager()
-                                          .sendGcodeCommand(
-                                              "M3 P0 S${sliderValue * 24000}")
-                                          .then((value) {
-                                        setState(() {});
-                                      });
-                                    });
-                                  }
+                            onPressed: () {
+                              setState(() {
+                                if ((sliderValue * 24000) >= 250)
+                                  sliderValue =
+                                      ((sliderValue * 24000 - 250) / 24000);
+                                API_Manager()
+                                    .sendGcodeCommand("M5 P0")
+                                    .then((value) {
+                                  API_Manager()
+                                      .sendGcodeCommand(
+                                          "M3 P0 S${sliderValue * 24000}")
+                                      .then((value) {
+                                    setState(() {});
+                                  });
                                 });
-                              },
-                              child: const Text(
-                                "-",
-                                style: TextStyle(
-                                    fontSize: 60, color: Colors.black26),
-                              )),
+                              });
+                            },
+                            child: const Text(
+                              "-",
+                              style: TextStyle(
+                                  fontSize: 60, color: Colors.black26),
+                            ),
+                          ),
                           Slider(
                               activeColor: const Color(0xFF20917F),
                               inactiveColor:
                                   const Color(0xFF20917F).withOpacity(0.2),
                               onChangeEnd: (double value) {
-                                if (sliderValue * 24000 > 12000) {
+                                API_Manager()
+                                    .sendGcodeCommand("M5 P0")
+                                    .then((value) {
                                   API_Manager()
-                                      .sendGcodeCommand("M5 P0")
+                                      .sendGcodeCommand(
+                                          "M3 P0 S${sliderValue * 24000}")
                                       .then((value) {
-                                    API_Manager()
-                                        .sendGcodeCommand(
-                                            "M3 P0 S${sliderValue * 24000}")
-                                        .then((value) {
-                                      setState(() {});
-                                    });
+                                    setState(() {});
                                   });
-                                }
+                                });
                               },
                               value: sliderValue,
                               onChanged: (double value) {
@@ -150,30 +150,29 @@ class VitesseBrocheState extends State<VitesseBroche> {
                                 });
                               }),
                           TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  if ((sliderValue * 24000) < 24000)
-                                    sliderValue =
-                                        ((sliderValue * 24000 + 250) / 24000);
-                                  if (sliderValue * 24000 > 12000) {
-                                    API_Manager()
-                                        .sendGcodeCommand("M5 P0")
-                                        .then((value) {
-                                      API_Manager()
-                                          .sendGcodeCommand(
-                                              "M3 P0 S${sliderValue * 24000}")
-                                          .then((value) {
-                                        setState(() {});
-                                      });
-                                    });
-                                  }
+                            onPressed: () {
+                              setState(() {
+                                if ((sliderValue * 24000) < 24000)
+                                  sliderValue =
+                                      ((sliderValue * 24000 + 250) / 24000);
+                                API_Manager()
+                                    .sendGcodeCommand("M5 P0")
+                                    .then((value) {
+                                  API_Manager()
+                                      .sendGcodeCommand(
+                                          "M3 P0 S${sliderValue * 24000}")
+                                      .then((value) {
+                                    setState(() {});
+                                  });
                                 });
-                              },
-                              child: const Text(
-                                "+",
-                                style: TextStyle(
-                                    fontSize: 50, color: Colors.black26),
-                              )),
+                              });
+                            },
+                            child: const Text(
+                              "+",
+                              style: TextStyle(
+                                  fontSize: 50, color: Colors.black26),
+                            ),
+                          ),
                         ],
                       )
                     ],

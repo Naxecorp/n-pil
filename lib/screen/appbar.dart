@@ -69,39 +69,9 @@ class GlobalAppBarState extends State<GlobalAppBar> {
                     ),
                   ),
                   Spacer(),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: Color(0xFF707585),
-                    ),
-                    onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: Text(global.DefaultTitle),
-                        content: RichText(
-                          text: TextSpan(
-                            text: 'Features :\n',
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
-                            ),
-                            children: const <TextSpan>[
-                              TextSpan(
-                                text: "Text\n\n",
-                              ),
-                              TextSpan(
-                                text: "Fix :",
-                              )
-                            ],
-                          ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, 'Fermer'),
-                            child: const Text('Fermer'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    child: Text(global.DefaultTitle),
+                  Text(
+                    global.Title,
+                    style: TextStyle(color: Color(0xFF707585)),
                   ),
                 ],
               ))),
