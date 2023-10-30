@@ -98,7 +98,7 @@ class MyApp extends StatelessWidget {
         //'/setpos':(context) => SetPos(),
       },
       title: 'Naxe N02',
-      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'RobotoMono'),
+      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Roboto'),
       //home: const MyHomePage(title: 'Version 1.0.2'),
       debugShowCheckedModeBanner: false,
     );

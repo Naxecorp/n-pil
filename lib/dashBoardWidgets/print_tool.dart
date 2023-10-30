@@ -106,15 +106,11 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                         onPressed: () {
                                           setState(() {
                                             API_Manager()
-                                                .sendGcodeCommand("M5 P0")
+                                                .sendGcodeCommand(
+                                                    "M104 S${TemperatureValueController.text}")
                                                 .then((value) {
-                                              API_Manager()
-                                                  .sendGcodeCommand(
-                                                      "M3 P0 S${TemperatureValueController.text}")
-                                                  .then((value) {
-                                                TemperatureValueController
-                                                    .clear();
-                                              });
+                                              TemperatureValueController
+                                                  .clear();
                                             });
                                           });
                                         },
@@ -206,15 +202,11 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                         onPressed: () {
                                           setState(() {
                                             API_Manager()
-                                                .sendGcodeCommand("M5 P0")
+                                                .sendGcodeCommand(
+                                                    "M109 S${TemperatureValueController.text}")
                                                 .then((value) {
-                                              API_Manager()
-                                                  .sendGcodeCommand(
-                                                      "M3 P0 S${TemperatureValueController.text}")
-                                                  .then((value) {
-                                                TemperatureValueController
-                                                    .clear();
-                                              });
+                                              TemperatureValueController
+                                                  .clear();
                                             });
                                           });
                                         },

@@ -31,11 +31,11 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
   Widget build(BuildContext context) {
     //global.machineObjectModel.result?.move?.axes?.elementAt(0)!.machinePosition?.toStringAsFixed(2) ?? "...",
     return Container(
-        color: const Color(0xFFF0F0F3),
-        child: Container(
-            //margin: EdgeInsets.all(10),
-            //color: Colors.green,
-            child: Row(
+      color: const Color(0xFFF0F0F3),
+      child: Container(
+        //margin: EdgeInsets.all(10),
+        //color: Colors.green,
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Flexible(
@@ -121,48 +121,51 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                   ),
                 )),
             Flexible(
-                flex: 1,
-                child: Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(1),
-                  //color: Colors.green,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Flexible(
-                          flex: 2,
-                          child: FittedBox(
-                              fit: BoxFit.fitHeight,
-                              child: Text(
-                                "Z",
-                                style: TextStyle(
-                                    color: global.objectModelMove.result?.axes
-                                                ?.elementAt(2)
-                                                .homed ==
-                                            false
-                                        ? Colors.red
-                                        : const Color(0xFF707585),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
-                              ))),
-                      Flexible(
-                          flex: 4,
-                          child: FittedBox(
-                              fit: BoxFit.fitHeight,
-                              child: Text(
-                                global.machineObjectModel.result?.move?.axes
-                                        ?.elementAt(2)!
-                                        .machinePosition
-                                        ?.toStringAsFixed(2) ??
-                                    "...",
-                                style: const TextStyle(
-                                    color: Color(0xFF707585), fontSize: 50),
-                              ))),
-                    ],
-                  ),
-                )),
+              flex: 1,
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(1),
+                //color: Colors.green,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Flexible(
+                        flex: 2,
+                        child: FittedBox(
+                            fit: BoxFit.fitHeight,
+                            child: Text(
+                              "Z",
+                              style: TextStyle(
+                                  color: global.objectModelMove.result?.axes
+                                              ?.elementAt(2)
+                                              .homed ==
+                                          false
+                                      ? Colors.red
+                                      : const Color(0xFF707585),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
+                            ))),
+                    Flexible(
+                        flex: 4,
+                        child: FittedBox(
+                            fit: BoxFit.fitHeight,
+                            child: Text(
+                              global.machineObjectModel.result?.move?.axes
+                                      ?.elementAt(2)!
+                                      .machinePosition
+                                      ?.toStringAsFixed(2) ??
+                                  "...",
+                              style: const TextStyle(
+                                  color: Color(0xFF707585), fontSize: 50),
+                            ))),
+                  ],
+                ),
+              ),
+            ),
           ],
-        )));
+        ),
+      ),
+    );
     throw UnimplementedError();
   }
 }
