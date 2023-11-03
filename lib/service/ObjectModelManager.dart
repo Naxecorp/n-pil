@@ -688,7 +688,7 @@ class State {
     List<GpOut?>? gpOut;
     dynamic laserPwm;
     num? msUpTime;
-    Stat? status;
+    String? status;
     dynamic time;
     num? upTime;
 
@@ -711,7 +711,7 @@ class State {
         gpOut: json["gpOut"] == null ? [] : List<GpOut?>.from(json["gpOut"]!.map((x) => x == null ? null : GpOut.fromJson(x))),
         laserPwm: json["laserPwm"],
         msUpTime: json["msUpTime"],
-        status: statValues.map[json["status"]]!,
+        status: json["status"],
         time: json["time"],
         upTime: json["upTime"],
     );
