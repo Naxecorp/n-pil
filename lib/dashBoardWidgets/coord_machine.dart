@@ -48,34 +48,38 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Flexible(
-                          flex: 2,
-                          child: FittedBox(
-                              fit: BoxFit.fitHeight,
-                              child: Text(
-                                "X",
-                                style: TextStyle(
-                                    color: global.objectModelMove.result?.axes
-                                                ?.elementAt(0)
-                                                .homed ==
-                                            false
-                                        ? Colors.redAccent
-                                        : const Color(0xFF707585),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
-                              ))),
+                        flex: 2,
+                        child: FittedBox(
+                          fit: BoxFit.fitHeight,
+                          child: Text(
+                            "X",
+                            style: TextStyle(
+                                color: global.objectModelMove.result?.axes
+                                            ?.elementAt(0)
+                                            .homed ==
+                                        false
+                                    ? Colors.redAccent
+                                    : const Color(0xFF707585),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ),
+                        ),
+                      ),
                       Flexible(
-                          flex: 4,
-                          child: FittedBox(
-                              fit: BoxFit.fitHeight,
-                              child: Text(
-                                global.machineObjectModel.result?.move?.axes
-                                        ?.elementAt(0)!
-                                        .machinePosition
-                                        ?.toStringAsFixed(2) ??
-                                    "...",
-                                style: const TextStyle(
-                                    color: Color(0xFF707585), fontSize: 50),
-                              ))),
+                        flex: 4,
+                        child: FittedBox(
+                          fit: BoxFit.fitHeight,
+                          child: Text(
+                            global.machineObjectModel.result?.move?.axes
+                                    ?.elementAt(0)!
+                                    .machinePosition
+                                    ?.toStringAsFixed(2) ??
+                                "...",
+                            style: const TextStyle(
+                                color: Color(0xFF707585), fontSize: 50),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 )),
@@ -89,21 +93,23 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Flexible(
-                          flex: 2,
-                          child: FittedBox(
-                              fit: BoxFit.fitHeight,
-                              child: Text(
-                                "Y",
-                                style: TextStyle(
-                                    color: global.objectModelMove.result?.axes
-                                                ?.elementAt(1)
-                                                .homed ==
-                                            false
-                                        ? Colors.red
-                                        : const Color(0xFF707585),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
-                              ))),
+                        flex: 2,
+                        child: FittedBox(
+                          fit: BoxFit.fitHeight,
+                          child: Text(
+                            "Y",
+                            style: TextStyle(
+                                color: global.objectModelMove.result?.axes
+                                            ?.elementAt(1)
+                                            .homed ==
+                                        false
+                                    ? Colors.red
+                                    : const Color(0xFF707585),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ),
+                        ),
+                      ),
                       Flexible(
                           flex: 4,
                           child: FittedBox(

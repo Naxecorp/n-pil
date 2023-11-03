@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:nweb/globals_var.dart';
+import 'package:nweb/service/nwc-settings/position.dart';
 
 import 'PalperOutil.dart';
 
@@ -17,6 +18,7 @@ class MachineN02Config {
   int? GlobalMachineUsedTime;
   String? DefaultMode;
   PalpeurOutil? Palpeur;
+  List<Position>? Positions;
 
   MachineN02Config(
       {this.IP,
@@ -24,7 +26,8 @@ class MachineN02Config {
       this.Lastmodifition,
       this.GlobalMachineUsedTime,
       this.DefaultMode,
-      this.Palpeur});
+      this.Palpeur,
+      this.Positions});
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
@@ -33,6 +36,10 @@ class MachineN02Config {
           Lastmodifition: json["lastmodification"],
           GlobalMachineUsedTime: json["GlobalMachineUsedTime"],
           DefaultMode: json["DefaultMode"],
+          Positions: json["Positions"] == null
+              ? []
+              : List<Position>.from(
+                  json["Positions"]!.map((x) => Position.fromJson(x))),
           Palpeur: json["Palpeur"] == null
               ? null
               : PalpeurOutil.fromJson(json["Palpeur"]));
@@ -43,6 +50,9 @@ class MachineN02Config {
         "lastmodification": Lastmodifition,
         "GlobalMachineUsedTime": GlobalMachineUsedTime,
         "DefaultMode": DefaultMode,
+        "Positions": Positions == null
+            ? []
+            : List<dynamic>.from(Positions!.map((x) => x.toJson())),
         "Palpeur": Palpeur!.toJson(),
       };
 }

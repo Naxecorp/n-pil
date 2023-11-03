@@ -80,10 +80,18 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
-                                    children: const [
+                                    children: [
                                       Icon(
                                         Icons.home_filled,
-                                        color: Color(0xFF707585),
+                                        color: global
+                                                    .machineObjectModel
+                                                    .result
+                                                    ?.sensors
+                                                    ?.endstops?[0]
+                                                    .triggered ==
+                                                true
+                                            ? Colors.green
+                                            : Colors.black87,
                                       ),
                                       FittedBox(
                                         fit: BoxFit.contain,
@@ -129,10 +137,18 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
-                                    children: const [
+                                    children: [
                                       Icon(
                                         Icons.home_filled,
-                                        color: Color(0xFF707585),
+                                        color: global
+                                                    .machineObjectModel
+                                                    .result
+                                                    ?.sensors
+                                                    ?.endstops?[1]
+                                                    .triggered ==
+                                                true
+                                            ? Colors.green
+                                            : Colors.black87,
                                       ),
                                       FittedBox(
                                         fit: BoxFit.contain,
@@ -179,10 +195,18 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
-                                    children: const [
+                                    children: [
                                       Icon(
                                         Icons.home_filled,
-                                        color: Color(0xFF707585),
+                                        color: global
+                                                    .machineObjectModel
+                                                    .result
+                                                    ?.sensors
+                                                    ?.endstops?[2]
+                                                    .triggered ==
+                                                true
+                                            ? Colors.green
+                                            : Colors.black87,
                                       ),
                                       FittedBox(
                                         fit: BoxFit.contain,

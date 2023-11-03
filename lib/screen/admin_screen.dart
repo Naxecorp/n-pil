@@ -734,6 +734,21 @@ class AdminScreenState extends State<AdminScreen>
                             },
                             child: Text("Run config.g"),
                           ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (global.AdminLogged) {
+                                API_Manager().upLoadAFile(
+                                    "0:/sys/nwc-settings.json",
+                                    global.MyMachineN02ConfigDeflaut.toJson()
+                                        .length
+                                        .toString(),
+                                    Uint8List.fromList(machineN02ConfigToJson(
+                                            global.MyMachineN02ConfigDeflaut)
+                                        .codeUnits));
+                              }
+                            },
+                            child: Text("Load Default Config"),
+                          ),
                         ],
                       ))
                 ],

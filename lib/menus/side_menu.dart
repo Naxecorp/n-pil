@@ -148,7 +148,7 @@ class _SideMenu extends State<SideMenu> {
               ),
             ),
           ),
-/*          Padding(
+          Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
               color: pageToShow == 8 ? Color(0xFF9A9A9A) : Colors.white,
@@ -158,7 +158,7 @@ class _SideMenu extends State<SideMenu> {
                   Navigator.pushNamed(context, '/setpos');
                 },
                 leading: Icon(
-                  Icons.play_arrow_sharp,
+                  Icons.radar,
                   color: pageToShow == 8 ? Colors.white : Color(0xFF9A9A9A),
                 ),
                 title: Text(
@@ -169,7 +169,7 @@ class _SideMenu extends State<SideMenu> {
                 ),
               ),
             ),
-          ),*/
+          ),
           Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),

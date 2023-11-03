@@ -11,6 +11,7 @@ import 'screen/job_screen.dart';
 import 'screen/origin_screen.dart';
 import 'screen/parametre_screen.dart';
 import 'screen/programme_screen.dart';
+import 'screen/set_pos.dart';
 import 'service/API/API_Manager.dart';
 import 'globals_var.dart' as global;
 import 'screen/screens.dart';
@@ -95,7 +96,7 @@ class MyApp extends StatelessWidget {
         '/parameters': (context) => ParametreScreen(),
         '/admin': (context) => AdminScreen(),
         '/editor': (context) => EditorPage(),
-        //'/setpos':(context) => SetPos(),
+        '/setpos': (context) => SetPos(),
       },
       title: 'Naxe N02',
       theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Roboto'),
