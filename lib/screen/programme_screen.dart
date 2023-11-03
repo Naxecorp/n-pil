@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'dart:html' as html;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,12 +28,12 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
   late AnimationController ProgressBarcontroller;
   bool isLoading = false;
 
-  void downloadFile(String urlBase, String FileName) {
-    html.AnchorElement anchorElement =
-        html.AnchorElement(href: urlBase + FileName);
-    anchorElement.download = 'test.gcode';
-    anchorElement.click();
-  }
+  // void downloadFile(String urlBase, String FileName) {
+  //   html.AnchorElement anchorElement =
+  //       html.AnchorElement(href: urlBase + FileName);
+  //   anchorElement.download = 'test.gcode';
+  //   anchorElement.click();
+  // }
 
   @override
   void initState() {
@@ -289,12 +288,12 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                           child: ElevatedButton(
                             child: Text('Télécharger Programme'),
                             onPressed: () {
-                              downloadFile(
-                                  "http://${global.MyMachineN02Config.IP}/rr_download?name=0:/gcodes/",
-                                  ListofGcodeFile!
-                                      .elementAt(selectedGcodeFileIndex)!
-                                      .name
-                                      .toString());
+                              // downloadFile(
+                              //     "http://${global.MyMachineN02Config.IP}/rr_download?name=0:/gcodes/",
+                              //     ListofGcodeFile!
+                              //         .elementAt(selectedGcodeFileIndex)!
+                              //         .name
+                              //         .toString());
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blueAccent),

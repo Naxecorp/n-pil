@@ -26,7 +26,7 @@ class VitesseBrocheState extends State<VitesseBroche> {
     super.initState();
     Timer(Duration(milliseconds: 2500), () {
       sliderValue =
-          global.machineObjectModel.result?.spindles?[0].current ?? 0.1;
+          global.machineObjectModel.result?.spindles?[0].current?.toDouble() ?? 0.1;
       sliderValue = sliderValue / 24000;
     });
   }

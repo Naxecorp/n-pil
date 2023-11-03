@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'dart:html' as html;
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +50,7 @@ class JobScreenState extends State<JobScreen> {
     });
 
     sliderValue =
-        global.machineObjectModel.result?.spindles?[0].current ?? 24000;
+        global.machineObjectModel.result?.spindles?[0].current?.toDouble() ?? 24000;
     sliderValue = sliderValue / 24000;
     sliderValueSpeedFactor = global.objectModelMove.result?.speedFactor ?? 2;
     sliderValueSpeedFactor = sliderValueSpeedFactor / 2;
@@ -464,7 +464,7 @@ class JobScreenState extends State<JobScreen> {
                                           .machineObjectModel
                                           .result
                                           ?.spindles?[0]
-                                          ?.current;
+                                          ?.current?.toDouble();
                                       API_Manager().sendGcodeCommand("M5");
                                       API_Manager().sendGcodeCommand("M25");
                                     }
