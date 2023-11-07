@@ -19,7 +19,7 @@ import 'service/system/SystemsFilesElement.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.3.0"; // demarrage Jean + Nettoyage 1 fichier/class
+String version = "Version 1.3.1"; 
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -34,7 +34,7 @@ MachineMode machineMode = MachineMode.unknow;
 
 MachineN02Config MyMachineN02Config = MachineN02Config(
     Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
-    IP: "192.168.1.73",
+    IP: "192.168.1.78",
     GlobalMachineUsedTime: 0,
     email: "jordan.fortel@naxe.fr",
     DefaultMode: "CNC",
@@ -46,7 +46,7 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
 
 MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
-    IP: "192.168.1.73",
+    IP: "192.168.1.78",
     GlobalMachineUsedTime: 0,
     email: "defaultconfig",
     DefaultMode: "CNC",
@@ -64,8 +64,7 @@ List<SysFileElement?>? ListofSysFile = [];
 
 List<String> ReplyList = [];
 
-StreamController<MachineObjectModel> controllerMachineObjectModel =
-    StreamController<MachineObjectModel>.broadcast();
+StreamController<MachineObjectModel> controllerMachineObjectModel = StreamController<MachineObjectModel>.broadcast();
 Stream streamMachineObjectModel = controllerMachineObjectModel.stream;
 
 String ContentofFileToEdit = "";
@@ -75,4 +74,13 @@ double Accel = 250;
 double SpeedValue = 3700;
 double Jerk = 350;
 
+double ExtrudeFactor = 100;
+double VentilatorFan = 0;
+
+
+
 String progName = "";
+
+
+StreamController<List<String>> controllerContentGcodeToDisplay = StreamController<List<String>>.broadcast();
+Stream streamcontrollerContentGcodeToDisplay = controllerContentGcodeToDisplay.stream;

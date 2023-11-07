@@ -69,25 +69,23 @@ class EditorPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Editeur de fichier"),
       ),
-      body: SingleChildScrollView(
-        child: CodeEditor(
-          model: model, // the model created above, not required since 1.0.0
-          edit: true, // can edit the files? by default true
-          onSubmit: (String? language, String? value) {
-            API_Manager().upLoadAFile(
-                "0:/sys/" +
-                    global.ListofSysFile!
-                        .elementAt(global.selectedFileSysIndex)!
-                        .name
-                        .toString(),
-                ContentofFileToEdit!.length.toString(),
-                Uint8List.fromList(value!.codeUnits));
-          },
-          disableNavigationbar:
-              false, // hide the navigation bar ? by default false
-          textEditingController:
-              myController, // Provide an optional, custom TextEditingController.
-        ),
+      body: CodeEditor(
+        model: model, // the model created above, not required since 1.0.0
+        edit: true, // can edit the files? by default true
+        onSubmit: (String? language, String? value) {
+          API_Manager().upLoadAFile(
+              "0:/sys/" +
+                  global.ListofSysFile!
+                      .elementAt(global.selectedFileSysIndex)!
+                      .name
+                      .toString(),
+              ContentofFileToEdit!.length.toString(),
+              Uint8List.fromList(value!.codeUnits));
+        },
+        disableNavigationbar:
+            false, // hide the navigation bar ? by default false
+        textEditingController:
+            myController, // Provide an optional, custom TextEditingController.
       ),
     );
   }

@@ -131,16 +131,13 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                     child: NeumorphicButton(
                       margin: const EdgeInsets.all(15),
                       style: NeumorphicStyle(
-                        depth: global.machineObjectModel.result!.fans![3]!
-                                    .actualValue! >
-                                0
+                        depth: (global.machineObjectModel.result?.fans?[3]!.actualValue ?? 0) >= 0
                             ? -5
                             : 5, //SpindleFanIsOn?-10:10,
                         color: const Color(0xFFF0F0F3),
                       ),
                       onPressed: () {
-                        if (global.machineObjectModel.result!.fans![3]!
-                                .actualValue! >
+                        if ((global.machineObjectModel.result?.fans?[3]!.actualValue ?? 0) >
                             0)
                           API_Manager()
                               .sendGcodeCommand("M106 P3 S0")
@@ -175,16 +172,16 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                     child: NeumorphicButton(
                       margin: const EdgeInsets.all(15),
                       style: NeumorphicStyle(
-                        depth: global.machineObjectModel.result!.spindles![0]!
-                                    .current! >
+                        depth: ((global.machineObjectModel.result?.spindles?[0]
+                                    .current)?? 0.0) >
                                 0
                             ? -5
                             : 5, //SpindleFanIsOn?-10:10,
                         color: const Color(0xFFF0F0F3),
                       ),
                       onPressed: () {
-                        if (global.machineObjectModel.result!.spindles![0]!
-                                .current ==
+                        if (((global.machineObjectModel.result?.spindles?[0]
+                                    .current)?? 0.0) ==
                             0)
                           API_Manager().sendGcodeCommand("M5 P0").then((value) {
                             API_Manager().sendGcodeCommand(
@@ -217,16 +214,16 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                     child: NeumorphicButton(
                       margin: const EdgeInsets.all(15),
                       style: NeumorphicStyle(
-                        depth: global.machineObjectModel.result!.spindles![0]!
-                                    .current! >
+                        depth: ((global.machineObjectModel.result?.spindles?[0]
+                                    .current)?? 0.0) >
                                 0
                             ? 5
                             : -5, //SpindleFanIsOn?-10:10,
                         color: const Color(0xFFF0F0F3),
                       ),
                       onPressed: () {
-                        if (global.machineObjectModel.result!.spindles![0]!
-                                .current! >
+                        if (((global.machineObjectModel.result?.spindles?[0]
+                                    .current)?? 0.0) >
                             0)
                           API_Manager().sendGcodeCommand("M5 P0").then((value) {
                             setState(() {});

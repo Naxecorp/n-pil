@@ -24,11 +24,39 @@ class ParametreScreen extends StatefulWidget {
 
 class ParametreScreenState extends State<ParametreScreen> {
   final TextEditingController _controllers = TextEditingController();
+  Duration usedTime = new Duration();
+
+  static String formatDuration(Duration d) {
+    var seconds = d.inSeconds;
+    final days = seconds~/Duration.secondsPerDay;
+    seconds -= days*Duration.secondsPerDay;
+    final hours = seconds~/Duration.secondsPerHour;
+    seconds -= hours*Duration.secondsPerHour;
+    final minutes = seconds~/Duration.secondsPerMinute;
+    seconds -= minutes*Duration.secondsPerMinute;
+
+    final List<String> tokens = [];
+    if (days != 0) {
+      tokens.add('${days}d');
+    }
+    if (tokens.isNotEmpty || hours != 0){
+      tokens.add('${hours}h');
+    }
+    if (tokens.isNotEmpty || minutes != 0) {
+      tokens.add('${minutes}m');
+    }
+    tokens.add('${seconds}s');
+
+    return tokens.join(':');
+  }
 
   @override
   initState() {
     super.initState();
     onReceivedData();
+    global.streamMachineObjectModel.listen((value) {
+      setState(() {});
+    });
   }
 
   void saveConfig() {
@@ -59,7 +87,7 @@ class ParametreScreenState extends State<ParametreScreen> {
             Flexible(
                 flex: 2,
                 child:
-                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
+                    Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
                 flex: 10,
                 child: Container(
@@ -121,21 +149,29 @@ class ParametreScreenState extends State<ParametreScreen> {
                           title2: " généraux",
                           child: ListView(
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 500,
-                                    child: Text(
-                                      "Temps d'utilisation global : ${Duration(minutes: global.MyMachineN02Config.GlobalMachineUsedTime!).inDays}:${Duration(minutes: global.MyMachineN02Config.GlobalMachineUsedTime!).inHours}:${Duration(minutes: global.MyMachineN02Config.GlobalMachineUsedTime!).inMinutes}",
-                                      style: TextStyle(
-                                        color: Colors.black26,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
+                              Container(
+                                width: 500,
+                                child: Text(
+                                  "Temps d'utilisation depuis Reset : ${formatDuration(Duration(seconds :(global.machineObjectModel.result?.state?.upTime?.toInt()??0)))}",
+                                  style: TextStyle(
+                                    color: Colors.black26,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
                                   ),
-                                ],
+                                ),
                               ),
+                              Container(
+                                width: 500,
+                                child: Text(
+                                  "Temps d'utilisation globale : ${formatDuration(Duration(minutes :(global.MyMachineN02Config.GlobalMachineUsedTime??0)))}",
+                                  style: TextStyle(
+                                    color: Colors.black26,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            
                             ],
                           ),
                         ),

@@ -5,6 +5,8 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nweb/dashBoardWidgets/laser_power.dart';
+import 'package:nweb/dashBoardWidgets/print_tool.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
@@ -44,15 +46,13 @@ class JobScreenState extends State<JobScreen> {
   @override
   void initState() {
     super.initState();
-
     global.streamMachineObjectModel.listen((value) {
       setState(() {});
     });
 
-    sliderValue =
-        global.machineObjectModel.result?.spindles?[0].current?.toDouble() ?? 24000;
+    sliderValue = global.machineObjectModel.result?.spindles?[0].current?.toDouble() ?? 24000;
     sliderValue = sliderValue / 24000;
-    sliderValueSpeedFactor = global.objectModelMove.result?.speedFactor ?? 2;
+    sliderValueSpeedFactor = global.objectModelMove.result?.speedFactor?.toDouble() ?? 2;
     sliderValueSpeedFactor = sliderValueSpeedFactor / 2;
   }
 
@@ -73,7 +73,7 @@ class JobScreenState extends State<JobScreen> {
             Flexible(
                 flex: 2,
                 child:
-                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
+                    Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
                 flex: 10,
                 child: Container(
@@ -164,9 +164,9 @@ class JobScreenState extends State<JobScreen> {
                       flex: 6,
                       child: Column(
                         children: [
-                          Flexible(flex: 1, child: JobInfo()),
+                          Flexible(flex: 80, child: JobInfo()),
                           Flexible(
-                              flex: 1,
+                              flex: 50,
                               child: Container(
                                 height: double.infinity,
                                 //color: Colors.white,
@@ -205,7 +205,12 @@ class JobScreenState extends State<JobScreen> {
                                                         "???",
                                                     style: TextStyle(
                                                         color:
-                                                            Color(0xFF707585))),
+                                                            global
+                                                            .machineObjectModel
+                                                            .result
+                                                            ?.state
+                                                            ?.status
+                                                            .toString() == "pausing"?Colors.yellowAccent:Color(0xFF707585))),
                                               ],
                                             ),
                                           )),
@@ -344,7 +349,7 @@ class JobScreenState extends State<JobScreen> {
                                 ),
                               )),
                           Flexible(
-                              flex: 1,
+                              flex: 70,
                               child: Container(
                                 height: double.infinity,
                                 //color: Colors.white,
@@ -356,7 +361,7 @@ class JobScreenState extends State<JobScreen> {
                                 ),
                               )),
                           Flexible(
-                              flex: 1,
+                              flex: 70,
                               child: Container(
                                 height: double.infinity,
                                 //color: Colors.white,
@@ -385,7 +390,7 @@ class JobScreenState extends State<JobScreen> {
                                 ),
                               )),
                           Flexible(
-                            flex: 2,
+                            flex: 260,
                             child: Container(
                               height: double.infinity,
                               //color: Colors.white,
@@ -425,7 +430,7 @@ class JobScreenState extends State<JobScreen> {
                                     child: Container(
                                       width: double.infinity,
                                       height: double.infinity,
-                                      child: VitesseBroche(),
+                                      child: (global.machineMode == global.MachineMode.cnc) ? VitesseBroche():(global.machineMode == global.MachineMode.fff)?PrintToolsTemperature():LaserToolPower(),
                                     ),
                                   )
                                 ],
@@ -456,17 +461,9 @@ class JobScreenState extends State<JobScreen> {
                                             .toString() ??
                                         "";
                                     if (tempStatus == "paused") {
-                                      await API_Manager().sendGcodeCommand(
-                                          "M3 P0 S$SpindleSpeedBeforePause");
                                       API_Manager().sendGcodeCommand("M24");
-                                    } else {
-                                      SpindleSpeedBeforePause = global
-                                          .machineObjectModel
-                                          .result
-                                          ?.spindles?[0]
-                                          ?.current?.toDouble();
-                                      API_Manager().sendGcodeCommand("M5");
-                                      API_Manager().sendGcodeCommand("M25");
+                                    } else {                                     
+                                      API_Manager().sendGcodeCommand("M25").then((value) => API_Manager().sendrr_reply().then((response) => global.ReplyList.add(response)));
                                     }
                                     setState(() {});
                                   },
@@ -485,7 +482,11 @@ class JobScreenState extends State<JobScreen> {
                                                           .result?.state?.status
                                                           .toString() ==
                                                       "paused"
-                                                  ? Colors.orange
+                                                  ? Colors.orange:global.machineObjectModel
+                                                          .result?.state?.status
+                                                          .toString() ==
+                                                      "pausing"
+                                                  ?Colors.yellowAccent
                                                   : Colors.grey,
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(20))),

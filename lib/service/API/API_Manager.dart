@@ -401,7 +401,6 @@ class API_Manager {
           .timeout(Duration(seconds: 1));
       global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
-        print(response.body);
         return response.body;
       } else {
         print(

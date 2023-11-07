@@ -34,17 +34,17 @@ class ObjectModelJob {
 
 class Result {
   Build? build;
-  int? duration;
+  num? duration;
   FileClass? file;
-  int? filePosition;
+  num? filePosition;
   dynamic lastDuration;
   dynamic lastFileName;
   dynamic layer;
   dynamic layerTime;
-  int? pauseDuration;
-  int? rawExtrusion;
+  num? pauseDuration;
+  num? rawExtrusion;
   TimesLeft? timesLeft;
-  int? warmUpDuration;
+  num? warmUpDuration;
 
   Result({
     this.build,
@@ -93,7 +93,7 @@ class Result {
 }
 
 class Build {
-  int? currentObject;
+  num? currentObject;
   bool? m486Names;
   bool? m486Numbers;
   List<dynamic>? objects;
@@ -126,11 +126,11 @@ class FileClass {
   dynamic generatedBy;
   double? height;
   DateTime? lastModified;
-  int? layerHeight;
-  int? numLayers;
+  num? layerHeight;
+  num? numLayers;
   dynamic printTime;
   dynamic simulatedTime;
-  int? size;
+  num? size;
   List<dynamic>? thumbnails;
 
   FileClass({
@@ -178,7 +178,7 @@ class FileClass {
 
 class TimesLeft {
   dynamic filament;
-  int? file;
+  num? file;
   dynamic slicer;
 
   TimesLeft({

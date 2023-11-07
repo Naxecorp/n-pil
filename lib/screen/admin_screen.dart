@@ -90,19 +90,6 @@ class AdminScreenState extends State<AdminScreen>
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
-                          child: Text("Connecter"),
-                          onPressed: () {
-                            if (MDP.text == global.pwd) {
-                              global.AdminLogged = true;
-                              global.Title = "ADMIN MODE | $version";
-                              Navigator.pop(context, '/admin');
-                            }
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
                           child: Text("Dashboard"),
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueGrey,
@@ -221,7 +208,7 @@ class AdminScreenState extends State<AdminScreen>
     API_Manager().sendGcodeCommand("G1 H3 X-10"); //2
     await Future.delayed(Duration(seconds: 6));
     double init =
-        global.machineObjectModel.result!.move!.axes![0].userPosition!; //3
+        global.machineObjectModel.result!.move!.axes![0].userPosition!.toDouble(); //3
     print(init);
     API_Manager().sendGcodeCommand("G1 X170 F3000"); //4
     for (int i = 0; i < 10; i++) {
@@ -231,7 +218,7 @@ class AdminScreenState extends State<AdminScreen>
     API_Manager().sendGcodeCommand("G1 H3 X-500 F500");
     await Future.delayed(Duration(seconds: 45));
     double after =
-        global.machineObjectModel.result!.move!.axes![0].userPosition!; //7
+        global.machineObjectModel.result!.move!.axes![0].userPosition!.toDouble(); //7
     if (after < (init - 0.5) || after > (init + 0.5)) {
       badDiag(context);
     } else {
@@ -244,7 +231,7 @@ class AdminScreenState extends State<AdminScreen>
     API_Manager().sendGcodeCommand("G1 H3 Y-10"); //2
     await Future.delayed(Duration(seconds: 6));
     double init =
-        global.machineObjectModel.result!.move!.axes![1].userPosition!; //3
+        global.machineObjectModel.result!.move!.axes![1].userPosition!.toDouble(); //3
     print(init);
     await API_Manager().sendGcodeCommand("G1 Y170 F3000"); //4
     for (int i = 0; i < 10; i++) {
@@ -255,7 +242,7 @@ class AdminScreenState extends State<AdminScreen>
 
     await Future.delayed(Duration(seconds: 45));
     double after =
-        global.machineObjectModel.result!.move!.axes![1].userPosition!; //7
+        global.machineObjectModel.result!.move!.axes![1].userPosition!.toDouble(); //7
     if (after < (init - 0.5) || after > (init + 0.5)) {
       badDiag(context);
       API_Manager().sendGcodeCommand("G1 Y0");
@@ -364,7 +351,7 @@ class AdminScreenState extends State<AdminScreen>
             Flexible(
                 flex: 2,
                 child:
-                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
+                    Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
                 flex: 10,
                 child: Container(

@@ -115,7 +115,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                               fit: BoxFit.fitHeight,
                               child: Text(
                                 global.machineObjectModel.result?.move?.axes
-                                        ?.elementAt(1)!
+                                        ?.elementAt(1)
                                         .machinePosition
                                         ?.toStringAsFixed(2) ??
                                     "...",

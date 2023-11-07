@@ -24,7 +24,7 @@ class CoefVitesseState extends State<CoefVitesse> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    sliderValueSpeedFactor = global.objectModelMove.result?.speedFactor ?? 2;
+    sliderValueSpeedFactor = global.objectModelMove.result?.speedFactor?.toDouble() ?? 2;
     sliderValueSpeedFactor = sliderValueSpeedFactor / 2;
   }
 
