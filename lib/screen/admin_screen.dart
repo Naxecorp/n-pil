@@ -435,7 +435,7 @@ class AdminScreenState extends State<AdminScreen>
                             child: Text('Diagnostique X'),
                             onPressed: () {
                               if (global.AdminLogged) {
-                                popupDiagnostiqueX(context);
+                                API_Manager().sendGcodeCommand('M98 P"diagX.g"');
                               } else
                                 null;
                             },
@@ -454,7 +454,7 @@ class AdminScreenState extends State<AdminScreen>
                             child: Text('Diagnostique Y'),
                             onPressed: () {
                               if (global.AdminLogged) {
-                                popupDiagnostiqueY(context);
+                                API_Manager().sendGcodeCommand('M98 P"diagY.g"');
                               } else
                                 null;
                             },
@@ -736,6 +736,16 @@ class AdminScreenState extends State<AdminScreen>
                             },
                             child: Text("Load Default Config"),
                           ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (global.AdminLogged) {
+                                await API_Manager().sendGcodeCommand("M905 P${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} S${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}");
+                                API_Manager().sendGcodeCommand("M98 P${global.ListofSysFile?.elementAt(global.selectedFileSysIndex)?.name}").then((value) => API_Manager().sendrr_reply().then((response) => global.ReplyList.add(response)));
+                              }
+                            },
+                            child: Text("Execute macro"),
+                          ),
+                        
                         ],
                       ))
                 ],

@@ -32,7 +32,6 @@ class API_Manager {
           .timeout(Duration(seconds: 1));
       global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
-        print(response.body);
         final MachineObjectModel Machine =
             machineObjectModelFromJson(response.body);
         return Machine;
@@ -331,6 +330,7 @@ class API_Manager {
 
     var uri = Uri.parse(
         'http://${global.MyMachineN02Config.IP}/rr_upload?name=$path');
+        print("url : $uri");
 
     try {
       var response = await http

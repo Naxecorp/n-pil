@@ -131,7 +131,7 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                     child: NeumorphicButton(
                       margin: const EdgeInsets.all(15),
                       style: NeumorphicStyle(
-                        depth: (global.machineObjectModel.result?.fans?[3]!.actualValue ?? 0) >= 0
+                        depth: (global.machineObjectModel.result?.fans?[3]!.actualValue ?? 0) > 0
                             ? -5
                             : 5, //SpindleFanIsOn?-10:10,
                         color: const Color(0xFFF0F0F3),

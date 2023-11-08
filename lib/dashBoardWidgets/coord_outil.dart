@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nweb/widgetUtils/ArretUrgence.dart';
@@ -343,6 +345,15 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                   "processing"
                               ? null
                               : () {
+                                  String content =
+                                      'echo "${global.machineObjectModel.result?.move?.axes?[0].machinePosition}"';
+                                  print(content);
+                                  API_Manager().upLoadAFile(
+                                      "0:/sys/recoveryX.g",
+                                      Uint8List.fromList(utf8.encode(content))
+                                          .length
+                                          .toString(),
+                                      Uint8List.fromList(utf8.encode(content)));
                                   API_Manager()
                                       .sendGcodeCommand("G10 L20 P1 X0 Y0 Z0");
                                   API_Manager().sendGcodeCommand("G10 L20 P1");

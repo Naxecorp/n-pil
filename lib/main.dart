@@ -22,7 +22,6 @@ final TextEditingController controllerForTerminal = TextEditingController();
 
 Future<void> actualiserMachineObjectModel() async {
   Timer.periodic(Duration(milliseconds: 600), (timer) {
-    print("actualiserMachineObjectModel()");
     API_Manager().getdataMachineObjectModel().then((machine) {
       global.machineObjectModel = machine;
       global.controllerMachineObjectModel.add(machine);
