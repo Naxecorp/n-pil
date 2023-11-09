@@ -6,6 +6,7 @@ import 'dart:html' as html;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/globals_var.dart';
+import 'package:nweb/screen/screens.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -19,6 +20,264 @@ import 'package:code_editor/code_editor.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
+class SetPosition extends StatefulWidget {
+  const SetPosition({super.key});
+
+  @override
+  State<SetPosition> createState() => _SetPositionState();
+}
+
+class _SetPositionState extends State<SetPosition> {
+  final posX = TextEditingController(text: '0');
+  final posY = TextEditingController(text: '0');
+  final posZ = TextEditingController(text: '0');
+
+  String textX = global.machineObjectModel.result?.move?.axes
+          ?.elementAt(0)!
+          .machinePosition
+          ?.toStringAsFixed(2) ??
+      "0";
+  String textY = global.machineObjectModel.result?.move?.axes
+          ?.elementAt(1)!
+          .machinePosition
+          ?.toStringAsFixed(2) ??
+      "0";
+  String textZ = global.machineObjectModel.result?.move?.axes
+          ?.elementAt(2)!
+          .machinePosition
+          ?.toStringAsFixed(2) ??
+      "0";
+
+  @override
+  void dispose() {
+    posX.dispose();
+    posY.dispose();
+    posZ.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Window(
+          title1: "Positions",
+          title2: " machine",
+          child: Row(
+            children: [
+              Flexible(
+                flex: 1,
+                child: Container(
+                  width: double.infinity,
+                  //color: Colors.amber,
+                  height: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Text(
+                          "X",
+                          style: TextStyle(
+                              color: Color(0xFF707585),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.05,
+                        //color: Colors.greenAccent,
+                        child: TextFormField(
+                          controller: posX,
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              gapPadding: 5.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: Container(
+                  width: double.infinity,
+                  //color: Colors.orange,
+                  height: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Text(
+                          "Y",
+                          style: TextStyle(
+                              color: Color(0xFF707585),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.05,
+                        //color: Colors.greenAccent,
+                        child: TextFormField(
+                          controller: posY,
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              gapPadding: 5.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: Container(
+                  width: double.infinity,
+                  //color: Colors.blue,
+                  height: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Text(
+                          "Z",
+                          style: TextStyle(
+                              color: Color(0xFF707585),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.05,
+                        //color: Colors.greenAccent,
+                        child: TextFormField(
+                          controller: posZ,
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              gapPadding: 5.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: Container(
+                  width: double.infinity,
+                  //color: Colors.red,
+                  height: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(5.0),
+                        width: MediaQuery.of(context).size.width * 0.08,
+                        child: NeumorphicButton(
+                          onPressed: () {
+                            print("Set");
+                          },
+                          style: const NeumorphicStyle(
+                            color: Color(0xFFF0F0F3),
+                          ),
+                          child: const Text(
+                            "Set",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF707585),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(5.0),
+                        width: MediaQuery.of(context).size.width * 0.08,
+                        child: NeumorphicButton(
+                          onPressed: () {
+                            API_Manager()
+                                .sendGcodeCommand("G53 G0 X${posX.text}");
+                            API_Manager()
+                                .sendGcodeCommand("G53 G0 Y${posY.text}");
+                            API_Manager()
+                                .sendGcodeCommand("G53 G0 Z${posZ.text}");
+                          },
+                          style: const NeumorphicStyle(
+                            color: Color(0xFFF0F0F3),
+                          ),
+                          child: const Text(
+                            "Go to",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF707585),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(5.0),
+                        width: MediaQuery.of(context).size.width * 0.08,
+                        child: NeumorphicButton(
+                          onPressed: () {
+                            posX.text = textX;
+                            posY.text = textY;
+                            posZ.text = textZ;
+                            posX.selection =
+                                TextSelection.collapsed(offset: textX.length);
+                            posY.selection =
+                                TextSelection.collapsed(offset: textY.length);
+                            posZ.selection =
+                                TextSelection.collapsed(offset: textZ.length);
+                          },
+                          style: const NeumorphicStyle(
+                            color: Color(0xFFF0F0F3),
+                          ),
+                          child: const Text(
+                            "Set from actual",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF707585),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class SetPos extends StatefulWidget {
   @override
   State<SetPos> createState() => SetPosState();
@@ -31,6 +290,9 @@ class SetPosState extends State<SetPos> {
   initState() {
     super.initState();
     onReceivedData();
+    global.streamMachineObjectModel.listen((value) {
+      setState(() {});
+    });
   }
 
   void saveConfig() {
@@ -63,9 +325,9 @@ class SetPosState extends State<SetPos> {
                 child:
                     Container(child: Image(image: AssetImage('iconnaxe.png')))),
             Flexible(
-                flex: 10,
-                child: Container(
-                    child: Row(
+              flex: 10,
+              child: Container(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Spacer(),
@@ -74,7 +336,7 @@ class SetPosState extends State<SetPos> {
                       //margin: EdgeInsets.all(40),
                       child: TextField(
                         controller: ManualGcodeComand,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: "Gcode",
                           border: OutlineInputBorder(
                             borderSide: BorderSide(),
@@ -100,7 +362,9 @@ class SetPosState extends State<SetPos> {
                       style: TextStyle(color: Color(0xFF707585)),
                     ),
                   ],
-                ))),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -108,661 +372,10 @@ class SetPosState extends State<SetPos> {
         color: Colors.white,
         child: ListView(
           children: [
-            Container(
-              height: 200,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Window(
-                  title1: "Positions",
-                  title2: " machine",
-                  child: ListView(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Row(
-                                children: [
-                                  Text("X"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: "0",
-                                      onChanged: (text) {
-                                        0;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text("Y"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: "0",
-                                      onChanged: (text) {
-                                        0;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text("Z"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: "0",
-                                      onChanged: (text) {
-                                        0;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    child: Center(
-                                      child: NeumorphicButton(
-                                        style: NeumorphicStyle(
-                                          color: Color(0xFFF0F0F3),
-                                        ),
-                                        onPressed: () {},
-                                        child: Text(
-                                          "Set",
-                                          style: TextStyle(
-                                            color: Color(0xFF707585),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Center(
-                                    child: NeumorphicButton(
-                                      style: NeumorphicStyle(
-                                        color: Color(0xFFF0F0F3),
-                                      ),
-                                      onPressed: () {},
-                                      child: Text(
-                                        "Go to",
-                                        style: TextStyle(
-                                          color: Color(0xFF707585),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Center(
-                                    child: NeumorphicButton(
-                                      style: NeumorphicStyle(
-                                        color: Color(0xFFF0F0F3),
-                                      ),
-                                      onPressed: () {},
-                                      child: Text(
-                                        "Set from actual",
-                                        style: TextStyle(
-                                          color: Color(0xFF707585),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 200,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Window(
-                  title1: "Positions",
-                  title2: " machine",
-                  child: ListView(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text("X"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: "0",
-                                      onChanged: (text) {
-                                        0;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text("Y"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: "0",
-                                      onChanged: (text) {
-                                        0;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text("Z"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: "0",
-                                      onChanged: (text) {
-                                        0;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    child: Center(
-                                      child: NeumorphicButton(
-                                        style: NeumorphicStyle(
-                                          color: Color(0xFFF0F0F3),
-                                        ),
-                                        onPressed: () {},
-                                        child: Text(
-                                          "Set",
-                                          style: TextStyle(
-                                            color: Color(0xFF707585),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Center(
-                                    child: NeumorphicButton(
-                                      style: const NeumorphicStyle(
-                                        color: Color(0xFFF0F0F3),
-                                      ),
-                                      onPressed: () {},
-                                      child: const Text(
-                                        "Go to",
-                                        style: TextStyle(
-                                          color: Color(0xFF707585),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Center(
-                                    child: NeumorphicButton(
-                                      style: NeumorphicStyle(
-                                        color: Color(0xFFF0F0F3),
-                                      ),
-                                      onPressed: () {},
-                                      child: Text(
-                                        "Set from actual",
-                                        style: TextStyle(
-                                          color: Color(0xFF707585),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 200,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Window(
-                  title1: "Positions",
-                  title2: " machine",
-                  child: ListView(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text("X"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: "0",
-                                      onChanged: (text) {
-                                        0;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text("Y"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: "0",
-                                      onChanged: (text) {
-                                        0;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text("Z"),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: "0",
-                                      onChanged: (text) {
-                                        0;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    child: Center(
-                                      child: NeumorphicButton(
-                                        style: NeumorphicStyle(
-                                          color: Color(0xFFF0F0F3),
-                                        ),
-                                        onPressed: () {},
-                                        child: Text(
-                                          "Set",
-                                          style: TextStyle(
-                                            color: Color(0xFF707585),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Center(
-                                    child: NeumorphicButton(
-                                      style: const NeumorphicStyle(
-                                        color: Color(0xFFF0F0F3),
-                                      ),
-                                      onPressed: () {},
-                                      child: const Text(
-                                        "Go to",
-                                        style: TextStyle(
-                                          color: Color(0xFF707585),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Center(
-                                    child: NeumorphicButton(
-                                      style: NeumorphicStyle(
-                                        color: Color(0xFFF0F0F3),
-                                      ),
-                                      onPressed: () {},
-                                      child: Text(
-                                        "Set from actual",
-                                        style: TextStyle(
-                                          color: Color(0xFF707585),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 200,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Window(
-                  title1: "Positions",
-                  title2: " machine",
-                  child: Row(
-                    children: [
-                      Flexible(
-                        flex: 1,
-                        child: Container(
-                          width: double.infinity,
-                          //color: Colors.amber,
-                          height: double.infinity,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Text("X"),
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.05,
-                                //color: Colors.greenAccent,
-                                child: TextFormField(
-                                  textAlign: TextAlign.end,
-                                  initialValue: "0",
-                                  onChanged: (text) {
-                                    0;
-                                  },
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(5)),
-                                      gapPadding: 5.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Container(
-                          color: Colors.orange,
-                          height: 150,
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Container(
-                          color: Colors.blue,
-                          height: 150,
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Container(
-                          color: Colors.red,
-                          height: 150,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 200,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Window(
-                  title1: "Positions",
-                  title2: " machine",
-                  child: Container(
-                    height: 200,
-                    child: Row(
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: Container(
-                            color: Colors.amber,
-                            height: double.infinity,
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          child: Container(
-                            color: Colors.orange,
-                            height: 150,
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          child: Container(
-                            color: Colors.blue,
-                            height: 150,
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          child: Container(
-                            color: Colors.red,
-                            height: 150,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            for (var i = 0;
+                i < global.MyMachineN02ConfigDeflaut.SetPosAffichage!;
+                i++)
+              SetPosition(),
           ],
         ),
       ),

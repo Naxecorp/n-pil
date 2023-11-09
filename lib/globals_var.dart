@@ -23,7 +23,7 @@ String version = "Version 1.3.0"; // demarrage Jean + Nettoyage 1 fichier/class
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
-
+int positions = 4;
 MachineObjectModel machineObjectModel = MachineObjectModel();
 ObjectModelMove objectModelMove = ObjectModelMove();
 ObjectModelJob objectModelJob = ObjectModelJob();
@@ -33,28 +33,32 @@ enum MachineMode { cnc, fff, laser, unknow }
 MachineMode machineMode = MachineMode.unknow;
 
 MachineN02Config MyMachineN02Config = MachineN02Config(
-    Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
-    IP: "192.168.1.73",
-    GlobalMachineUsedTime: 0,
-    email: "jordan.fortel@naxe.fr",
-    DefaultMode: "CNC",
-    Positions: [
-      Position(PosX: 20, PosY: 40, PosZ: 100),
-      Position(PosX: 21, PosY: 41, PosZ: 110),
-      Position(PosX: 22, PosY: 42, PosZ: 120)
-    ]);
+  Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
+  IP: "192.168.1.78",
+  GlobalMachineUsedTime: 0,
+  email: "jordan.fortel@naxe.fr",
+  DefaultMode: "CNC",
+  Positions: [
+    Position(PosX: 20, PosY: 40, PosZ: 100),
+    Position(PosX: 21, PosY: 41, PosZ: 110),
+    Position(PosX: 22, PosY: 42, PosZ: 120)
+  ],
+  SetPosAffichage: 4,
+);
 
 MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
-    Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
-    IP: "192.168.1.73",
-    GlobalMachineUsedTime: 0,
-    email: "defaultconfig",
-    DefaultMode: "CNC",
-    Positions: [
-      Position(PosX: 20, PosY: 40, PosZ: 100),
-      Position(PosX: 21, PosY: 41, PosZ: 110),
-      Position(PosX: 22, PosY: 42, PosZ: 120)
-    ]);
+  Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
+  IP: "192.168.1.78",
+  GlobalMachineUsedTime: 0,
+  email: "defaultconfig",
+  DefaultMode: "CNC",
+  Positions: [
+    Position(PosX: 20, PosY: 40, PosZ: 100),
+    Position(PosX: 21, PosY: 41, PosZ: 110),
+    Position(PosX: 22, PosY: 42, PosZ: 120)
+  ],
+  SetPosAffichage: 4,
+);
 
 Ethernet_Connection myEthernet_connection = Ethernet_Connection();
 List<FileElement?>? ListofGcodeFile = [];

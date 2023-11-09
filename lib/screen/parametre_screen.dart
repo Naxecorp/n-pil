@@ -262,6 +262,45 @@ class ParametreScreenState extends State<ParametreScreen> {
                                   ),
                                 ],
                               ),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 200,
+                                    child: Text(
+                                      'Nombre de positions sauvegardées :',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.05,
+                                    child: TextFormField(
+                                      textAlign: TextAlign.end,
+                                      initialValue: global
+                                          .MyMachineN02ConfigDeflaut
+                                          .SetPosAffichage!
+                                          .toString(),
+                                      onChanged: (text) {
+                                        global.MyMachineN02ConfigDeflaut
+                                                .SetPosAffichage =
+                                            int.tryParse(text)!;
+                                      },
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5)),
+                                          gapPadding: 5.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),

@@ -52,19 +52,43 @@ class DashboardScreenState extends State<DashboardScreen> {
     showDialog(
       context: context,
       barrierDismissible:
-          false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
+          true, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Redémarrage en cours"),
-          content:
-              CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
-          actions: <Widget>[],
+          title:
+              Text("Voulez-vous retourner aux dernières coordonnées machine ?"),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                API_Manager().sendGcodeCommand('M98 P"restorelast0.g"');
+              },
+              child: Text("Oui"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible:
+                      false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("Redémarrage en cours"),
+                      content:
+                          CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
+                      actions: <Widget>[],
+                    );
+                  },
+                );
+                Timer(Duration(seconds: 12), () {
+                  Navigator.of(context).pop(); // Ferme la boîte de dialogue
+                });
+              },
+              child: Text("Non"),
+            ),
+          ],
         );
       },
     );
-    Timer(Duration(seconds: 12), () {
-      Navigator.of(context).pop(); // Ferme la boîte de dialogue
-    });
   }
 
   @override
@@ -124,16 +148,16 @@ class DashboardScreenState extends State<DashboardScreen> {
                     ),
                     Spacer(),
                     ElevatedButton(
-                        onPressed: global
-                                    .machineObjectModel.result?.state?.status
-                                    ?.toString() ==
-                                "halted"
-                            ? () {
-                                API_Manager().sendGcodeCommand("M999");
-                                loadingPopup(context);
-                              }
-                            : null,
-                        child: Text("Aquiter AU"))
+                      onPressed: global.machineObjectModel.result?.state?.status
+                                  ?.toString() ==
+                              "halted"
+                          ? () {
+                              API_Manager().sendGcodeCommand("M999");
+                              loadingPopup(context);
+                            }
+                          : null,
+                      child: Text("Aquiter AU"),
+                    )
                   ],
                 ))),
           ],

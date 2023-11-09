@@ -19,6 +19,7 @@ class MachineN02Config {
   String? DefaultMode;
   PalpeurOutil? Palpeur;
   List<Position>? Positions;
+  int? SetPosAffichage;
 
   MachineN02Config(
       {this.IP,
@@ -27,22 +28,28 @@ class MachineN02Config {
       this.GlobalMachineUsedTime,
       this.DefaultMode,
       this.Palpeur,
-      this.Positions});
+      this.Positions,
+      this.SetPosAffichage});
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
-          IP: json["IP"],
-          email: json["email"],
-          Lastmodifition: json["lastmodification"],
-          GlobalMachineUsedTime: json["GlobalMachineUsedTime"],
-          DefaultMode: json["DefaultMode"],
-          Positions: json["Positions"] == null
-              ? []
-              : List<Position>.from(
-                  json["Positions"]!.map((x) => Position.fromJson(x))),
-          Palpeur: json["Palpeur"] == null
-              ? null
-              : PalpeurOutil.fromJson(json["Palpeur"]));
+        IP: json["IP"],
+        email: json["email"],
+        Lastmodifition: json["lastmodification"],
+        GlobalMachineUsedTime: json["GlobalMachineUsedTime"],
+        DefaultMode: json["DefaultMode"],
+        Positions: json["Positions"] == null
+            ? []
+            : List<Position>.from(
+                json["Positions"]!.map(
+                  (x) => Position.fromJson(x),
+                ),
+              ),
+        Palpeur: json["Palpeur"] == null
+            ? null
+            : PalpeurOutil.fromJson(json["Palpeur"]),
+        SetPosAffichage: json["SetPosAffichage"],
+      );
 
   Map<String, dynamic> toJson() => {
         "IP": IP,
@@ -54,5 +61,6 @@ class MachineN02Config {
             ? []
             : List<dynamic>.from(Positions!.map((x) => x.toJson())),
         "Palpeur": Palpeur!.toJson(),
+        "SetPosAffichage": SetPosAffichage,
       };
 }
