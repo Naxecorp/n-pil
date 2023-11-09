@@ -28,18 +28,18 @@ class ParametreScreenState extends State<ParametreScreen> {
 
   static String formatDuration(Duration d) {
     var seconds = d.inSeconds;
-    final days = seconds~/Duration.secondsPerDay;
-    seconds -= days*Duration.secondsPerDay;
-    final hours = seconds~/Duration.secondsPerHour;
-    seconds -= hours*Duration.secondsPerHour;
-    final minutes = seconds~/Duration.secondsPerMinute;
-    seconds -= minutes*Duration.secondsPerMinute;
+    final days = seconds ~/ Duration.secondsPerDay;
+    seconds -= days * Duration.secondsPerDay;
+    final hours = seconds ~/ Duration.secondsPerHour;
+    seconds -= hours * Duration.secondsPerHour;
+    final minutes = seconds ~/ Duration.secondsPerMinute;
+    seconds -= minutes * Duration.secondsPerMinute;
 
     final List<String> tokens = [];
     if (days != 0) {
       tokens.add('${days}d');
     }
-    if (tokens.isNotEmpty || hours != 0){
+    if (tokens.isNotEmpty || hours != 0) {
       tokens.add('${hours}h');
     }
     if (tokens.isNotEmpty || minutes != 0) {
@@ -86,8 +86,8 @@ class ParametreScreenState extends State<ParametreScreen> {
           children: [
             Flexible(
                 flex: 2,
-                child:
-                    Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
+                child: Container(
+                    child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
                 flex: 10,
                 child: Container(
@@ -152,7 +152,7 @@ class ParametreScreenState extends State<ParametreScreen> {
                               Container(
                                 width: 500,
                                 child: Text(
-                                  "Temps d'utilisation depuis Reset : ${formatDuration(Duration(seconds :(global.machineObjectModel.result?.state?.upTime?.toInt()??0)))}",
+                                  "Temps d'utilisation depuis Reset : ${formatDuration(Duration(seconds: (global.machineObjectModel.result?.state?.upTime?.toInt() ?? 0)))}",
                                   style: TextStyle(
                                     color: Colors.black26,
                                     fontWeight: FontWeight.bold,
@@ -163,7 +163,7 @@ class ParametreScreenState extends State<ParametreScreen> {
                               Container(
                                 width: 500,
                                 child: Text(
-                                  "Temps d'utilisation globale : ${formatDuration(Duration(minutes :(global.MyMachineN02Config.GlobalMachineUsedTime??0)))}",
+                                  "Temps d'utilisation globale : ${formatDuration(Duration(minutes: (global.MyMachineN02Config.GlobalMachineUsedTime ?? 0)))}",
                                   style: TextStyle(
                                     color: Colors.black26,
                                     fontWeight: FontWeight.bold,
@@ -171,7 +171,6 @@ class ParametreScreenState extends State<ParametreScreen> {
                                   ),
                                 ),
                               ),
-                            
                             ],
                           ),
                         ),

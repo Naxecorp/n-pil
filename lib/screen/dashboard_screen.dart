@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-
+import 'dart:html' as html;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
@@ -48,47 +49,108 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  Future<void> actualiserHomeMachine() async {
+    Timer.periodic(Duration(seconds: 1), (timer) async {
+      if (global.objectModelMove.result?.axes?.elementAt(0).homed == true &&
+          global.objectModelMove.result?.axes?.elementAt(1).homed == true &&
+          global.objectModelMove.result?.axes?.elementAt(2).homed == true) {
+        String posXYZ = "";
+        await API_Manager().sendGcodeCommand('M98 P"recoveryXYZ.g"').then(
+            (value) => API_Manager()
+                .sendrr_reply()
+                .then((response) => posXYZ = response.trim()));
+
+        String posX;
+        String posY;
+        String posZ;
+
+        posX = posXYZ.split('\n')[0];
+        posY = posXYZ.split('\n')[1];
+        posZ = posXYZ.split('\n')[2];
+
+        await Future.delayed(Duration(seconds: 3));
+        await API_Manager().sendGcodeCommand("G53 G0 X${posX}").then((value) =>
+            API_Manager()
+                .sendrr_reply()
+                .then((response) => global.ReplyList.add(response)));
+        await Future.delayed(Duration(seconds: 3));
+        await API_Manager().sendGcodeCommand("G53 G0 Y${posY}").then((value) =>
+            API_Manager()
+                .sendrr_reply()
+                .then((response) => global.ReplyList.add(response)));
+        await Future.delayed(Duration(seconds: 3));
+        await API_Manager().sendGcodeCommand("G53 G0 Z${posZ}").then((value) =>
+            API_Manager()
+                .sendrr_reply()
+                .then((response) => global.ReplyList.add(response)));
+        timer.cancel();
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
   void loadingPopup(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible:
-          true, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
+          false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
       builder: (BuildContext context) {
         return AlertDialog(
-          title:
-              Text("Voulez-vous retourner aux dernières coordonnées machine ?"),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                API_Manager().sendGcodeCommand('M98 P"restorelast0.g"');
-              },
-              child: Text("Oui"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  barrierDismissible:
-                      false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text("Redémarrage en cours"),
-                      content:
-                          CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
-                      actions: <Widget>[],
-                    );
-                  },
-                );
-                Timer(Duration(seconds: 12), () {
-                  Navigator.of(context).pop(); // Ferme la boîte de dialogue
-                });
-              },
-              child: Text("Non"),
-            ),
-          ],
+          title: Text("Redémarrage en cours"),
+          content:
+              CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
+          actions: <Widget>[],
         );
       },
     );
+    Timer(Duration(seconds: 12), () {
+      Navigator.of(context).pop();
+      showDialog(
+        context: context,
+        barrierDismissible:
+            false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title:
+                Text("Voulez-vous restaurer les anciennes positions machine ?"),
+            actions: <Widget>[
+              ElevatedButton(
+                onPressed: () async {
+                  API_Manager().sendGcodeCommand('G28 X');
+                  API_Manager().sendGcodeCommand('G28 Y');
+                  API_Manager().sendGcodeCommand('G28 Z');
+
+                  actualiserHomeMachine();
+                },
+                child: Text("go to"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible:
+                        false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Redémarrage en cours"),
+                        content:
+                            CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
+                        actions: <Widget>[],
+                      );
+                    },
+                  );
+                  Timer(Duration(seconds: 5), () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Ferme la boîte de dialogue
+                  });
+                },
+                child: Text("Non"),
+              ),
+            ],
+          );
+        },
+      );
+    });
   }
 
   @override
@@ -108,7 +170,7 @@ class DashboardScreenState extends State<DashboardScreen> {
             Flexible(
                 flex: 2,
                 child:
-                    Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
+                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
             Flexible(
                 flex: 10,
                 child: Container(
