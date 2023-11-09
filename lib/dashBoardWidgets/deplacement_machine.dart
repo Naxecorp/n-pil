@@ -87,7 +87,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                                     .machineObjectModel
                                                     .result
                                                     ?.sensors
-                                                    ?.endstops?[0]
+                                                    ?.endstops?[0]!
                                                     .triggered ==
                                                 true
                                             ? Colors.green
@@ -145,7 +145,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                                     .result
                                                     ?.sensors
                                                     ?.endstops?[1]
-                                                    .triggered ==
+                                                    !.triggered ==
                                                 true
                                             ? Colors.green
                                             : Colors.black87,
@@ -202,7 +202,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                                     .machineObjectModel
                                                     .result
                                                     ?.sensors
-                                                    ?.endstops?[2]
+                                                    ?.endstops?[2]!
                                                     .triggered ==
                                                 true
                                             ? Colors.green
@@ -424,6 +424,43 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                 "M120\nG91\nG1 Z-$Zstepdown F${global.SpeedValue}\nM121\n");
                           API_Manager().sendrr_reply();
                         },
+                       onRotateALPressed: () async{
+                         if (MovesWithoutEndstop)
+                            await API_Manager().sendGcodeCommand(
+                                "M120\nG91\nG1 A$stepValue H2 F${global.SpeedValue}\nM121\n");
+                          else
+                            await API_Manager().sendGcodeCommand(
+                                "M120\nG91\nG1 A$stepValue F${global.SpeedValue}\nM121\n");
+                          API_Manager().sendrr_reply();
+                       },
+                       onRotateARPressed: () async{
+                         if (MovesWithoutEndstop)
+                            await API_Manager().sendGcodeCommand(
+                                "M120\nG91\nG1 A-$stepValue H2 F${global.SpeedValue}\nM121\n");
+                          else
+                            await API_Manager().sendGcodeCommand(
+                                "M120\nG91\nG1 A-$stepValue F${global.SpeedValue}\nM121\n");
+                          API_Manager().sendrr_reply();
+                       },
+                      onRotateCRPressed: () async{
+                         if (MovesWithoutEndstop)
+                            await API_Manager().sendGcodeCommand(
+                                "M120\nG91\nG1 C$stepValue H2 F${global.SpeedValue}\nM121\n");
+                          else
+                            await API_Manager().sendGcodeCommand(
+                                "M120\nG91\nG1 C$stepValue F${global.SpeedValue}\nM121\n");
+                          API_Manager().sendrr_reply();
+                       },
+                      onRotateCLPressed: () async{
+                         if (MovesWithoutEndstop)
+                            await API_Manager().sendGcodeCommand(
+                                "M120\nG91\nG1 C-$stepValue H2 F${global.SpeedValue}\nM121\n");
+                          else
+                            await API_Manager().sendGcodeCommand(
+                                "M120\nG91\nG1 C-$stepValue F${global.SpeedValue}\nM121\n");
+                          API_Manager().sendrr_reply();
+                       },
+                      
                       ),
                     ),
                   ),

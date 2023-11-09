@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'dart:html' as html;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import '../menus/side_menu.dart';
+import '../widgetUtils/gcodeViewer.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -29,12 +29,15 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
   late AnimationController ProgressBarcontroller;
   bool isLoading = false;
 
-  void downloadFile(String urlBase, String FileName) {
-    html.AnchorElement anchorElement =
-        html.AnchorElement(href: urlBase + FileName);
-    anchorElement.download = 'test.gcode';
-    anchorElement.click();
-  }
+  // void downloadFile(String urlBase, String FileName) {
+  //   html.AnchorElement anchorElement =
+  //       html.AnchorElement(href: urlBase + FileName);
+  //   anchorElement.download = 'test.gcode';
+  //   anchorElement.click();
+  // }
+
+  String LoadedFileContentString = "";
+
 
   @override
   void initState() {
@@ -66,7 +69,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
   }
 
   void _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles(withData: true);
 
     if (result == null) {
       isLoading = false;
@@ -79,10 +82,8 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
 
     filename = result.files.first.name.toString();
     if (!containsSpecialCharacters(filename)) {
-      API_Manager()
-          .upLoadAFile(
-              "0:/gcodes/" + result.files.first.name.toString(),
-              result.files.first.bytes!.length.toString(),
+      API_Manager().upLoadAFile("0:/gcodes/" + result.files.first.name.toString(),
+              result.files.first.size.toString(),
               result.files.first.bytes!)
           .then((notused) {
         API_Manager()
@@ -137,7 +138,6 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                 onPressed: () async {
                   await API_Manager().sendGcodeCommand("G10 L20 P1 X0 Y0 Z0");
                   await API_Manager().sendGcodeCommand("G10 L20 P1");
-
                   await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
                       ListofGcodeFile!
                           .elementAt(selectedGcodeFileIndex)!
@@ -176,6 +176,11 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     );
   }
 
+  List<String> convertStringToList(String inputString) {
+  List<String> lines = inputString.split('\n');
+  return lines;
+}
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,7 +198,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
             Flexible(
                 flex: 2,
                 child:
-                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
+                    Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
                 flex: 10,
                 child: Container(
@@ -288,13 +293,14 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: ElevatedButton(
                             child: Text('Télécharger Programme'),
-                            onPressed: () {
-                              downloadFile(
-                                  "http://${global.MyMachineN02Config.IP}/rr_download?name=0:/gcodes/",
+                            onPressed: () async{
+                             String FileContent = await API_Manager().downLoadAFile(
+                                  "gcodes",
                                   ListofGcodeFile!
                                       .elementAt(selectedGcodeFileIndex)!
                                       .name
                                       .toString());
+                              
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blueAccent),
@@ -426,11 +432,11 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                         margin: EdgeInsets.symmetric(vertical: 5),
                         height: double.infinity,
                         decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Color.fromARGB(255, 219, 219, 219),
                             border: Border.all(color: Colors.black26, width: 1),
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))),
-                        child: Center(child: Container()),
+                        child: Center(child: GcodeViewer()),
                       ),
                     ),
                     Flexible(
@@ -442,7 +448,17 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                               ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Color(0xFF2B879B)),
-                                  onPressed: null,
+                                  onPressed: ()async{
+                                    LoadedFileContentString = await API_Manager().downLoadAFile(
+                                  "gcodes",
+                                  ListofGcodeFile!
+                                      .elementAt(selectedGcodeFileIndex)!
+                                      .name
+                                      .toString());
+                                        List<String> _LoadedFileContent= convertStringToList(LoadedFileContentString);
+                                        global.controllerContentGcodeToDisplay.add(_LoadedFileContent);
+                                     
+                                  },
                                   child: SizedBox(
                                       height: 50,
                                       child: Center(

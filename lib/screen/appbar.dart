@@ -35,7 +35,7 @@ class GlobalAppBarState extends State<GlobalAppBar> {
           Flexible(
               flex: 2,
               child:
-                  Container(child: Image(image: AssetImage('iconnaxe.png')))),
+                  Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
           Flexible(
               flex: 10,
               child: Container(

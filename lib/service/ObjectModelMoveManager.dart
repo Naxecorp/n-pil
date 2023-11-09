@@ -58,14 +58,14 @@ class Result {
   Kinematics? kinematics;
   bool? limitAxes;
   bool? noMovesBeforeHoming;
-  double? prdoubleingAcceleration;
+  num? prdoubleingAcceleration;
   List<Queue>? queue;
   Rotation? rotation;
   Shaping? shaping;
-  double? speedFactor;
-  double? travelAcceleration;
-  double? virtualEPos;
-  double? workplaceNumber;
+  num? speedFactor;
+  num? travelAcceleration;
+  num? virtualEPos;
+  num? workplaceNumber;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     axes: json["axes"] == null ? null : List<Axe>.from(json["axes"].map((x) => Axe.fromJson(x))),
@@ -114,26 +114,26 @@ class Axe {
     this.workplaceOffsets,
   });
 
-  double? acceleration;
-  double? babystep;
-  double? current;
+  num? acceleration;
+  num? babystep;
+  num? current;
   List<String>? drivers;
   bool? homed;
-  double? jerk;
+  num? jerk;
   String? letter;
-  double? machinePosition;
-  double? max;
+  num? machinePosition;
+  num? max;
   bool? maxProbed;
   Microstepping? microstepping;
-  double? min;
+  num? min;
   bool? minProbed;
-  double? percentCurrent;
-  double? percentStstCurrent;
-  double? speed;
-  double? stepsPerMm;
-  double? userPosition;
+  num? percentCurrent;
+  num? percentStstCurrent;
+  num? speed;
+  num? stepsPerMm;
+  num? userPosition;
   bool? visible;
-  List<double>? workplaceOffsets;
+  List<num>? workplaceOffsets;
 
   factory Axe.fromJson(Map<String, dynamic> json) => Axe(
     acceleration: json["acceleration"] == null ? null : json["acceleration"],
@@ -155,7 +155,7 @@ class Axe {
     stepsPerMm: json["stepsPerMm"] == null ? null : json["stepsPerMm"],
     userPosition: json["userPosition"] == null ? null : json["userPosition"],
     visible: json["visible"] == null ? null : json["visible"],
-    workplaceOffsets: json["workplaceOffsets"] == null ? null : List<double>.from(json["workplaceOffsets"].map((x) => x)),
+    workplaceOffsets: json["workplaceOffsets"] == null ? null : List<num>.from(json["workplaceOffsets"].map((x) => x)),
   );
 
 
@@ -168,7 +168,7 @@ class Microstepping {
   });
 
   bool? doubleerpolated;
-  double? value;
+  num? value;
 
   factory Microstepping.fromJson(Map<String, dynamic> json) => Microstepping(
     doubleerpolated: json["doubleerpolated"] == null ? null : json["doubleerpolated"],
@@ -190,7 +190,7 @@ class Calibration {
 
   Final? calibrationFinal;
   Final? initial;
-  double? numFactors;
+  num? numFactors;
 
   factory Calibration.fromJson(Map<String, dynamic> json) => Calibration(
     calibrationFinal: json["final"] == null ? null : Final.fromJson(json["final"]),
@@ -206,8 +206,8 @@ class Final {
     this.mean,
   });
 
-  double? deviation;
-  double? mean;
+  num? deviation;
+  num? mean;
 
   factory Final.fromJson(Map<String, dynamic> json) => Final(
     deviation: json["deviation"] == null ? null : json["deviation"],
@@ -261,17 +261,17 @@ class ProbeGrid {
   });
 
   List<String>? axes;
-  List<double>? maxs;
-  List<double>? mins;
-  double? radius;
-  List<double>? spacings;
+  List<num>? maxs;
+  List<num>? mins;
+  num? radius;
+  List<num>? spacings;
 
   factory ProbeGrid.fromJson(Map<String, dynamic> json) => ProbeGrid(
     axes: json["axes"] == null ? null : List<String>.from(json["axes"].map((x) => x)),
-    maxs: json["maxs"] == null ? null : List<double>.from(json["maxs"].map((x) => x)),
-    mins: json["mins"] == null ? null : List<double>.from(json["mins"].map((x) => x)),
+    maxs: json["maxs"] == null ? null : List<num>.from(json["maxs"].map((x) => x)),
+    mins: json["mins"] == null ? null : List<num>.from(json["mins"].map((x) => x)),
     radius: json["radius"] == null ? null : json["radius"],
-    spacings: json["spacings"] == null ? null : List<double>.from(json["spacings"].map((x) => x)),
+    spacings: json["spacings"] == null ? null : List<num>.from(json["spacings"].map((x) => x)),
   );
 
 
@@ -286,9 +286,9 @@ class Skew {
   });
 
   bool? compensateXy;
-  double? tanXy;
-  double? tanXz;
-  double? tanYz;
+  num? tanXy;
+  num? tanXz;
+  num? tanYz;
 
   factory Skew.fromJson(Map<String, dynamic> json) => Skew(
     compensateXy: json["compensateXY"] == null ? null : json["compensateXY"],
@@ -309,11 +309,11 @@ class CurrentMove {
     this.topSpeed,
   });
 
-  double? acceleration;
-  double? deceleration;
+  num? acceleration;
+  num? deceleration;
   dynamic? laserPwm;
-  double? requestedSpeed;
-  double? topSpeed;
+  num? requestedSpeed;
+  num? topSpeed;
 
   factory CurrentMove.fromJson(Map<String, dynamic> json) => CurrentMove(
     acceleration: json["acceleration"] == null ? null : json["acceleration"],
@@ -351,21 +351,21 @@ class Extruder {
     this.stepsPerMm,
   });
 
-  double? acceleration;
-  double? current;
+  num? acceleration;
+  num? current;
   String? driver;
-  double? factor;
+  num? factor;
   String? filament;
-  double? jerk;
+  num? jerk;
   Microstepping? microstepping;
   Nonlinear? nonlinear;
-  double? percentCurrent;
-  double? percentStstCurrent;
-  double? position;
-  double? pressureAdvance;
-  double?rawPosition;
-  double? speed;
-  double? stepsPerMm;
+  num? percentCurrent;
+  num? percentStstCurrent;
+  num? position;
+  num? pressureAdvance;
+  num?rawPosition;
+  num? speed;
+  num? stepsPerMm;
 
   factory Extruder.fromJson(Map<String, dynamic> json) => Extruder(
     acceleration: json["acceleration"] == null ? null : json["acceleration"],
@@ -395,9 +395,9 @@ class Nonlinear {
     this.upperLimit,
   });
 
-  double? a;
-  double? b;
-  double? upperLimit;
+  num? a;
+  num? b;
+  num? upperLimit;
 
   factory Nonlinear.fromJson(Map<String, dynamic> json) => Nonlinear(
     a: json["a"] == null ? null : json["a"],
@@ -418,8 +418,8 @@ class Idle {
     this.timeout,
   });
 
-  double? factor;
-  double? timeout;
+  num? factor;
+  num? timeout;
 
   factory Idle.fromJson(Map<String, dynamic> json) => Idle(
     factor: json["factor"] == null ? null : json["factor"].toDouble(),
@@ -441,15 +441,15 @@ class Kinematics {
     this.segmentation,
   });
 
-  List<List<double>>? forwardMatrix;
-  List<List<double>>? inverseMatrix;
+  List<List<num>>? forwardMatrix;
+  List<List<num>>? inverseMatrix;
   String? name;
   TiltCorrection? tiltCorrection;
   dynamic? segmentation;
 
   factory Kinematics.fromJson(Map<String, dynamic> json) => Kinematics(
-    forwardMatrix: json["forwardMatrix"] == null ? null : List<List<double>>.from(json["forwardMatrix"].map((x) => List<double>.from(x.map((x) => x)))),
-    inverseMatrix: json["inverseMatrix"] == null ? null : List<List<double>>.from(json["inverseMatrix"].map((x) => List<double>.from(x.map((x) => x)))),
+    forwardMatrix: json["forwardMatrix"] == null ? null : List<List<num>>.from(json["forwardMatrix"].map((x) => List<num>.from(x.map((x) => x)))),
+    inverseMatrix: json["inverseMatrix"] == null ? null : List<List<num>>.from(json["inverseMatrix"].map((x) => List<num>.from(x.map((x) => x)))),
     name: json["name"] == null ? null : json["name"],
     tiltCorrection: json["tiltCorrection"] == null ? null : TiltCorrection.fromJson(json["tiltCorrection"]),
     segmentation: json["segmentation"],
@@ -467,10 +467,10 @@ class TiltCorrection {
     this.screwY,
   });
 
-  double? correctionFactor;
+  num? correctionFactor;
   List<dynamic>? lastCorrections;
-  double? maxCorrection;
-  double? screwPitch;
+  num? maxCorrection;
+  num? screwPitch;
   List<dynamic>? screwX;
   List<dynamic>? screwY;
 
@@ -492,8 +492,8 @@ class Queue {
     this.length,
   });
 
-  double? gracePeriod;
-  double? length;
+  num? gracePeriod;
+  num? length;
 
   factory Queue.fromJson(Map<String, dynamic> json) => Queue(
     gracePeriod: json["gracePeriod"] == null ? null : json["gracePeriod"].toDouble(),
@@ -527,10 +527,10 @@ class Shaping {
   });
 
   List<dynamic>? amplitudes;
-  double? damping;
+  num? damping;
   List<dynamic>? durations;
-  double? frequency;
-  double? minAcceleration;
+  num? frequency;
+  num? minAcceleration;
   String? type;
 
   factory Shaping.fromJson(Map<String, dynamic> json) => Shaping(

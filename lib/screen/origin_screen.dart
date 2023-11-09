@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'dart:html' as html;
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +60,7 @@ class OriginScreenState extends State<OriginScreen> {
             Flexible(
                 flex: 2,
                 child:
-                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
+                    Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
                 flex: 10,
                 child: Container(
@@ -203,7 +203,7 @@ class OriginScreenState extends State<OriginScreen> {
                                     ),
                                     onPressed: () {
                                       ZSaved = global.machineObjectModel.result!
-                                          .move!.axes![2].userPosition!;
+                                          .move!.axes![2].userPosition!.toDouble();
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(

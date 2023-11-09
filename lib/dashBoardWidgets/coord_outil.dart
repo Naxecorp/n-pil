@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -347,6 +348,10 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                               : () {
                                   String content =
                                       'echo "${global.machineObjectModel.result?.move?.axes?[0].machinePosition}"';
+<<<<<<< HEAD
+=======
+                                  print(content);
+>>>>>>> origin/main
                                   API_Manager().upLoadAFile(
                                       "0:/sys/recoveryX.g",
                                       Uint8List.fromList(utf8.encode(content))

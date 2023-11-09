@@ -37,7 +37,7 @@ class EndCoursesState extends State {
                         height: 10,
                         width: 10,
                         color: global.machineObjectModel.result?.sensors
-                                    ?.endstops?[0].triggered
+                                    ?.endstops?[0]!.triggered
                                     .toString() ==
                                 'true'
                             ? Colors.orange
@@ -52,7 +52,7 @@ class EndCoursesState extends State {
                               height: 10,
                               width: 10,
                               color: global.machineObjectModel.result?.sensors
-                                          ?.endstops?[1].triggered
+                                          ?.endstops?[1]!.triggered
                                           .toString() ==
                                       'true'
                                   ? Colors.orange
@@ -62,7 +62,7 @@ class EndCoursesState extends State {
                               height: 10,
                               width: 10,
                               color: global.machineObjectModel.result?.sensors
-                                          ?.endstops?[2].triggered
+                                          ?.endstops?[2]!.triggered
                                           .toString() ==
                                       'true'
                                   ? Colors.orange
@@ -75,7 +75,7 @@ class EndCoursesState extends State {
                         height: 10,
                         width: 10,
                         color: global.machineObjectModel.result?.sensors
-                                    ?.endstops?[2].triggered
+                                    ?.endstops?[2]!.triggered
                                     .toString() ==
                                 'true'
                             ? Colors.orange
@@ -92,7 +92,7 @@ class EndCoursesState extends State {
                       height: 10,
                       width: 10,
                       color: global.machineObjectModel.result?.sensors
-                                  ?.endstops?[2].triggered
+                                  ?.endstops?[2]!.triggered
                                   .toString() ==
                               'true'
                           ? Colors.orange
@@ -105,7 +105,7 @@ class EndCoursesState extends State {
                       height: 10,
                       width: 10,
                       color: global.machineObjectModel.result?.sensors
-                                  ?.endstops?[2].triggered
+                                  ?.endstops?[2]!.triggered
                                   .toString() ==
                               'true'
                           ? Colors.orange

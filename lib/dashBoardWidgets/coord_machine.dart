@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -116,7 +115,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                               fit: BoxFit.fitHeight,
                               child: Text(
                                 global.machineObjectModel.result?.move?.axes
-                                        ?.elementAt(1)!
+                                        ?.elementAt(1)
                                         .machinePosition
                                         ?.toStringAsFixed(2) ??
                                     "...",

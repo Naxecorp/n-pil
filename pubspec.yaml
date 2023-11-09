@@ -42,6 +42,9 @@ dependencies:
   intl : ^0.17.0
   flutter_neumorphic: ^3.2.0
   fluttertoast: ^8.0.7
+  path_provider: ^2.0.4
+  vector_math: any
+  ditredi: 1.0.4
 
 
 
@@ -96,7 +99,7 @@ flutter:
     - 'assets/Icon Usinage classique.png'
     - 'assets/Icon Subd.png'
     - 'assets/Icon HDMI.png'
-
+    - 'assets/convGcode/NPS_motif2.gcode'
 
 
   #

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'dart:html' as html;
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +50,7 @@ class ConversationelScreenState extends State<ConversationelScreen> {
               flex: 2,
               child: Container(
                 child: Image(
-                  image: AssetImage('iconnaxe.png'),
+                  image: AssetImage("assets/iconnaxe.png"),
                 ),
               ),
             ),

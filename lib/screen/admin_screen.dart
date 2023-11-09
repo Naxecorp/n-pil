@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'dart:html' as html;
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -79,19 +79,6 @@ class AdminScreenState extends State<AdminScreen>
                           obscureText: true,
                           controller: MDP,
                           onFieldSubmitted: (value) {
-                            if (MDP.text == global.pwd) {
-                              global.AdminLogged = true;
-                              global.Title = "ADMIN MODE | $version";
-                              Navigator.pop(context, '/admin');
-                            }
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          child: Text("Connecter"),
-                          onPressed: () {
                             if (MDP.text == global.pwd) {
                               global.AdminLogged = true;
                               global.Title = "ADMIN MODE | $version";
@@ -221,7 +208,7 @@ class AdminScreenState extends State<AdminScreen>
     API_Manager().sendGcodeCommand("G1 H3 X-10"); //2
     await Future.delayed(Duration(seconds: 6));
     double init =
-        global.machineObjectModel.result!.move!.axes![0].userPosition!; //3
+        global.machineObjectModel.result!.move!.axes![0].userPosition!.toDouble(); //3
     print(init);
     API_Manager().sendGcodeCommand("G1 X170 F3000"); //4
     for (int i = 0; i < 10; i++) {
@@ -231,7 +218,7 @@ class AdminScreenState extends State<AdminScreen>
     API_Manager().sendGcodeCommand("G1 H3 X-500 F500");
     await Future.delayed(Duration(seconds: 45));
     double after =
-        global.machineObjectModel.result!.move!.axes![0].userPosition!; //7
+        global.machineObjectModel.result!.move!.axes![0].userPosition!.toDouble(); //7
     if (after < (init - 0.5) || after > (init + 0.5)) {
       badDiag(context);
     } else {
@@ -244,7 +231,7 @@ class AdminScreenState extends State<AdminScreen>
     API_Manager().sendGcodeCommand("G1 H3 Y-10"); //2
     await Future.delayed(Duration(seconds: 6));
     double init =
-        global.machineObjectModel.result!.move!.axes![1].userPosition!; //3
+        global.machineObjectModel.result!.move!.axes![1].userPosition!.toDouble(); //3
     print(init);
     await API_Manager().sendGcodeCommand("G1 Y170 F3000"); //4
     for (int i = 0; i < 10; i++) {
@@ -255,7 +242,7 @@ class AdminScreenState extends State<AdminScreen>
 
     await Future.delayed(Duration(seconds: 45));
     double after =
-        global.machineObjectModel.result!.move!.axes![1].userPosition!; //7
+        global.machineObjectModel.result!.move!.axes![1].userPosition!.toDouble(); //7
     if (after < (init - 0.5) || after > (init + 0.5)) {
       badDiag(context);
       API_Manager().sendGcodeCommand("G1 Y0");
@@ -364,7 +351,7 @@ class AdminScreenState extends State<AdminScreen>
             Flexible(
                 flex: 2,
                 child:
-                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
+                    Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
                 flex: 10,
                 child: Container(
@@ -448,7 +435,7 @@ class AdminScreenState extends State<AdminScreen>
                             child: Text('Diagnostique X'),
                             onPressed: () {
                               if (global.AdminLogged) {
-                                popupDiagnostiqueX(context);
+                                API_Manager().sendGcodeCommand('M98 P"diagX.g"');
                               } else
                                 null;
                             },
@@ -467,7 +454,7 @@ class AdminScreenState extends State<AdminScreen>
                             child: Text('Diagnostique Y'),
                             onPressed: () {
                               if (global.AdminLogged) {
-                                popupDiagnostiqueY(context);
+                                API_Manager().sendGcodeCommand('M98 P"diagY.g"');
                               } else
                                 null;
                             },
@@ -749,6 +736,16 @@ class AdminScreenState extends State<AdminScreen>
                             },
                             child: Text("Load Default Config"),
                           ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (global.AdminLogged) {
+                                await API_Manager().sendGcodeCommand("M905 P${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} S${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}");
+                                API_Manager().sendGcodeCommand("M98 P${global.ListofSysFile?.elementAt(global.selectedFileSysIndex)?.name}").then((value) => API_Manager().sendrr_reply().then((response) => global.ReplyList.add(response)));
+                              }
+                            },
+                            child: Text("Execute macro"),
+                          ),
+                        
                         ],
                       ))
                 ],
