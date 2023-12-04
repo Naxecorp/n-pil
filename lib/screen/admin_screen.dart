@@ -277,6 +277,7 @@ class AdminScreenState extends State<AdminScreen>
     });
   }
 
+  // Fonction de Diagnostique Axe X
   void popupDiagnostiqueX(BuildContext context) {
     showDialog(
       context: context,
@@ -306,6 +307,7 @@ class AdminScreenState extends State<AdminScreen>
     );
   }
 
+  // Fonction de Diagnostique Axe Y
   void popupDiagnostiqueY(BuildContext context) {
     showDialog(
       context: context,
@@ -413,7 +415,13 @@ class AdminScreenState extends State<AdminScreen>
                           height: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: ElevatedButton(
-                            child: Text('Charger depuis PC'),
+                            child: Text(
+                              'Charger depuis PC',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                             onPressed: () {
                               if (global.AdminLogged) {
                                 isLoading = true;
@@ -422,7 +430,11 @@ class AdminScreenState extends State<AdminScreen>
                                 null;
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF2B879B)),
+                              backgroundColor: Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -433,7 +445,11 @@ class AdminScreenState extends State<AdminScreen>
                           height: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: ElevatedButton(
-                            child: Text('Diagnostique X'),
+                            child: Text(
+                              'Diagnostique X',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
                             onPressed: () {
                               if (global.AdminLogged) {
                                 API_Manager()
@@ -442,7 +458,11 @@ class AdminScreenState extends State<AdminScreen>
                                 null;
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF2B879B)),
+                              backgroundColor: Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -453,7 +473,11 @@ class AdminScreenState extends State<AdminScreen>
                           height: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: ElevatedButton(
-                            child: Text('Diagnostique Y'),
+                            child: Text(
+                              'Diagnostique Y',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
                             onPressed: () {
                               if (global.AdminLogged) {
                                 API_Manager()
@@ -462,7 +486,11 @@ class AdminScreenState extends State<AdminScreen>
                                 null;
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF2B879B)),
+                              backgroundColor: Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -477,7 +505,11 @@ class AdminScreenState extends State<AdminScreen>
                           height: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: ElevatedButton(
-                            child: Text('Télécharger Programme'),
+                            child: Text(
+                              'Télécharger Programme',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
                             onPressed: () {
                               if (global.AdminLogged) {
                                 String fileName = ListofSysFile!
@@ -491,6 +523,9 @@ class AdminScreenState extends State<AdminScreen>
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
                             ),
                           ),
                         ),
@@ -501,7 +536,11 @@ class AdminScreenState extends State<AdminScreen>
                           height: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: ElevatedButton(
-                            child: Text('Supprimer Programme'),
+                            child: Text(
+                              'Supprimer Programme',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
                             onPressed: () {
                               setState(() {});
                               if (global.AdminLogged) {
@@ -522,7 +561,11 @@ class AdminScreenState extends State<AdminScreen>
                                 null;
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF9B2B2B)),
+                              backgroundColor: Color(0xFF9B2B2B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -679,7 +722,14 @@ class AdminScreenState extends State<AdminScreen>
                               } else
                                 null;
                             },
-                            child: Text("clear"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            child: Text(
+                              "clear",
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: () {
@@ -692,7 +742,14 @@ class AdminScreenState extends State<AdminScreen>
                               } else
                                 null;
                             },
-                            child: Text("Logout"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            child: Text(
+                              "Logout",
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: () async {
@@ -709,7 +766,14 @@ class AdminScreenState extends State<AdminScreen>
                                 Navigator.pushNamed(context, '/editor');
                               }
                             },
-                            child: Text("Visualiser"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            child: Text(
+                              "Visualiser",
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: () async {
@@ -722,7 +786,14 @@ class AdminScreenState extends State<AdminScreen>
                                             global.ReplyList.add(response!)));
                               }
                             },
-                            child: Text("Run config.g"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            child: Text(
+                              "Run config.g",
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: () async {
@@ -737,9 +808,17 @@ class AdminScreenState extends State<AdminScreen>
                                         .codeUnits));
                               }
                             },
-                            child: Text("Load Default Config"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            child: Text(
+                              "Load Default Config",
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                           ElevatedButton(
+                            // Boutton qui execute les fichiers macro GCode
                             onPressed: () async {
                               if (global.AdminLogged) {
                                 await API_Manager().sendGcodeCommand(
@@ -753,7 +832,14 @@ class AdminScreenState extends State<AdminScreen>
                                             global.ReplyList.add(response)));
                               }
                             },
-                            child: Text("Execute macro"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            child: Text(
+                              "Execute macro",
+                              style: TextStyle(color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ],
                       ))

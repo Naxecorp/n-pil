@@ -36,7 +36,12 @@ class _SideMenu extends State<SideMenu> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
               child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 onTap: () {
                   pageToShow = 1;
                   Navigator.pushNamed(context, '/dashboard');
@@ -60,7 +65,13 @@ class _SideMenu extends State<SideMenu> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
               child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 onTap: () {
                   pageToShow = 2;
                   Navigator.pushNamed(context, '/conversationel');
@@ -82,7 +93,13 @@ class _SideMenu extends State<SideMenu> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
               child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 onTap: () {
                   pageToShow = 3;
                   API_Manager()
@@ -107,8 +124,14 @@ class _SideMenu extends State<SideMenu> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
               color: pageToShow == 4 ? Color(0xFF9A9A9A) : Colors.white,
               child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 onTap: () {
                   pageToShow = 4;
                   Navigator.pushNamed(context, '/jobStatus');
@@ -129,8 +152,14 @@ class _SideMenu extends State<SideMenu> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
               color: pageToShow == 6 ? Color(0xFF9A9A9A) : Colors.white,
               child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 onTap: () {
                   pageToShow = 6;
                   Navigator.pushNamed(context, '/origin');
@@ -151,8 +180,15 @@ class _SideMenu extends State<SideMenu> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
               color: pageToShow == 8 ? Color(0xFF9A9A9A) : Colors.white,
               child: ListTile(
+                enabled: false,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 onTap: () {
                   pageToShow = 8;
                   Navigator.pushNamed(context, '/setpos');
@@ -174,8 +210,14 @@ class _SideMenu extends State<SideMenu> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
               color: pageToShow == 5 ? Color(0xFF9A9A9A) : Colors.white,
               child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 onTap: () {
                   pageToShow = 5;
                   Navigator.pushNamed(context, '/parameters');
@@ -196,8 +238,14 @@ class _SideMenu extends State<SideMenu> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
               color: pageToShow == 7 ? Color(0xFF9A9A9A) : Colors.white,
               child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 onTap: () {
                   pageToShow = 7;
                   Navigator.pushNamed(context, '/admin');

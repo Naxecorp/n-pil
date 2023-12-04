@@ -132,6 +132,7 @@ class _Menu2 extends State<Menu2> {
                 child: Center(
                   child: Text(
                     'Retour opérations',
+                    style: TextStyle(color: Colors.white),
                     textAlign: TextAlign.center,
                     maxLines: 2,
                   ),
@@ -175,6 +176,7 @@ class _Menu2 extends State<Menu2> {
                     child: Center(
                         child: Text(
                       'Supprimer opération',
+                      style: TextStyle(color: Colors.white),
                       textAlign: TextAlign.center,
                     )))),
           ),
@@ -212,6 +214,7 @@ class _Menu2 extends State<Menu2> {
                     child: Center(
                         child: Text(
                       'Charger liste opération',
+                      style: TextStyle(color: Colors.white),
                       textAlign: TextAlign.center,
                     )))),
           ),

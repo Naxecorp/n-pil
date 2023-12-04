@@ -30,76 +30,80 @@ class _Menu1 extends State<Menu1> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Flexible(flex: 10, child: Container()),
-        Flexible(
-          flex: 5,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2B879B)),
-                onPressed: () {
-                  global.viewListOfOperation = !global.viewListOfOperation;
-                  print(global.viewListOfOperation);
-                  setState(() {
-                    OpeSelected = 0;
-                  });
-                  global.bottomMenuToShow = 'Menu2';
-                  return onAnytap!();
-                },
-                child: SizedBox(
-                    height: 100,
-                    child: Center(
-                        child: Text(
-                      'Voir liste opération',
-                      textAlign: TextAlign.center,
-                    )))),
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Flexible(flex: 10, child: Container()),
+          Flexible(
+            flex: 5,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF2B879B)),
+                  onPressed: () {
+                    global.viewListOfOperation = !global.viewListOfOperation;
+                    print(global.viewListOfOperation);
+                    setState(() {
+                      OpeSelected = 0;
+                    });
+                    global.bottomMenuToShow = 'Menu2';
+                    return onAnytap!();
+                  },
+                  child: SizedBox(
+                      height: 100,
+                      child: Center(
+                          child: Text(
+                        'Voir liste opération',
+                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.center,
+                      )))),
+            ),
           ),
-        ),
-        Flexible(flex: 10, child: Container()),
-        Flexible(
-          flex: 5,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2B9B80)),
-                onPressed: null,
-                child: SizedBox(
-                    height: 100,
-                    child: Center(
-                        child: Text(
-                      'Charger opération',
-                      textAlign: TextAlign.center,
-                    )))),
+          Flexible(flex: 10, child: Container()),
+          Flexible(
+            flex: 5,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF2B9B80)),
+                  onPressed: null,
+                  child: SizedBox(
+                      height: 100,
+                      child: Center(
+                          child: Text(
+                        'Charger opération',
+                        textAlign: TextAlign.center,
+                      )))),
+            ),
           ),
-        ),
-        Flexible(
-          flex: 5,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2B9B80)),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: const Text('Liste chargée'),
-                    duration: const Duration(milliseconds: 400),
-                  ));
-                },
-                child: SizedBox(
-                    height: 100,
-                    child: Center(
-                        child: Text(
-                      'Charger liste opération',
-                      textAlign: TextAlign.center,
-                    )))),
+          Flexible(
+            flex: 5,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF2B9B80)),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: const Text('Liste chargée'),
+                      duration: const Duration(milliseconds: 400),
+                    ));
+                  },
+                  child: SizedBox(
+                      height: 100,
+                      child: Center(
+                          child: Text(
+                        'Charger liste opération',
+                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.center,
+                      )))),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
     throw UnimplementedError();
   }

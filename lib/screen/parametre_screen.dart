@@ -25,7 +25,7 @@ class ParametreScreen extends StatefulWidget {
 class ParametreScreenState extends State<ParametreScreen> {
   final TextEditingController _controllers = TextEditingController();
   Duration usedTime = new Duration();
-
+  // Fonction pour noter la date
   static String formatDuration(Duration d) {
     var seconds = d.inSeconds;
     final days = seconds ~/ Duration.secondsPerDay;
@@ -188,6 +188,9 @@ class ParametreScreenState extends State<ParametreScreen> {
                                 children: [
                                   Container(
                                     width: 200,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
                                     child: Text(
                                       'Coordonées du palpeur outil X  :',
                                       style: TextStyle(
@@ -224,6 +227,9 @@ class ParametreScreenState extends State<ParametreScreen> {
                               Row(
                                 children: [
                                   Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
                                     width: 200,
                                     child: Text(
                                       'Coordonées du palpeur outil Y  :',
@@ -261,6 +267,9 @@ class ParametreScreenState extends State<ParametreScreen> {
                               Row(
                                 children: [
                                   Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
                                     width: 200,
                                     child: Text(
                                       'Hauteur du palpeur outil Z  :',
@@ -298,6 +307,9 @@ class ParametreScreenState extends State<ParametreScreen> {
                               Row(
                                 children: [
                                   Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
                                     width: 200,
                                     child: Text(
                                       'Nombre de positions sauvegardées :',

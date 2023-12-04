@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/screen/conversationel_screen.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -20,6 +21,7 @@ int pageToShow = 1;
 
 final TextEditingController controllerForTerminal = TextEditingController();
 
+// Fonction qui actualise l'ObjectModel
 Future<void> actualiserMachineObjectModel() async {
   Timer.periodic(Duration(milliseconds: 600), (timer) {
     API_Manager().getdataMachineObjectModel().then((machine) {
@@ -29,7 +31,10 @@ Future<void> actualiserMachineObjectModel() async {
   });
 }
 
+// Fonctions qui actualise le temps d'utilisation de la machine
 Future<void> actualiserMachineUsedTime() async {
+  await API_Manager().sendGcodeCommand(
+      "M905 P${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} S${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}");
   Timer.periodic(Duration(minutes: 2), (timer) async {
     await API_Manager().downLoadNwcSettings();
     global.MyMachineN02Config.GlobalMachineUsedTime =

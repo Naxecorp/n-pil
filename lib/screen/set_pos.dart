@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'dart:html' as html;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +19,7 @@ import 'package:code_editor/code_editor.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
+// Widget pour une sauvegarde de position
 class SetPosition extends StatefulWidget {
   const SetPosition({super.key});
 
@@ -28,6 +28,7 @@ class SetPosition extends StatefulWidget {
 }
 
 class _SetPositionState extends State<SetPosition> {
+  // Création de controller pour Set from actual
   final posX = TextEditingController(text: '0');
   final posY = TextEditingController(text: '0');
   final posZ = TextEditingController(text: '0');
@@ -322,8 +323,8 @@ class SetPosState extends State<SetPos> {
           children: [
             Flexible(
                 flex: 2,
-                child:
-                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
+                child: Container(
+                    child: Image(image: AssetImage('assets/iconnaxe.png')))),
             Flexible(
               flex: 10,
               child: Container(

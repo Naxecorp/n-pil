@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'dart:html' as html;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,12 +48,15 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  // Fonction qui regarde si les 3 axes sont homes et va au dernières coordonées machines
   Future<void> actualiserHomeMachine() async {
     Timer.periodic(Duration(seconds: 1), (timer) async {
       if (global.objectModelMove.result?.axes?.elementAt(0).homed == true &&
           global.objectModelMove.result?.axes?.elementAt(1).homed == true &&
           global.objectModelMove.result?.axes?.elementAt(2).homed == true) {
+        timer.cancel();
         String posXYZ = "";
+        // Récupère les données du fichier "recovenyXYZ.g"
         await API_Manager().sendGcodeCommand('M98 P"recoveryXYZ.g"').then(
             (value) => API_Manager()
                 .sendrr_reply()
@@ -69,36 +71,41 @@ class DashboardScreenState extends State<DashboardScreen> {
         posZ = posXYZ.split('\n')[2];
 
         await Future.delayed(Duration(seconds: 3));
+        // Récupère le resultat du GCode
         await API_Manager().sendGcodeCommand("G53 G0 X${posX}").then((value) =>
             API_Manager()
                 .sendrr_reply()
                 .then((response) => global.ReplyList.add(response)));
         await Future.delayed(Duration(seconds: 3));
+        // Récupère le resultat du GCode
         await API_Manager().sendGcodeCommand("G53 G0 Y${posY}").then((value) =>
             API_Manager()
                 .sendrr_reply()
                 .then((response) => global.ReplyList.add(response)));
         await Future.delayed(Duration(seconds: 3));
+        // Récupère le resultat du GCode
         await API_Manager().sendGcodeCommand("G53 G0 Z${posZ}").then((value) =>
             API_Manager()
                 .sendrr_reply()
                 .then((response) => global.ReplyList.add(response)));
-        timer.cancel();
+
         Navigator.of(context).pop();
       }
     });
   }
 
+  // Fonction de redemarrage lors de l'emergency stop
   void loadingPopup(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible:
           false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
       builder: (BuildContext context) {
-        return AlertDialog(
+        return const AlertDialog(
           title: Text("Redémarrage en cours"),
-          content:
-              CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
+          content: CircularProgressIndicator(
+            color: Colors.blue,
+          ), // Ajoute une animation de chargement (cercle tournant)
           actions: <Widget>[],
         );
       },
@@ -115,36 +122,46 @@ class DashboardScreenState extends State<DashboardScreen> {
                 Text("Voulez-vous restaurer les anciennes positions machine ?"),
             actions: <Widget>[
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                ),
                 onPressed: () async {
+                  API_Manager().sendGcodeCommand('G28 Z');
                   API_Manager().sendGcodeCommand('G28 X');
                   API_Manager().sendGcodeCommand('G28 Y');
-                  API_Manager().sendGcodeCommand('G28 Z');
 
                   actualiserHomeMachine();
-                },
-                child: Text("go to"),
-              ),
-              ElevatedButton(
-                onPressed: () {
+                  Navigator.of(context).pop();
                   showDialog(
                     context: context,
                     barrierDismissible:
                         false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
                     builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Redémarrage en cours"),
-                        content:
-                            CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
-                        actions: <Widget>[],
+                      return const AlertDialog(
+                        title: Text("Récupération en cours..."),
+                        content: CircularProgressIndicator(
+                          color: Colors.blue,
+                        ), // Ajoute une animation de chargement (cercle tournant)
                       );
                     },
                   );
-                  Timer(Duration(seconds: 5), () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop(); // Ferme la boîte de dialogue
-                  });
                 },
-                child: Text("Non"),
+                child: Text(
+                  "Oui",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Non",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -169,8 +186,8 @@ class DashboardScreenState extends State<DashboardScreen> {
           children: [
             Flexible(
                 flex: 2,
-                child:
-                    Container(child: Image(image: AssetImage('iconnaxe.png')))),
+                child: Container(
+                    child: Image(image: AssetImage('assets/iconnaxe.png')))),
             Flexible(
                 flex: 10,
                 child: Container(
@@ -210,6 +227,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                     ),
                     Spacer(),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                      ),
                       onPressed: global.machineObjectModel.result?.state?.status
                                   ?.toString() ==
                               "halted"
@@ -218,7 +238,10 @@ class DashboardScreenState extends State<DashboardScreen> {
                               loadingPopup(context);
                             }
                           : null,
-                      child: Text("Aquiter AU"),
+                      child: Text(
+                        "Aquiter AU",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     )
                   ],
                 ))),
@@ -297,7 +320,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                 ? LaserToolPower()
                                                 : Container(
                                                     child: Text(
-                                                        "Pas d'outils détectés"),
+                                                      "Pas d'outils détectés",
+                                                    ),
                                                   ),
                                   ),
                                 ),

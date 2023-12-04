@@ -26,7 +26,8 @@ class VitesseBrocheState extends State<VitesseBroche> {
     super.initState();
     Timer(Duration(milliseconds: 2500), () {
       sliderValue =
-          global.machineObjectModel.result?.spindles?[0].current?.toDouble() ?? 0.1;
+          global.machineObjectModel.result?.spindles?[0].current?.toDouble() ??
+              0.1;
       sliderValue = sliderValue / 24000;
     });
   }
@@ -34,6 +35,7 @@ class VitesseBrocheState extends State<VitesseBroche> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      surfaceTintColor: Color.fromRGBO(240, 240, 243, 1),
       elevation: 10,
       child: Container(
         margin: const EdgeInsets.all(5),

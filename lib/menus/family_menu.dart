@@ -79,6 +79,9 @@ class _FamilyMenu extends State<FamilyMenu> {
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     child: Card(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         tileColor: FamillyToShow == 'classique'
                             ? Color(0xFF9A9A9A)
                             : Colors.white,
@@ -105,6 +108,9 @@ class _FamilyMenu extends State<FamilyMenu> {
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     child: Card(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         tileColor: FamillyToShow == 'connecteur'
                             ? Color(0xFF9A9A9A)
                             : Colors.white,
@@ -130,6 +136,9 @@ class _FamilyMenu extends State<FamilyMenu> {
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     child: Card(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         tileColor: FamillyToShow == 'autres'
                             ? Color(0xFF9A9A9A)
                             : Colors.white,
@@ -156,6 +165,9 @@ class _FamilyMenu extends State<FamilyMenu> {
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     child: Card(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         tileColor: FamillyToShow == 'personalises'
                             ? Color(0xFF9A9A9A)
                             : Colors.white,

@@ -23,6 +23,10 @@ class _BabyStepZState extends State<BabyStepZ> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      surfaceTintColor: Color.fromRGBO(240, 240, 243, 1),
       elevation: 10,
       child: Container(
         margin: const EdgeInsets.all(5),

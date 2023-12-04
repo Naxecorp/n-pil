@@ -126,13 +126,20 @@ class JobInfoState extends State<JobInfo> {
     int hours = secondsElapsedSinceBeginning ~/ 3600;
     int minutes = (secondsElapsedSinceBeginning % 3600) ~/ 60;
     int seconds = secondsElapsedSinceBeginning % 60;
+    int tempsTotalEnSecondes = 0;
 
-    int tempsTotalEnSecondes =
-        (secondsElapsedSinceBeginning / (pourcentageComplet / 100)).toInt();
+    if (pourcentageComplet != 0.0) {
+      int tempsTotalEnSecondes =
+          (secondsElapsedSinceBeginning / (pourcentageComplet / 100)).toInt();
+    }
     int tempsRestantEnSecondes =
         tempsTotalEnSecondes - secondsElapsedSinceBeginning;
 
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      surfaceTintColor: Color.fromRGBO(240, 240, 243, 1),
       elevation: 10,
       child: Container(
         margin: const EdgeInsets.all(5),

@@ -24,13 +24,18 @@ class CoefVitesseState extends State<CoefVitesse> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    sliderValueSpeedFactor = global.objectModelMove.result?.speedFactor?.toDouble() ?? 2;
+    sliderValueSpeedFactor =
+        global.objectModelMove.result?.speedFactor?.toDouble() ?? 2;
     sliderValueSpeedFactor = sliderValueSpeedFactor / 2;
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      surfaceTintColor: Color.fromRGBO(240, 240, 243, 1),
       elevation: 10,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

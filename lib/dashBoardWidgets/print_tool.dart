@@ -136,7 +136,8 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                           onPressed: () {
                             setState(() {
                               global.ExtrudeFactor = global.objectModelMove
-                                      .result?.extruders?[0].factor?.toDouble() ??
+                                      .result?.extruders?[0].factor
+                                      ?.toDouble() ??
                                   global.ExtrudeFactor;
                               global.ExtrudeFactor += 10;
                               API_Manager().sendGcodeCommand(
@@ -148,14 +149,16 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                             color: Color(0xFF707585),
                           ),
                         ),
-                        Text("Débit: ${global.objectModelMove.result?.extruders?[0].factor??"..."}"),
+                        Text(
+                            "Débit: ${global.objectModelMove.result?.extruders?[0].factor ?? "..."}"),
                         NeumorphicButton(
                           style:
                               const NeumorphicStyle(color: Color(0xFFF0F0F3)),
                           onPressed: () {
                             setState(() {
                               global.ExtrudeFactor = global.objectModelMove
-                                      .result?.extruders?[0].factor?.toDouble() ??
+                                      .result?.extruders?[0].factor
+                                      ?.toDouble() ??
                                   global.ExtrudeFactor;
                               if (global.ExtrudeFactor >= 20)
                                 global.ExtrudeFactor -= 10;
@@ -183,8 +186,13 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                       ?.toDouble() ??
                                   global.VentilatorFan;
                               global.VentilatorFan += 10;
-                              API_Manager().sendGcodeCommand(
-                                  "M106 P0 S${global.VentilatorFan}").then((value) => API_Manager().sendrr_reply().then((response) => global.ReplyList.add(response)));
+                              API_Manager()
+                                  .sendGcodeCommand(
+                                      "M106 P0 S${global.VentilatorFan}")
+                                  .then((value) => API_Manager()
+                                      .sendrr_reply()
+                                      .then((response) =>
+                                          global.ReplyList.add(response)));
                             });
                           },
                           child: const Icon(
@@ -192,17 +200,26 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                             color: Color(0xFF707585),
                           ),
                         ),
-                        Text("Fan: ${global.machineObjectModel.result?.fans?[0]?.actualValue??"..."}"),
+                        Text(
+                            "Fan: ${global.machineObjectModel.result?.fans?[0]?.actualValue ?? "..."}"),
                         NeumorphicButton(
-                          style:const NeumorphicStyle(color: Color(0xFFF0F0F3)),
+                          style:
+                              const NeumorphicStyle(color: Color(0xFFF0F0F3)),
                           onPressed: () {
                             setState(() {
                               global.VentilatorFan = global.machineObjectModel
-                                      .result?.fans?[0]?.actualValue?.toDouble()??global.VentilatorFan;
+                                      .result?.fans?[0]?.actualValue
+                                      ?.toDouble() ??
+                                  global.VentilatorFan;
                               if (global.VentilatorFan >= 20)
                                 global.VentilatorFan -= 10;
-                              API_Manager().sendGcodeCommand(
-                                  "M106 P0 S${global.VentilatorFan}").then((value) => API_Manager().sendrr_reply().then((response) => global.ReplyList.add(response)));
+                              API_Manager()
+                                  .sendGcodeCommand(
+                                      "M106 P0 S${global.VentilatorFan}")
+                                  .then((value) => API_Manager()
+                                      .sendrr_reply()
+                                      .then((response) =>
+                                          global.ReplyList.add(response)));
                             });
                           },
                           child: const Icon(

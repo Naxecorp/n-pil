@@ -95,6 +95,9 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                             vertical: 5, horizontal: 5),
                         child: Card(
                           child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                             tileColor: opeToShow == 'Surfacage'
                                 ? Color(0xFF9A9A9A)
                                 : Colors.white,
@@ -123,6 +126,9 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                             vertical: 5, horizontal: 5),
                         child: Card(
                           child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                             tileColor: opeToShow == 'PocheCarre'
                                 ? Color(0xFF9A9A9A)
                                 : Colors.white,
@@ -148,6 +154,9 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                             vertical: 5, horizontal: 5),
                         child: Card(
                           child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                             tileColor: opeToShow == 'PocheRonde'
                                 ? Color(0xFF9A9A9A)
                                 : Colors.white,
@@ -173,6 +182,9 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                             vertical: 5, horizontal: 5),
                         child: Card(
                           child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                             tileColor: opeToShow == 'Contournage'
                                 ? Color(0xFF9A9A9A)
                                 : Colors.white,
@@ -198,6 +210,9 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                             vertical: 5, horizontal: 5),
                         child: Card(
                           child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                             tileColor: opeToShow == 'LigneDroite'
                                 ? Color(0xFF9A9A9A)
                                 : Colors.white,
@@ -239,7 +254,7 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                               : opeToShow == 'LigneDroite'
                                   ? OpeLigneDroite()
                                   : Center(
-                                      child: Text('Selectionner opération')),
+                                      child: Text('Sélectionner opération')),
             )) // Affichage des VUES opération
       ],
     );

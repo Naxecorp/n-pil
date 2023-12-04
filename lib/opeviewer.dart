@@ -649,7 +649,11 @@ class AddOperationState extends State {
         return _onPressed!();
       },
       child: const FittedBox(
-          alignment: Alignment.centerLeft, child: Text('Ajouter opé.')),
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Ajouter opé.',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          )),
     );
   }
 }
