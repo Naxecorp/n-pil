@@ -11,6 +11,7 @@ import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:nweb/service/nwc-settings/position.dart';
 import '../menus/side_menu.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
@@ -21,17 +22,32 @@ TextEditingController ManualGcodeComand = TextEditingController();
 
 // Widget pour une sauvegarde de position
 class SetPosition extends StatefulWidget {
-  const SetPosition({super.key});
+  final VoidCallback? onClickOnSet;
+
+  final TextEditingController? posX;
+  final TextEditingController? posY;
+  final TextEditingController? posZ;
+  SetPosition({super.key, this.onClickOnSet, this.posX, this.posY, this.posZ});
 
   @override
-  State<SetPosition> createState() => _SetPositionState();
+  State<SetPosition> createState() =>
+      _SetPositionState(onClickOnSet, posX, posY, posZ);
 }
 
 class _SetPositionState extends State<SetPosition> {
+  final VoidCallback? _onClickOnSet;
+
   // Création de controller pour Set from actual
-  final posX = TextEditingController(text: '0');
-  final posY = TextEditingController(text: '0');
-  final posZ = TextEditingController(text: '0');
+  final TextEditingController? _posX;
+  final TextEditingController? _posY;
+  final TextEditingController? _posZ;
+
+  _SetPositionState(this._onClickOnSet, this._posX, this._posY, this._posZ);
+
+  // Création de controller pour Set from actual
+  //final posX = TextEditingController(text: '0');
+  //final posY = TextEditingController(text: '0');
+  //final posZ = TextEditingController(text: '0');
 
   String textX = global.machineObjectModel.result?.move?.axes
           ?.elementAt(0)!
@@ -51,16 +67,13 @@ class _SetPositionState extends State<SetPosition> {
 
   @override
   void dispose() {
-    posX.dispose();
-    posY.dispose();
-    posZ.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
+      height: 215,
       child: Padding(
         padding: EdgeInsets.all(8.0),
         child: Window(
@@ -91,7 +104,7 @@ class _SetPositionState extends State<SetPosition> {
                         width: MediaQuery.of(context).size.width * 0.05,
                         //color: Colors.greenAccent,
                         child: TextFormField(
-                          controller: posX,
+                          controller: _posX,
                           textAlign: TextAlign.center,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(
@@ -130,7 +143,7 @@ class _SetPositionState extends State<SetPosition> {
                         width: MediaQuery.of(context).size.width * 0.05,
                         //color: Colors.greenAccent,
                         child: TextFormField(
-                          controller: posY,
+                          controller: _posY,
                           textAlign: TextAlign.center,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(
@@ -169,7 +182,7 @@ class _SetPositionState extends State<SetPosition> {
                         width: MediaQuery.of(context).size.width * 0.05,
                         //color: Colors.greenAccent,
                         child: TextFormField(
-                          controller: posZ,
+                          controller: _posZ,
                           textAlign: TextAlign.center,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(
@@ -188,6 +201,7 @@ class _SetPositionState extends State<SetPosition> {
               Flexible(
                 flex: 1,
                 child: Container(
+                  //color: Colors.green,
                   width: double.infinity,
                   //color: Colors.red,
                   height: double.infinity,
@@ -199,7 +213,7 @@ class _SetPositionState extends State<SetPosition> {
                         width: MediaQuery.of(context).size.width * 0.08,
                         child: NeumorphicButton(
                           onPressed: () {
-                            print("Set");
+                            return _onClickOnSet!();
                           },
                           style: const NeumorphicStyle(
                             color: Color(0xFFF0F0F3),
@@ -219,12 +233,13 @@ class _SetPositionState extends State<SetPosition> {
                         width: MediaQuery.of(context).size.width * 0.08,
                         child: NeumorphicButton(
                           onPressed: () {
+                            API_Manager().sendGcodeCommand("G53 G0 Z189");
                             API_Manager()
-                                .sendGcodeCommand("G53 G0 X${posX.text}");
+                                .sendGcodeCommand("G53 G0 X${_posX?.text}");
                             API_Manager()
-                                .sendGcodeCommand("G53 G0 Y${posY.text}");
+                                .sendGcodeCommand("G53 G0 Y${_posY?.text}");
                             API_Manager()
-                                .sendGcodeCommand("G53 G0 Z${posZ.text}");
+                                .sendGcodeCommand("G53 G0 Z${_posZ?.text}");
                           },
                           style: const NeumorphicStyle(
                             color: Color(0xFFF0F0F3),
@@ -244,14 +259,14 @@ class _SetPositionState extends State<SetPosition> {
                         width: MediaQuery.of(context).size.width * 0.08,
                         child: NeumorphicButton(
                           onPressed: () {
-                            posX.text = textX;
-                            posY.text = textY;
-                            posZ.text = textZ;
-                            posX.selection =
+                            _posX?.text = textX;
+                            _posY?.text = textY;
+                            _posZ?.text = textZ;
+                            _posX?.selection =
                                 TextSelection.collapsed(offset: textX.length);
-                            posY.selection =
+                            _posY?.selection =
                                 TextSelection.collapsed(offset: textY.length);
-                            posZ.selection =
+                            _posZ?.selection =
                                 TextSelection.collapsed(offset: textZ.length);
                           },
                           style: const NeumorphicStyle(
@@ -369,15 +384,82 @@ class SetPosState extends State<SetPos> {
           ],
         ),
       ),
+      // body: Container(
+      //   color: Colors.white,
+      //   child: ListView.builder(
+      //     itemCount: global.MyMachineN02Config.Positions?.length,
+      //     itemBuilder: (BuildContext context, int index) {
+      //       List<TextEditingController> listPosX = [TextEditingController()];
+      //       List<TextEditingController> listPosY = [TextEditingController()];
+      //       List<TextEditingController> listPosZ = [TextEditingController()];
+      //       return SetPosition(
+      //         posX: listPosX[index = 0],
+      //         posY: listPosY[index = 0],
+      //         posZ: listPosZ[index = 0],
+      //         onClickOnSet: () {
+      //           global.MyMachineN02Config.Positions?[index] = Position(
+      //             PosX: double.tryParse(listPosX[index].text),
+      //             PosY: double.tryParse(listPosY[index].text),
+      //             PosZ: double.tryParse(listPosZ[index].text),
+      //           );
+      //         },
+      //       );
+      //     },
+      //   ),
+      // ),
       body: Container(
         color: Colors.white,
-        child: ListView(
-          children: [
-            for (var i = 0;
-                i < global.MyMachineN02ConfigDeflaut.SetPosAffichage!;
-                i++)
-              SetPosition(),
-          ],
+        child: ListView.builder(
+          itemCount: global.MyMachineN02Config.Positions?.length ?? 0,
+          itemBuilder: (BuildContext context, int index) {
+            // Utilisez un contrôleur par élément de la liste
+            TextEditingController controllerPosX = TextEditingController();
+            TextEditingController controllerPosY = TextEditingController();
+            TextEditingController controllerPosZ = TextEditingController();
+
+            // Remplissez les contrôleurs avec les valeurs actuelles si disponibles
+            if (global.MyMachineN02Config.Positions != null &&
+                index < global.MyMachineN02Config.Positions!.length) {
+              controllerPosX.text = global
+                      .MyMachineN02Config.Positions![index].PosX
+                      ?.toString() ??
+                  '';
+              controllerPosY.text = global
+                      .MyMachineN02Config.Positions![index].PosY
+                      ?.toString() ??
+                  '';
+              controllerPosZ.text = global
+                      .MyMachineN02Config.Positions![index].PosZ
+                      ?.toString() ??
+                  '';
+            }
+
+            return SetPosition(
+              // Utilisez le contrôleur approprié pour chaque champ de position
+              posX: controllerPosX,
+              posY: controllerPosY,
+              posZ: controllerPosZ,
+              onClickOnSet: () {
+                // Mettez à jour la position dans la liste avec les nouvelles valeurs
+                global.MyMachineN02Config.Positions?[index] = Position(
+                  PosX: double.tryParse(controllerPosX.text),
+                  PosY: double.tryParse(controllerPosY.text),
+                  PosZ: double.tryParse(controllerPosZ.text),
+                );
+                API_Manager().upLoadAFile(
+                  "0:/sys/nwc-settings.json",
+                  global.MyMachineN02Config.toJson().length.toString(),
+                  Uint8List.fromList(
+                      machineN02ConfigToJson(global.MyMachineN02Config)
+                          .codeUnits),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Position n°${index + 1} enregistrée'),
+                  duration: const Duration(milliseconds: 600),
+                ));
+              },
+            );
+          },
         ),
       ),
     );

@@ -136,6 +136,8 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                 child: Text(
                     "Set la position actuel a '0' puis démarre le programme"),
                 onPressed: () async {
+                  global.secondsElapsedSinceBeginning = 0;
+                  global.isJobStartedByUser = true;
                   await API_Manager().sendGcodeCommand("G10 L20 P1 X0 Y0 Z0");
                   await API_Manager().sendGcodeCommand("G10 L20 P1");
                   await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
@@ -155,6 +157,8 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
             ElevatedButton(
               child: Text("Démarrer"),
               onPressed: () async {
+                global.secondsElapsedSinceBeginning = 0;
+                global.isJobStartedByUser = true;
                 await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
                     ListofGcodeFile!
                         .elementAt(selectedGcodeFileIndex)!

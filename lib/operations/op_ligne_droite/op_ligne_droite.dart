@@ -11,18 +11,70 @@ class OperationLigneDroite extends Operation {
   double ParamC = 1; // pronfondeur
   double ParamAP = 0.3; // profondeur de passe
 
-  double ParamDe = 0; // Décalage
+  OperationLigneDroite({
+    required super.OriginZ,
+    required super.OriginY,
+    required super.OriginX,
+    super.label,
+    required this.ParamA,
+    required this.ParamC,
+    required this.ParamDf,
+    required this.ParamAP,
+  });
 
-  OperationLigneDroite(
-      {required super.OriginZ,
-      required super.OriginY,
-      required super.OriginX,
-      super.label,
-      required this.ParamA,
-      required this.ParamC,
-      required this.ParamDf,
-      required this.ParamAP,
-      required this.ParamDe});
+  List<String> generateGcodeForLine(double startX, double startY, double startZ,
+      double lengthX, double lengthY, double totalDepth, double stepDepthInMM) {
+    List<String> gcodeTrajectories = [];
+
+    double endX = startX + lengthX;
+    double endY = startY + lengthY;
+
+    // Cas où lengthX ou lengthY est égal à 0
+    if (lengthX == 0) {
+      // Générer les passes successives uniquement selon l'axe Y
+      for (double currentDepth = stepDepthInMM;
+          currentDepth <= totalDepth;
+          currentDepth += stepDepthInMM) {
+        // Ajouter le Gcode pour descendre à la profondeur actuelle
+        gcodeTrajectories.add('G1 Z${startZ - currentDepth}');
+
+        // Ajouter le Gcode pour tracer la ligne à la profondeur actuelle
+        gcodeTrajectories.add('G1 Y$endY Z${startZ - currentDepth}');
+
+        // ... (La logique pour remonter à la surface, si nécessaire)
+      }
+    } else if (lengthY == 0) {
+      // Générer les passes successives uniquement selon l'axe X
+      for (double currentDepth = stepDepthInMM;
+          currentDepth <= totalDepth;
+          currentDepth += stepDepthInMM) {
+        // Ajouter le Gcode pour descendre à la profondeur actuelle
+        gcodeTrajectories.add('G1 Z${startZ - currentDepth}');
+
+        // Ajouter le Gcode pour tracer la ligne à la profondeur actuelle
+        gcodeTrajectories.add('G1 X$endX Z${startZ - currentDepth}');
+
+        // ... (La logique pour remonter à la surface, si nécessaire)
+      }
+    } else {
+      // Générer les passes successives pour une ligne oblique
+      for (double currentDepth = stepDepthInMM;
+          currentDepth <= totalDepth;
+          currentDepth += stepDepthInMM) {
+        // Ajouter le Gcode pour descendre à la profondeur actuelle
+        gcodeTrajectories.add('G1 Z${startZ - currentDepth}');
+
+        // Ajouter le Gcode pour tracer la ligne à la profondeur actuelle
+        gcodeTrajectories.add('G1 X$endX Y$endY Z${startZ - currentDepth}');
+
+        // ... (La logique pour remonter à la surface, si nécessaire)
+      }
+    }
+
+    // ... (La logique de remontée finale, si nécessaire)
+
+    return gcodeTrajectories;
+  }
 
   @override
   Future<void> construct() async {
@@ -34,67 +86,17 @@ class OperationLigneDroite extends Operation {
     trajectoires.add('M3 P0 S10000');
     trajectoires.add('G4 S2');
 
-    if (ParamDf == 0) {
-      for (double i = ParamAP; i <= ParamC; i += ParamAP) {
-        trajectoires.add('G0 Y' +
-            (OriginY).toString() +
-            ' X' +
-            (OriginX + ParamDe).toString());
-        trajectoires.add('G0 Z' + (-i).toString());
-        trajectoires.add('G1 Y' +
-            (OriginY + ParamA).toString() +
-            ' X' +
-            (OriginX + ParamDe).toString());
-        trajectoires.add('G0 Z2');
-      }
-      trajectoires.add('G0 Y' +
-          (OriginY).toString() +
-          ' X' +
-          (OriginX + ParamDe).toString());
-      trajectoires.add('G0 Z' + (-ParamC).toString());
-      trajectoires.add('G1 Y' +
-          (OriginY + ParamA).toString() +
-          ' X' +
-          (OriginX + ParamDe).toString());
-    } else if (ParamA == 0) {
-      for (double i = ParamAP; i <= ParamC; i += ParamAP) {
-        trajectoires.add('G0 Y' +
-            (OriginY + ParamDe).toString() +
-            ' X' +
-            (OriginX).toString());
-        trajectoires.add('G0 Z' + (-i).toString());
-        trajectoires.add('G1 Y' +
-            (OriginY + ParamDe).toString() +
-            ' X' +
-            (OriginX + ParamDf).toString());
-        trajectoires.add('G0 Z2');
-      }
-      trajectoires.add('G0 Y' +
-          (OriginY + ParamDe).toString() +
-          ' X' +
-          (OriginX).toString());
-      trajectoires.add('G0 Z' + (-ParamC).toString());
-      trajectoires.add('G1 Y' +
-          (OriginY + ParamDe).toString() +
-          ' X' +
-          (OriginX + ParamDf).toString());
-    } else {
-      for (double i = ParamAP; i <= ParamC; i += ParamAP) {
-        trajectoires.add('G0 X$OriginX Y$OriginY');
-        trajectoires.add('G0 Z' + (-i).toString());
-        trajectoires.add('G1 X' +
-            (OriginX + ParamDf).toString() +
-            ' Y' +
-            (OriginY + ParamA).toString());
-        trajectoires.add('G0 Z2');
-      }
-      trajectoires.add('G0 X$OriginX Y$OriginY');
-      trajectoires.add('G0 Z' + (-ParamC).toString());
-      trajectoires.add('G1 X' +
-          (OriginX + ParamDf).toString() +
-          ' Y' +
-          (OriginY + ParamA).toString());
-    }
+    List<String> generatedGcode = generateGcodeForLine(
+      super.OriginX,
+      super.OriginY,
+      super.OriginZ,
+      ParamDf,
+      ParamA,
+      ParamC,
+      ParamAP,
+    );
+
+    trajectoires.addAll(generatedGcode);
 
     trajectoires.add('G0 Z10');
     trajectoires.add('M5');

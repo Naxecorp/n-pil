@@ -24,6 +24,10 @@ bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
 int positions = 4;
+int secondsElapsedSinceBeginning =
+    0; // Temps écoulé depuis le début en secondes
+double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
+bool isJobStartedByUser = false; // Si le programme a bien été lancé par le User
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
 ObjectModelMove objectModelMove = ObjectModelMove();
@@ -42,7 +46,8 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
   Positions: [
     Position(PosX: 20, PosY: 40, PosZ: 100),
     Position(PosX: 21, PosY: 41, PosZ: 110),
-    Position(PosX: 22, PosY: 42, PosZ: 120)
+    Position(PosX: 22, PosY: 42, PosZ: 120),
+    Position(PosX: 23, PosY: 44, PosZ: 135)
   ],
   SetPosAffichage: 4,
 );
@@ -56,7 +61,8 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
   Positions: [
     Position(PosX: 20, PosY: 40, PosZ: 100),
     Position(PosX: 21, PosY: 41, PosZ: 110),
-    Position(PosX: 22, PosY: 42, PosZ: 120)
+    Position(PosX: 22, PosY: 42, PosZ: 120),
+    Position(PosX: 23, PosY: 44, PosZ: 135)
   ],
   SetPosAffichage: 4,
 );
@@ -89,3 +95,6 @@ StreamController<List<String>> controllerContentGcodeToDisplay =
     StreamController<List<String>>.broadcast();
 Stream streamcontrollerContentGcodeToDisplay =
     controllerContentGcodeToDisplay.stream;
+
+Timer? timer;
+bool timerStarted = false;

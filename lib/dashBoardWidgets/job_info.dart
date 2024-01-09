@@ -18,10 +18,6 @@ class JobInfo extends StatefulWidget {
 }
 
 class JobInfoState extends State<JobInfo> {
-  int secondsElapsedSinceBeginning =
-      0; // Temps écoulé depuis le début en secondes
-  late Timer timer;
-  double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
   String globalTimeValue = "00:00:00"; // Variable pour stocker le temps global
   bool isJobPaused = false;
   bool isPercentage = false; //dit si le programme a été a 100%
@@ -33,11 +29,14 @@ class JobInfoState extends State<JobInfo> {
         return AlertDialog(
           title: Text("Tâche terminée"),
           content: Text(
-              "Le programme est terminé. Durée du programme : $globalTimeValue"),
+              "Le programme est terminé. Durée du dernier programme : $globalTimeValue"),
           actions: <Widget>[
             ElevatedButton(
               child: Text("OK"),
               onPressed: () {
+                global.secondsElapsedSinceBeginning = 0;
+                global.timerStarted = false;
+                global.timer!.cancel();
                 Navigator.of(context).pop();
                 API_Manager().sendGcodeCommand("M106 P3 S0");
               },
@@ -45,6 +44,9 @@ class JobInfoState extends State<JobInfo> {
             ElevatedButton(
               child: Text("Recommencer Programme"),
               onPressed: () {
+                global.secondsElapsedSinceBeginning = 0;
+                global.timerStarted = false;
+                global.timer!.cancel();
                 Navigator.of(context).pop();
                 API_Manager()
                     .sendGcodeCommand('M32 "0:/gcodes/' + progName + '"');
@@ -54,6 +56,9 @@ class JobInfoState extends State<JobInfo> {
             ElevatedButton(
               child: Text("Dégager tête"),
               onPressed: () {
+                global.secondsElapsedSinceBeginning = 0;
+                global.timerStarted = false;
+                global.timer!.cancel();
                 Navigator.of(context).pop();
                 API_Manager().sendGcodeCommand("M106 P3 S0");
                 API_Manager().sendGcodeCommand("G53 G0 Z189").then((value) =>
@@ -67,74 +72,104 @@ class JobInfoState extends State<JobInfo> {
     );
   }
 
-  String formatDuration(int seconds) {
-    int hours = seconds ~/ 3600;
-    int minutes = (seconds % 3600) ~/ 60;
-    int remainingSeconds = seconds % 60;
-    return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}";
+  String formatDuration(Duration duration) {
+    // Extrayez les composants de la durée
+    int hours = duration.inHours;
+    int minutes = duration.inMinutes % 60;
+    int seconds = duration.inSeconds % 60;
+
+    // Créez une chaîne de format HH:MM:SS
+    String formattedDuration =
+        '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+
+    return formattedDuration;
+  }
+
+  // Fonction pour calculer le temps restant en fonction du temps écoulé et du pourcentage de progression
+  Duration calculateRemainingTime(int elapsedSeconds, double percentage) {
+    // Assurez-vous que le pourcentage est compris entre 0 et 100
+    if (percentage < 0.0 || percentage > 100.0) {
+      throw ArgumentError('Le pourcentage doit être compris entre 0 et 100.');
+    }
+
+    // Assurez-vous que le temps écoulé est positif
+    if (elapsedSeconds < 0.0) {
+      throw ArgumentError('Le temps écoulé ne peut pas être négatif.');
+    }
+
+    // Convertissez le pourcentage en une valeur entre 0 et 1
+    double percentageDecimal = percentage / 100.0;
+
+    // Vérifiez si le pourcentage est 100, dans ce cas, le temps restant est 0
+    if (percentageDecimal == 1.0) {
+      return Duration(seconds: 0);
+    }
+
+    // Calculez le temps restant en fonction du temps écoulé et du pourcentage
+    if (percentageDecimal > 0) {
+      double remainingSeconds =
+          (elapsedSeconds / percentageDecimal) - elapsedSeconds;
+      // Créez et renvoyez la durée du temps restant en secondes
+      return Duration(seconds: remainingSeconds.round());
+    } else {
+      return Duration(seconds: 0);
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    actualiserJobObjectModel();
+    if (!global.timerStarted && global.isJobStartedByUser == true) {
+      actualiserJobObjectModel();
+      global.timerStarted = true;
+    }
   }
 
   bool isPopupDisplayed = false;
 
   Future<void> actualiserJobObjectModel() async {
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!isJobPaused) {
+    global.timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!isJobPaused &&
+          global.machineObjectModel.result?.state?.status == "processing") {
+        global.secondsElapsedSinceBeginning++;
         setState(() {
-          secondsElapsedSinceBeginning++;
-          int hours = secondsElapsedSinceBeginning ~/ 3600;
-          int minutes = (secondsElapsedSinceBeginning % 3600) ~/ 60;
-          int seconds = secondsElapsedSinceBeginning % 60;
-          globalTimeValue =
-              "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+          Duration durreDepuisLeDebut =
+              Duration(seconds: global.secondsElapsedSinceBeginning);
+          globalTimeValue = formatDuration(durreDepuisLeDebut);
         });
       }
 
       API_Manager().getMachineJobObjectModel().then((job) {
         global.objectModelJob = job;
-        pourcentageComplet = (global.objectModelJob.result?.filePosition ?? 0) /
-            (global.objectModelJob.result?.file?.size?.toInt() ?? 1) *
-            100;
+        global.pourcentageComplet =
+            (global.objectModelJob.result?.filePosition ?? 0) /
+                (global.objectModelJob.result?.file?.size?.toInt() ?? 1) *
+                100;
 
         if (global.machineObjectModel.result?.state?.status == "idle" &&
-            !isPopupDisplayed &&
-            isPercentage == true) {
+            global.isJobStartedByUser == true) {
           isPopupDisplayed = true;
+          global.isJobStartedByUser = false;
+          timer.cancel();
+          global.timer!.cancel();
+          global.secondsElapsedSinceBeginning = 0;
           showCompletionPopup(context);
+          global.timerStarted = false;
         }
-        if (pourcentageComplet == 100) {
+        if (global.pourcentageComplet == 100) {
           isPercentage = true;
         }
       });
-      if (global.myEthernet_connection.isConnected == false) timer.cancel();
     });
   }
 
   @override
   void dispose() {
-    timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    int hours = secondsElapsedSinceBeginning ~/ 3600;
-    int minutes = (secondsElapsedSinceBeginning % 3600) ~/ 60;
-    int seconds = secondsElapsedSinceBeginning % 60;
-    int tempsTotalEnSecondes = 0;
-
-    if (pourcentageComplet != 0.0) {
-      int tempsTotalEnSecondes =
-          (secondsElapsedSinceBeginning / (pourcentageComplet / 100)).toInt();
-    }
-    int tempsRestantEnSecondes =
-        tempsTotalEnSecondes - secondsElapsedSinceBeginning;
-
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -229,7 +264,7 @@ class JobInfoState extends State<JobInfo> {
                             style: TextStyle(color: Color(0xFF494949)),
                           ),
                           Text(
-                            "${formatDuration(tempsRestantEnSecondes)}",
+                            "${formatDuration(calculateRemainingTime(global.secondsElapsedSinceBeginning, global.pourcentageComplet))}",
                             style: const TextStyle(
                                 fontWeight: FontWeight.w100,
                                 fontSize: 15,
@@ -245,7 +280,7 @@ class JobInfoState extends State<JobInfo> {
                             style: const TextStyle(color: Color(0xFF494949)),
                           ),
                           Text(
-                            "${pourcentageComplet.round().toString()}%",
+                            "${global.pourcentageComplet.round().toString()}%",
                             style: const TextStyle(
                                 fontWeight: FontWeight.w100,
                                 fontSize: 15,

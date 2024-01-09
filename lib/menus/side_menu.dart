@@ -185,7 +185,7 @@ class _SideMenu extends State<SideMenu> {
               ),
               color: pageToShow == 8 ? Color(0xFF9A9A9A) : Colors.white,
               child: ListTile(
-                enabled: false,
+                enabled: true,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),

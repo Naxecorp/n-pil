@@ -324,6 +324,7 @@ class ParametreScreenState extends State<ParametreScreen> {
                                     width: MediaQuery.of(context).size.width *
                                         0.05,
                                     child: TextFormField(
+                                      enabled: false,
                                       textAlign: TextAlign.end,
                                       initialValue: global
                                           .MyMachineN02ConfigDeflaut
