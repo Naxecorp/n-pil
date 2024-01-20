@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../../globals_var.dart' as global;
@@ -30,6 +31,32 @@ class _DeplacementMachine extends State<DeplacementMachine> {
   bool zCapteur = false;
   bool xCapteur = false;
   bool yCapteur = false;
+
+  void setTemperaturePopUp(BuildContext context, String heaterToSet) {
+    TextEditingController _controllerTempe = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Programmer température :"),
+          content: TextFormField(
+            controller: _controllerTempe,
+            onFieldSubmitted: (value) {
+              if (heaterToSet == "head")
+                API_Manager()
+                    .sendGcodeCommand("M104 S$value")
+                    .then((value) => API_Manager().sendrr_reply());
+              if (heaterToSet == "bed")
+                API_Manager()
+                    .sendGcodeCommand("M140 S$value")
+                    .then((value) => API_Manager().sendrr_reply());
+              Navigator.of(context).pop();
+            },
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -339,139 +366,239 @@ class _DeplacementMachine extends State<DeplacementMachine> {
           ),
           Flexible(
             flex: 5,
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: Container(
-                      //color: Colors.green,
-                      child: Joystick(
-                        size: 70,
-                        iconColor: const Color(0xFF707585),
-                        onUpPressed: () async {
-                          if (MovesWithoutEndstop)
-                            await API_Manager()
-                                .sendGcodeCommand(
-                                    "M120\nG91\nG1 Y$stepValue H2 F${global.SpeedValue}\nM121\n")
-                                .then((value) => print(value));
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 Y$stepValue F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                        onDownPressed: () async {
-                          if (MovesWithoutEndstop)
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 H2 Y-$stepValue F${global.SpeedValue}\nM121\n");
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 Y-$stepValue F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                        onLeftPressed: () async {
-                          if (MovesWithoutEndstop)
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 H2 X-$stepValue F${global.SpeedValue}\nM121\n");
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 X-$stepValue F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                        onRightPressed: () async {
-                          if (MovesWithoutEndstop)
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 X$stepValue H2 F${global.SpeedValue}\nM121\n");
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 X$stepValue F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                      ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Flexible(
+                  flex: 3,
+                  child: Container(
+                    //color: Colors.green,
+                    child: Joystick(
+                      size: 70,
+                      iconColor: const Color(0xFF707585),
+                      onUpPressed: () async {
+                        if (MovesWithoutEndstop)
+                          await API_Manager()
+                              .sendGcodeCommand(
+                                  "M120\nG91\nG1 Y$stepValue H2 F${global.SpeedValue}\nM121\n")
+                              .then((value) => print(value));
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 Y$stepValue F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
+                      onDownPressed: () async {
+                        if (MovesWithoutEndstop)
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 H2 Y-$stepValue F${global.SpeedValue}\nM121\n");
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 Y-$stepValue F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
+                      onLeftPressed: () async {
+                        if (MovesWithoutEndstop)
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 H2 X-$stepValue F${global.SpeedValue}\nM121\n");
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 X-$stepValue F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
+                      onRightPressed: () async {
+                        if (MovesWithoutEndstop)
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 X$stepValue H2 F${global.SpeedValue}\nM121\n");
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 X$stepValue F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
                     ),
                   ),
-                  Flexible(
-                    flex: 1,
-                    child: Container(
-                      //height: 300,
-                      //width: 300,
-                      //color: Colors.yellow,
-                      child: Joystick2(
-                        size: 70,
-                        iconColor: const Color(0xFF707585),
-                        onUpPressed: () async {
-                          if (MovesWithoutEndstop)
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 H2 Z$stepValue F${global.SpeedValue}\nM121\n");
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 Z$stepValue F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                        onDownPressed: () async {
-                          var Zstepdown;
-                          if (stepValue > 10)
-                            Zstepdown = 10;
-                          else
-                            Zstepdown = stepValue;
-                          if (MovesWithoutEndstop)
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 H2 Z-$Zstepdown F${global.SpeedValue}\nM121\n");
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 Z-$Zstepdown F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                        onRotateALPressed: () async {
-                          if (MovesWithoutEndstop)
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 A$stepValue H2 F${global.SpeedValue}\nM121\n");
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 A$stepValue F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                        onRotateARPressed: () async {
-                          if (MovesWithoutEndstop)
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 A-$stepValue H2 F${global.SpeedValue}\nM121\n");
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 A-$stepValue F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                        onRotateCRPressed: () async {
-                          if (MovesWithoutEndstop)
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 C$stepValue H2 F${global.SpeedValue}\nM121\n");
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 C$stepValue F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                        onRotateCLPressed: () async {
-                          if (MovesWithoutEndstop)
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 C-$stepValue H2 F${global.SpeedValue}\nM121\n");
-                          else
-                            await API_Manager().sendGcodeCommand(
-                                "M120\nG91\nG1 C-$stepValue F${global.SpeedValue}\nM121\n");
-                          API_Manager().sendrr_reply();
-                        },
-                      ),
+                ),
+                Flexible(
+                  flex: 3,
+                  child: Container(
+                    child: Joystick2(
+                      size: 70,
+                      iconColor: const Color(0xFF707585),
+                      onUpPressed: () async {
+                        if (MovesWithoutEndstop)
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 H2 Z$stepValue F${global.SpeedValue}\nM121\n");
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 Z$stepValue F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
+                      onDownPressed: () async {
+                        var Zstepdown;
+                        if (stepValue > 10)
+                          Zstepdown = 10;
+                        else
+                          Zstepdown = stepValue;
+                        if (MovesWithoutEndstop)
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 H2 Z-$Zstepdown F${global.SpeedValue}\nM121\n");
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 Z-$Zstepdown F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
+                      onRotateALPressed: () async {
+                        if (MovesWithoutEndstop)
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 A$stepValue H2 F${global.SpeedValue}\nM121\n");
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 A$stepValue F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
+                      onRotateARPressed: () async {
+                        if (MovesWithoutEndstop)
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 A-$stepValue H2 F${global.SpeedValue}\nM121\n");
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 A-$stepValue F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
+                      onRotateCRPressed: () async {
+                        if (MovesWithoutEndstop)
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 C$stepValue H2 F${global.SpeedValue}\nM121\n");
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 C$stepValue F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
+                      onRotateCLPressed: () async {
+                        if (MovesWithoutEndstop)
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 C-$stepValue H2 F${global.SpeedValue}\nM121\n");
+                        else
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 C-$stepValue F${global.SpeedValue}\nM121\n");
+                        API_Manager().sendrr_reply();
+                      },
                     ),
                   ),
-                ],
-              ),
+                ),
+                Flexible(
+                    flex: 1,
+                    child: ListView(
+                      children: [
+                        global.MyMachineN02Config.HasFanOnEnclosure == 1
+                            ? Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: AspectRatio(
+                                  aspectRatio: 1,
+                                  //salut
+                                  child: NeumorphicButton(
+                                    style: const NeumorphicStyle(
+                                      color: Color(0xFFF0F0F3),
+                                    ),
+                                    onPressed: () {
+                                      if ((global.machineObjectModel.result
+                                                  ?.fans?[4]!.actualValue ??
+                                              0) >
+                                          0)
+                                        API_Manager()
+                                            .sendGcodeCommand("M106 P4 S0")
+                                            .then((value) {
+                                          setState(() {});
+                                        });
+                                      else
+                                        API_Manager()
+                                            .sendGcodeCommand("M106 P4 S255")
+                                            .then((value) {
+                                          setState(() {});
+                                        });
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text("Ventil."),
+                                        Icon(Icons.air_sharp)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                        global.MyMachineN02Config.HasLedOnEnclosure == 1
+                            ? Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: AspectRatio(
+                                  aspectRatio: 1,
+                                  child: NeumorphicButton(
+                                    style: const NeumorphicStyle(
+                                      color: Color(0xFFF0F0F3),
+                                    ),
+                                    onPressed: (() {
+                                      API_Manager()
+                                          .sendGcodeCommand("M42 P4 S1");
+                                      print("light off");
+                                    }),
+                                    child: GestureDetector(
+                                      onDoubleTap: () {
+                                        API_Manager()
+                                            .sendGcodeCommand("M42 P4 S0");
+                                        print("light on");
+                                      },
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Text("Eclaira."),
+                                          Icon(Icons.light)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                        global.MyMachineN02Config.HasHeatBed == 1
+                            ? Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: AspectRatio(
+                                  aspectRatio: 1,
+                                  child: NeumorphicButton(
+                                    style: const NeumorphicStyle(
+                                      color: Color(0xFFF0F0F3),
+                                    ),
+                                    onPressed: () {
+                                      setTemperaturePopUp(context, "bed");
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text("Bed"),
+                                        Text(global.machineObjectModel.result
+                                                ?.heat?.heaters?[0].current
+                                                .toString() ??
+                                            "..." +
+                                                "/ ${(global.machineObjectModel.result?.heat?.heaters?[0].standby) ?? 0}"),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                      ],
+                    )),
+              ],
             ),
           ),
           Flexible(
               flex: 3,
               child: Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
                   children: [
                     global.AdminLogged == true
                         ? Container(

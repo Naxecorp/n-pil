@@ -72,22 +72,19 @@ class DashboardScreenState extends State<DashboardScreen> {
 
         await Future.delayed(Duration(seconds: 3));
         // Récupère le resultat du GCode
-        await API_Manager().sendGcodeCommand("G53 G0 X${posX}").then((value) =>
-            API_Manager()
-                .sendrr_reply()
-                .then((response) => global.ReplyList.add(response)));
+        await API_Manager()
+            .sendGcodeCommand("G53 G0 X${posX}")
+            .then((value) => API_Manager().sendrr_reply());
         await Future.delayed(Duration(seconds: 3));
         // Récupère le resultat du GCode
-        await API_Manager().sendGcodeCommand("G53 G0 Y${posY}").then((value) =>
-            API_Manager()
-                .sendrr_reply()
-                .then((response) => global.ReplyList.add(response)));
+        await API_Manager()
+            .sendGcodeCommand("G53 G0 Y${posY}")
+            .then((value) => API_Manager().sendrr_reply());
         await Future.delayed(Duration(seconds: 3));
         // Récupère le resultat du GCode
-        await API_Manager().sendGcodeCommand("G53 G0 Z${posZ}").then((value) =>
-            API_Manager()
-                .sendrr_reply()
-                .then((response) => global.ReplyList.add(response)));
+        await API_Manager()
+            .sendGcodeCommand("G53 G0 Z${posZ}")
+            .then((value) => API_Manager().sendrr_reply());
 
         Navigator.of(context).pop();
       }
@@ -211,10 +208,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                         onSubmitted: (Commande) {
                           setState(() {
                             ManualGcodeComand.clear();
-                            API_Manager().sendGcodeCommand(Commande).then(
-                                (value) => API_Manager().sendrr_reply().then(
-                                    (response) =>
-                                        global.ReplyList.add(response)));
+                            API_Manager()
+                                .sendGcodeCommand(Commande)
+                                .then((value) => API_Manager().sendrr_reply());
                           });
                           print(Commande);
                         },
@@ -319,9 +315,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                     MachineMode.laser
                                                 ? LaserToolPower()
                                                 : Container(
-                                                    child: Text(
-                                                      "Pas d'outils détectés",
-                                                    ),
+                                                    child: Text("unkown mode"),
                                                   ),
                                   ),
                                 ),

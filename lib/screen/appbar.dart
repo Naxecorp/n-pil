@@ -60,9 +60,7 @@ class GlobalAppBarState extends State<GlobalAppBar> {
                         setState(() {
                           ManualGcodeComand.clear();
                           API_Manager().sendGcodeCommand(Commande).then(
-                              (value) => API_Manager().sendrr_reply().then(
-                                  (response) =>
-                                      global.ReplyList.add(response)));
+                              (value) => API_Manager().sendrr_reply());
                         });
                         print(Commande);
                       },

@@ -44,6 +44,7 @@ class ModeMachineState extends State<ModeMachine> {
                     .getMachineMode()
                     .then((value) => global.machineMode = value);
                 setState(() {});
+                await API_Manager().sendGcodeCommand('M98 P"extrudercrea.g"');
               },
               child: const Text(
                 "FFF",
@@ -58,7 +59,7 @@ class ModeMachineState extends State<ModeMachine> {
               value: global.MachineMode.laser,
               groupValue: global.machineMode,
               onChanged: (global.MachineMode? MMvalue) async {
-                await API_Manager().sendGcodeCommand('M452 C"out5-" F100');
+                await API_Manager().sendGcodeCommand('M98 P"lasercrea.g"');
                 await API_Manager()
                     .getMachineMode()
                     .then((value) => global.machineMode = value);
@@ -82,6 +83,7 @@ class ModeMachineState extends State<ModeMachine> {
                     .getMachineMode()
                     .then((value) => global.machineMode = value);
                 setState(() {});
+                await API_Manager().sendGcodeCommand('M98 P"spindlecrea.g"').then((value) => API_Manager().sendrr_reply());
               },
               child: const Text(
                 "CNC",
@@ -92,6 +94,5 @@ class ModeMachineState extends State<ModeMachine> {
         ),
       ),
     );
-    throw UnimplementedError();
   }
 }

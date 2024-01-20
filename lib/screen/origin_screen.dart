@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/globals_var.dart';
@@ -59,8 +58,8 @@ class OriginScreenState extends State<OriginScreen> {
           children: [
             Flexible(
                 flex: 2,
-                child:
-                    Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
+                child: Container(
+                    child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
                 flex: 10,
                 child: Container(
@@ -84,10 +83,9 @@ class OriginScreenState extends State<OriginScreen> {
                         onSubmitted: (Commande) {
                           setState(() {
                             ManualGcodeComand.clear();
-                            API_Manager().sendGcodeCommand(Commande).then(
-                                (value) => API_Manager().sendrr_reply().then(
-                                    (response) =>
-                                        global.ReplyList.add(response)));
+                            API_Manager()
+                                .sendGcodeCommand(Commande)
+                                .then((value) => API_Manager().sendrr_reply());
                           });
                           print(Commande);
                         },
@@ -203,7 +201,8 @@ class OriginScreenState extends State<OriginScreen> {
                                     ),
                                     onPressed: () {
                                       ZSaved = global.machineObjectModel.result!
-                                          .move!.axes![2].userPosition!.toDouble();
+                                          .move!.axes![2].userPosition!
+                                          .toDouble();
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(

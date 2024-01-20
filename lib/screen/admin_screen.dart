@@ -139,7 +139,9 @@ class AdminScreenState extends State<AdminScreen>
   var selectedFileIndex = 0;
 
   void _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+     FilePickerResult? result =
+        await FilePicker.platform.pickFiles(withData: true);
+        
     if (result == null) {
       isLoading = false;
       return;
@@ -163,178 +165,9 @@ class AdminScreenState extends State<AdminScreen>
     });
   }
 
-  void goodDiag(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Votre machine fonctionne correctement"),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text("Ok"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void badDiag(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-              "Veuillez verifiez les éléments mécaniques et relancer. Si le probleme perciste merci de contacter Naxe."),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text("Ok"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> testDiagX() async {
-    API_Manager().sendGcodeCommand("G28 X F500"); //1
-    API_Manager().sendGcodeCommand("G1 H3 X-10"); //2
-    await Future.delayed(Duration(seconds: 6));
-    double init = global.machineObjectModel.result!.move!.axes![0].userPosition!
-        .toDouble(); //3
-    print(init);
-    API_Manager().sendGcodeCommand("G1 X170 F3000"); //4
-    for (int i = 0; i < 10; i++) {
-      API_Manager().sendGcodeCommand("G1 H3 X175");
-      API_Manager().sendGcodeCommand("G1 H3 X165");
-    }
-    API_Manager().sendGcodeCommand("G1 H3 X-500 F500");
-    await Future.delayed(Duration(seconds: 45));
-    double after = global
-        .machineObjectModel.result!.move!.axes![0].userPosition!
-        .toDouble(); //7
-    if (after < (init - 0.5) || after > (init + 0.5)) {
-      badDiag(context);
-    } else {
-      goodDiag(context);
-    }
-  }
-
-  Future<void> testDiagY() async {
-    API_Manager().sendGcodeCommand("G28 Y F500"); //1
-    API_Manager().sendGcodeCommand("G1 H3 Y-10"); //2
-    await Future.delayed(Duration(seconds: 6));
-    double init = global.machineObjectModel.result!.move!.axes![1].userPosition!
-        .toDouble(); //3
-    print(init);
-    await API_Manager().sendGcodeCommand("G1 Y170 F3000"); //4
-    for (int i = 0; i < 10; i++) {
-      API_Manager().sendGcodeCommand("G1 H3 Y175");
-      API_Manager().sendGcodeCommand("G1 H3 Y165");
-    }
-    API_Manager().sendGcodeCommand("G1 H3 Y-500 F500");
-
-    await Future.delayed(Duration(seconds: 45));
-    double after = global
-        .machineObjectModel.result!.move!.axes![1].userPosition!
-        .toDouble(); //7
-    if (after < (init - 0.5) || after > (init + 0.5)) {
-      badDiag(context);
-      API_Manager().sendGcodeCommand("G1 Y0");
-    } else {
-      goodDiag(context);
-      API_Manager().sendGcodeCommand("G1 Y0");
-    }
-  }
-
   bool containsSpecialCharacters(String text) {
     final RegExp specialCharacters = RegExp(r'[!@#\$%^&*(),.?":{}|<>]');
     return specialCharacters.hasMatch(text);
-  }
-
-  void loadingPopup(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible:
-          false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Diagnostique en cours"),
-          content:
-              CircularProgressIndicator(), // Ajoute une animation de chargement (cercle tournant)
-          actions: <Widget>[],
-        );
-      },
-    );
-    Timer(Duration(seconds: 45), () {
-      Navigator.of(context).pop(); // Ferme la boîte de dialogue
-    });
-  }
-
-  // Fonction de Diagnostique Axe X
-  void popupDiagnostiqueX(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Voulez vous lancer le test diagnostique de l'axe X?"),
-          content: Text(""),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text("Oui"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                //loadingPopup(context);
-                testDiagX();
-                Navigator.pushNamed(context, '/dashboard');
-              },
-            ),
-            ElevatedButton(
-              child: Text("Non"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Fonction de Diagnostique Axe Y
-  void popupDiagnostiqueY(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Voulez vous lancer le test diagnostique de l'axe Y?"),
-          content: Text(""),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text("Oui"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                //loadingPopup(context);
-                testDiagY();
-                Navigator.pushNamed(context, '/dashboard');
-              },
-            ),
-            ElevatedButton(
-              child: Text("Non"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -378,10 +211,9 @@ class AdminScreenState extends State<AdminScreen>
                         onSubmitted: (Commande) {
                           setState(() {
                             ManualGcodeComand.clear();
-                            API_Manager().sendGcodeCommand(Commande).then(
-                                (value) => API_Manager().sendrr_reply().then(
-                                    (response) =>
-                                        global.ReplyList.add(response)));
+                            API_Manager()
+                                .sendGcodeCommand(Commande)
+                                .then((value) => API_Manager().sendrr_reply());
                           });
                           print(Commande);
                         },
@@ -780,10 +612,7 @@ class AdminScreenState extends State<AdminScreen>
                               if (global.AdminLogged) {
                                 await API_Manager()
                                     .sendGcodeCommand('M98 P"config.g"')
-                                    .then((_) => API_Manager()
-                                        .sendrr_reply()
-                                        .then((response) =>
-                                            global.ReplyList.add(response!)));
+                                    .then((_) => API_Manager().sendrr_reply());
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -825,11 +654,9 @@ class AdminScreenState extends State<AdminScreen>
                                     "M905 P${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} S${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}");
                                 API_Manager()
                                     .sendGcodeCommand(
-                                        "M98 P${global.ListofSysFile?.elementAt(global.selectedFileSysIndex)?.name}")
-                                    .then((value) => API_Manager()
-                                        .sendrr_reply()
-                                        .then((response) =>
-                                            global.ReplyList.add(response)));
+                                        'M98 P"${global.ListofSysFile?.elementAt(global.selectedFileSysIndex)?.name}"')
+                                    .then((value) =>
+                                        API_Manager().sendrr_reply());
                               }
                             },
                             style: ElevatedButton.styleFrom(

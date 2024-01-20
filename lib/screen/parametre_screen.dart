@@ -111,10 +111,9 @@ class ParametreScreenState extends State<ParametreScreen> {
                         onSubmitted: (Commande) {
                           setState(() {
                             ManualGcodeComand.clear();
-                            API_Manager().sendGcodeCommand(Commande).then(
-                                (value) => API_Manager().sendrr_reply().then(
-                                    (response) =>
-                                        global.ReplyList.add(response)));
+                            API_Manager()
+                                .sendGcodeCommand(Commande)
+                                .then((value) => API_Manager().sendrr_reply());
                           });
                           print(Commande);
                         },
@@ -137,7 +136,7 @@ class ParametreScreenState extends State<ParametreScreen> {
           children: [
             Flexible(
               flex: 6,
-              child: Column(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Flexible(
@@ -333,6 +332,128 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       onChanged: (text) {
                                         global.MyMachineN02ConfigDeflaut
                                                 .SetPosAffichage =
+                                            int.tryParse(text)!;
+                                      },
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5)),
+                                          gapPadding: 5.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
+                                    width: 200,
+                                    child: Text(
+                                      'Plateau chauffant:',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.05,
+                                    child: TextFormField(
+                                      textAlign: TextAlign.end,
+                                      initialValue: global
+                                          .MyMachineN02Config.HasHeatBed
+                                          .toString(),
+                                      onChanged: (text) {
+                                        global.MyMachineN02Config.HasHeatBed =
+                                            int.tryParse(text)!;
+                                      },
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5)),
+                                          gapPadding: 5.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
+                                    width: 200,
+                                    child: Text(
+                                      'Ventilateur Caisson',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.05,
+                                    child: TextFormField(
+                                      textAlign: TextAlign.end,
+                                      initialValue: global
+                                          .MyMachineN02Config.HasFanOnEnclosure
+                                          .toString(),
+                                      onChanged: (text) {
+                                        global.MyMachineN02Config
+                                                .HasFanOnEnclosure =
+                                            int.tryParse(text)!;
+                                      },
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5)),
+                                          gapPadding: 5.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
+                                    width: 200,
+                                    child: Text(
+                                      'Eclairage Caisson',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.05,
+                                    child: TextFormField(
+                                      textAlign: TextAlign.end,
+                                      initialValue: global
+                                          .MyMachineN02Config.HasLedOnEnclosure
+                                          .toString(),
+                                      onChanged: (text) {
+                                        global.MyMachineN02Config
+                                                .HasLedOnEnclosure =
                                             int.tryParse(text)!;
                                       },
                                       decoration: InputDecoration(

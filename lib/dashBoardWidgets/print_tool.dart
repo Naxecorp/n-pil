@@ -35,15 +35,13 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
             controller: _controllerTempe,
             onFieldSubmitted: (value) {
               if (heaterToSet == "head")
-                API_Manager().sendGcodeCommand("M104 S$value").then((value) =>
-                    API_Manager()
-                        .sendrr_reply()
-                        .then((response) => global.ReplyList.add(response)));
+                API_Manager()
+                    .sendGcodeCommand("M104 S$value")
+                    .then((value) => API_Manager().sendrr_reply());
               if (heaterToSet == "bed")
-                API_Manager().sendGcodeCommand("M140 S$value").then((value) =>
-                    API_Manager()
-                        .sendrr_reply()
-                        .then((response) => global.ReplyList.add(response)));
+                API_Manager()
+                    .sendGcodeCommand("M140 S$value")
+                    .then((value) => API_Manager().sendrr_reply());
               Navigator.of(context).pop();
             },
           ),
@@ -189,10 +187,8 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                               API_Manager()
                                   .sendGcodeCommand(
                                       "M106 P0 S${global.VentilatorFan}")
-                                  .then((value) => API_Manager()
-                                      .sendrr_reply()
-                                      .then((response) =>
-                                          global.ReplyList.add(response)));
+                                  .then(
+                                      (value) => API_Manager().sendrr_reply());
                             });
                           },
                           child: const Icon(
@@ -216,10 +212,8 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                               API_Manager()
                                   .sendGcodeCommand(
                                       "M106 P0 S${global.VentilatorFan}")
-                                  .then((value) => API_Manager()
-                                      .sendrr_reply()
-                                      .then((response) =>
-                                          global.ReplyList.add(response)));
+                                  .then(
+                                      (value) => API_Manager().sendrr_reply());
                             });
                           },
                           child: const Icon(

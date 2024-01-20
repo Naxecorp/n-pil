@@ -19,7 +19,7 @@ import 'service/system/SystemsFilesElement.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.4.0";
+String version = "Version 1.4.1";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -50,6 +50,9 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
     Position(PosX: 23, PosY: 44, PosZ: 135)
   ],
   SetPosAffichage: 4,
+  HasHeatBed: 0,
+  HasFanOnEnclosure: 0,
+  HasLedOnEnclosure: 0,
 );
 
 MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
@@ -65,6 +68,9 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     Position(PosX: 23, PosY: 44, PosZ: 135)
   ],
   SetPosAffichage: 4,
+  HasHeatBed: 1,
+  HasFanOnEnclosure: 1,
+  HasLedOnEnclosure: 1,
 );
 
 Ethernet_Connection myEthernet_connection = Ethernet_Connection();

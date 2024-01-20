@@ -99,10 +99,9 @@ class JobScreenState extends State<JobScreen> {
                         onSubmitted: (Commande) {
                           setState(() {
                             ManualGcodeComand.clear();
-                            API_Manager().sendGcodeCommand(Commande).then(
-                                (value) => API_Manager().sendrr_reply().then(
-                                    (response) =>
-                                        global.ReplyList.add(response)));
+                            API_Manager()
+                                .sendGcodeCommand(Commande)
+                                .then((value) => API_Manager().sendrr_reply());
                           });
                           print(Commande);
                         },
@@ -479,11 +478,8 @@ class JobScreenState extends State<JobScreen> {
                                     } else {
                                       API_Manager()
                                           .sendGcodeCommand("M25")
-                                          .then((value) => API_Manager()
-                                              .sendrr_reply()
-                                              .then((response) =>
-                                                  global.ReplyList.add(
-                                                      response)));
+                                          .then((value) =>
+                                              API_Manager().sendrr_reply());
                                     }
                                     setState(() {});
                                   },

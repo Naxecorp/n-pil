@@ -20,6 +20,9 @@ class MachineN02Config {
   PalpeurOutil? Palpeur;
   List<Position>? Positions;
   int? SetPosAffichage;
+  int? HasHeatBed;
+  int? HasFanOnEnclosure;
+  int? HasLedOnEnclosure;
 
   MachineN02Config(
       {this.IP,
@@ -29,7 +32,7 @@ class MachineN02Config {
       this.DefaultMode,
       this.Palpeur,
       this.Positions,
-      this.SetPosAffichage});
+      this.SetPosAffichage, this.HasHeatBed,this.HasFanOnEnclosure,this.HasLedOnEnclosure});
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
@@ -49,6 +52,9 @@ class MachineN02Config {
             ? null
             : PalpeurOutil.fromJson(json["Palpeur"]),
         SetPosAffichage: json["SetPosAffichage"],
+        HasHeatBed: json["HasHeatBed"],
+        HasFanOnEnclosure: json["HasFanOnEnclosure"],
+        HasLedOnEnclosure: json["HasLedOnEnclosure"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -62,5 +68,8 @@ class MachineN02Config {
             : List<dynamic>.from(Positions!.map((x) => x.toJson())),
         "Palpeur": Palpeur!.toJson(),
         "SetPosAffichage": SetPosAffichage,
+        "HasBedOnlaser": HasHeatBed,
+        "HasFanOnEnclosure": HasFanOnEnclosure,
+        "HasLedOnEnclosure": HasLedOnEnclosure,
       };
 }
