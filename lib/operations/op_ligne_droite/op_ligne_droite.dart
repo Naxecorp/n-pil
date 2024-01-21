@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
-import 'dart:math';
+import '/globals_var.dart' as global;
 import '../operation.dart';
 
 class OperationLigneDroite extends Operation {
@@ -29,6 +27,8 @@ class OperationLigneDroite extends Operation {
     double endX = startX + lengthX;
     double endY = startY + lengthY;
 
+    gcodeTrajectories.add('G1 X${startX} Y${startY}');
+
     // Cas où lengthX ou lengthY est égal à 0
     if (lengthX == 0) {
       // Générer les passes successives uniquement selon l'axe Y
@@ -39,7 +39,12 @@ class OperationLigneDroite extends Operation {
         gcodeTrajectories.add('G1 Z${startZ - currentDepth}');
 
         // Ajouter le Gcode pour tracer la ligne à la profondeur actuelle
-        gcodeTrajectories.add('G1 Y$endY Z${startZ - currentDepth}');
+        if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 Y$endY Z${startZ - currentDepth} S100');
+        else gcodeTrajectories.add('G1 Y$endY Z${startZ - currentDepth}');
+        if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 Z10 S0');
+        else gcodeTrajectories.add('G1 Z10');
+        gcodeTrajectories.add('G1 Y$startY');
+
 
         // ... (La logique pour remonter à la surface, si nécessaire)
       }
@@ -52,8 +57,11 @@ class OperationLigneDroite extends Operation {
         gcodeTrajectories.add('G1 Z${startZ - currentDepth}');
 
         // Ajouter le Gcode pour tracer la ligne à la profondeur actuelle
-        gcodeTrajectories.add('G1 X$endX Z${startZ - currentDepth}');
-
+        if(global.machineMode==global.MachineMode.laser) gcodeTrajectories.add('G1 X$endX Z${startZ - currentDepth} S100');
+        else gcodeTrajectories.add('G1 X$endX Z${startZ - currentDepth}');
+        if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 Z10 S0');
+        else gcodeTrajectories.add('G1 Z10');
+        gcodeTrajectories.add('G1 X$startX');
         // ... (La logique pour remonter à la surface, si nécessaire)
       }
     } else {
@@ -65,12 +73,15 @@ class OperationLigneDroite extends Operation {
         gcodeTrajectories.add('G1 Z${startZ - currentDepth}');
 
         // Ajouter le Gcode pour tracer la ligne à la profondeur actuelle
-        gcodeTrajectories.add('G1 X$endX Y$endY Z${startZ - currentDepth}');
-
+        if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 X$endX Y$endY Z${startZ - currentDepth} S100');
+        else gcodeTrajectories.add('G1 X$endX Y$endY Z${startZ - currentDepth}');
+        if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 Z10 S0');
+        else gcodeTrajectories.add('G1 Z10');
+        gcodeTrajectories.add('G1 X$startX Y$startY');
         // ... (La logique pour remonter à la surface, si nécessaire)
       }
     }
-
+    
     // ... (La logique de remontée finale, si nécessaire)
 
     return gcodeTrajectories;
@@ -79,11 +90,12 @@ class OperationLigneDroite extends Operation {
   @override
   Future<void> construct() async {
     trajectoires.add(';$label');
-    trajectoires.add('M453');
     trajectoires.add('G0 Z10 F1500');
+    if (global.machineMode == global.MachineMode.cnc) {
+      trajectoires.add('M5');
+      trajectoires.add('M3 P0 S10000');
+    }
 
-    trajectoires.add('M5');
-    trajectoires.add('M3 P0 S10000');
     trajectoires.add('G4 S2');
 
     List<String> generatedGcode = generateGcodeForLine(
@@ -99,8 +111,7 @@ class OperationLigneDroite extends Operation {
     trajectoires.addAll(generatedGcode);
 
     trajectoires.add('G0 Z10');
-    trajectoires.add('M5');
-
+    if (global.machineMode == global.MachineMode.cnc) trajectoires.add('M5');
     trajectoires.add('G0 X$OriginX Y$OriginY');
     trajectoires.add(';End of $label\n');
     trajectoires.forEach((element) {
