@@ -25,6 +25,11 @@ class ParametreScreen extends StatefulWidget {
 class ParametreScreenState extends State<ParametreScreen> {
   final TextEditingController _controllers = TextEditingController();
   Duration usedTime = new Duration();
+  bool _hasHeatbed = global.MyMachineN02Config.HasHeatBed==1;
+  bool _hasFanOnEnclosure = global.MyMachineN02Config.HasFanOnEnclosure==1;
+  bool _hasLedOnEnclosure = global.MyMachineN02Config.HasLedOnEnclosure==1;
+  
+  
   // Fonction pour noter la date
   static String formatDuration(Duration d) {
     var seconds = d.inSeconds;
@@ -68,6 +73,16 @@ class ParametreScreenState extends State<ParametreScreen> {
             machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
     print(machineN02ConfigToJson(global.MyMachineN02Config));
   }
+
+  final MaterialStateProperty<Icon?> thumbIcon =
+      MaterialStateProperty.resolveWith<Icon?>(
+    (Set<MaterialState> states) {
+      if (states.contains(MaterialState.selected)) {
+        return const Icon(Icons.check);
+      }
+      return const Icon(Icons.close);
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -362,28 +377,19 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: global
-                                          .MyMachineN02Config.HasHeatBed
-                                          .toString(),
-                                      onChanged: (text) {
-                                        global.MyMachineN02Config.HasHeatBed =
-                                            int.tryParse(text)!;
-                                      },
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  Switch(value: _hasHeatbed, 
+                                  activeColor: Color(0xFF20917F),
+                                  inactiveThumbColor: Color.fromARGB(255, 15, 19, 18),
+                                  inactiveTrackColor: Color.fromARGB(255, 237, 237, 237),
+                                  thumbIcon: thumbIcon,
+                                  onChanged: ((value) {
+                                    setState(() {
+                                      _hasHeatbed=value;
+                                      if(_hasHeatbed)global.MyMachineN02Config.HasHeatBed=1;
+                                      else global.MyMachineN02Config.HasHeatBed=0;
+                                    });
+                                  })
+                                  )
                                 ],
                               ),
                               Row(
@@ -402,29 +408,19 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: global
-                                          .MyMachineN02Config.HasFanOnEnclosure
-                                          .toString(),
-                                      onChanged: (text) {
-                                        global.MyMachineN02Config
-                                                .HasFanOnEnclosure =
-                                            int.tryParse(text)!;
-                                      },
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  Switch(value: _hasFanOnEnclosure, 
+                                  thumbIcon: thumbIcon,
+                                  activeColor: Color(0xFF20917F),
+                                  inactiveThumbColor: Color.fromARGB(255, 15, 19, 18),
+                                  inactiveTrackColor: Color.fromARGB(255, 237, 237, 237),
+                                  onChanged: ((value) {
+                                    setState(() {
+                                      _hasFanOnEnclosure=value;
+                                      if(_hasFanOnEnclosure)global.MyMachineN02Config.HasFanOnEnclosure=1;
+                                      else global.MyMachineN02Config.HasFanOnEnclosure=0;
+                                    });
+                                  })
+                                  )
                                 ],
                               ),
                               Row(
@@ -443,29 +439,19 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.05,
-                                    child: TextFormField(
-                                      textAlign: TextAlign.end,
-                                      initialValue: global
-                                          .MyMachineN02Config.HasLedOnEnclosure
-                                          .toString(),
-                                      onChanged: (text) {
-                                        global.MyMachineN02Config
-                                                .HasLedOnEnclosure =
-                                            int.tryParse(text)!;
-                                      },
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          gapPadding: 5.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  Switch(value: _hasLedOnEnclosure, 
+                                  thumbIcon: thumbIcon,
+                                  activeColor: Color(0xFF20917F),
+                                  inactiveThumbColor: Color.fromARGB(255, 15, 19, 18),
+                                  inactiveTrackColor: Color.fromARGB(255, 237, 237, 237),
+                                  onChanged: ((value) {
+                                    setState(() {
+                                      _hasLedOnEnclosure=value;
+                                      if(_hasLedOnEnclosure)global.MyMachineN02Config.HasLedOnEnclosure=1;
+                                      else global.MyMachineN02Config.HasLedOnEnclosure=0;
+                                    });
+                                  })
+                                  )
                                 ],
                               ),
                             ],

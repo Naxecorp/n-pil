@@ -494,7 +494,6 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                 padding: const EdgeInsets.all(5.0),
                                 child: AspectRatio(
                                   aspectRatio: 1,
-                                  //salut
                                   child: NeumorphicButton(
                                     style: const NeumorphicStyle(
                                       color: Color(0xFFF0F0F3),
