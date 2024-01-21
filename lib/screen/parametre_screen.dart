@@ -475,6 +475,14 @@ class ParametreScreenState extends State<ParametreScreen> {
                 child: NeumorphicButton(
                   onPressed: () {
                     saveConfig();
+                    setState(() {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text('Config sauvée'),
+                                duration: const Duration(milliseconds: 700),
+                              ),
+                            );
+                    });
                   },
                   child: Text('Save Config'),
                 ))

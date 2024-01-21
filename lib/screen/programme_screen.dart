@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -37,6 +38,27 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
   // }
 
   String LoadedFileContentString = "";
+
+  Future<String> SaveFileContent(String Content) async {
+    String? outputFile = await FilePicker.platform.saveFile(
+      dialogTitle: 'Please select an output file:',
+      fileName: 'program.g',
+    );
+
+    if (outputFile == null) {
+      // User canceled the picker
+      return "canceled";
+    }
+
+    final file = File(outputFile);
+    var sink = file.openWrite();
+    sink.write(Content);
+    // _companies.forEach((_company) {
+    //   sink.write('${_company.name};${_company.contactMail}\n');
+    // });
+    sink.close();
+    return "Done";
+  }
 
   @override
   void initState() {
@@ -325,6 +347,8 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                           .elementAt(selectedGcodeFileIndex)!
                                           .name
                                           .toString());
+                              //print(FileContent);
+                              await SaveFileContent(FileContent);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
