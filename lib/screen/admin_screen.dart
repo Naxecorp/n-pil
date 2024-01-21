@@ -139,9 +139,9 @@ class AdminScreenState extends State<AdminScreen>
   var selectedFileIndex = 0;
 
   void _pickFile() async {
-     FilePickerResult? result =
+    FilePickerResult? result =
         await FilePicker.platform.pickFiles(withData: true);
-        
+
     if (result == null) {
       isLoading = false;
       return;
@@ -541,9 +541,10 @@ class AdminScreenState extends State<AdminScreen>
                     ),
                   ),
                   Flexible(
-                      flex: 20,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      flex: 7,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton(
                             onPressed: () {
@@ -562,6 +563,9 @@ class AdminScreenState extends State<AdminScreen>
                               style: TextStyle(color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
+                          ),
+                          SizedBox(
+                            width: 10,
                           ),
                           ElevatedButton(
                             onPressed: () {
@@ -582,6 +586,9 @@ class AdminScreenState extends State<AdminScreen>
                               style: TextStyle(color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
+                          ),
+                          SizedBox(
+                            width: 10,
                           ),
                           ElevatedButton(
                             onPressed: () async {
@@ -607,6 +614,9 @@ class AdminScreenState extends State<AdminScreen>
                               textAlign: TextAlign.center,
                             ),
                           ),
+                          SizedBox(
+                            width: 10,
+                          ),
                           ElevatedButton(
                             onPressed: () async {
                               if (global.AdminLogged) {
@@ -623,6 +633,9 @@ class AdminScreenState extends State<AdminScreen>
                               style: TextStyle(color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
+                          ),
+                          SizedBox(
+                            width: 10,
                           ),
                           ElevatedButton(
                             onPressed: () async {
@@ -645,6 +658,9 @@ class AdminScreenState extends State<AdminScreen>
                               style: TextStyle(color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
+                          ),
+                          SizedBox(
+                            width: 10,
                           ),
                           ElevatedButton(
                             // Boutton qui execute les fichiers macro GCode
@@ -669,6 +685,11 @@ class AdminScreenState extends State<AdminScreen>
                             ),
                           ),
                         ],
+                      )),
+                  Flexible(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 10,
                       ))
                 ],
               )),
