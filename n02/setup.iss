@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Naxe Pilotage"
-#define MyAppVersion "1.4.1"
+#define MyAppVersion "1.4.2"
 #define MyAppPublisher "Naxe"
 #define MyAppURL "https://www.naxe.fr/"
 #define MyAppExeName "nweb.exe"
@@ -27,7 +27,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\Jordan\AndroidStudioProjects\nweb\n02
-OutputBaseFilename=mysetup
+OutputBaseFilename=Naxe Pilotage v{#MyAppVersion}
 SetupIconFile=C:\Users\Jordan\Downloads\iconnaxe-_3_.ico
 Compression=lzma
 SolidCompression=yes

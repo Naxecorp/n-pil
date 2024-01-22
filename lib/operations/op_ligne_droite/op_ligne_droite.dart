@@ -39,7 +39,7 @@ class OperationLigneDroite extends Operation {
         gcodeTrajectories.add('G1 Z${startZ - currentDepth}');
 
         // Ajouter le Gcode pour tracer la ligne à la profondeur actuelle
-        if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 Y$endY Z${startZ - currentDepth} S100');
+        if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 Y$endY Z${startZ - currentDepth} S255');
         else gcodeTrajectories.add('G1 Y$endY Z${startZ - currentDepth}');
         if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 Z10 S0');
         else gcodeTrajectories.add('G1 Z10');
@@ -57,7 +57,7 @@ class OperationLigneDroite extends Operation {
         gcodeTrajectories.add('G1 Z${startZ - currentDepth}');
 
         // Ajouter le Gcode pour tracer la ligne à la profondeur actuelle
-        if(global.machineMode==global.MachineMode.laser) gcodeTrajectories.add('G1 X$endX Z${startZ - currentDepth} S100');
+        if(global.machineMode==global.MachineMode.laser) gcodeTrajectories.add('G1 X$endX Z${startZ - currentDepth} S255');
         else gcodeTrajectories.add('G1 X$endX Z${startZ - currentDepth}');
         if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 Z10 S0');
         else gcodeTrajectories.add('G1 Z10');
@@ -73,7 +73,7 @@ class OperationLigneDroite extends Operation {
         gcodeTrajectories.add('G1 Z${startZ - currentDepth}');
 
         // Ajouter le Gcode pour tracer la ligne à la profondeur actuelle
-        if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 X$endX Y$endY Z${startZ - currentDepth} S100');
+        if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 X$endX Y$endY Z${startZ - currentDepth} S255');
         else gcodeTrajectories.add('G1 X$endX Y$endY Z${startZ - currentDepth}');
         if(global.machineMode==global.MachineMode.laser)gcodeTrajectories.add('G1 Z10 S0');
         else gcodeTrajectories.add('G1 Z10');
@@ -94,6 +94,9 @@ class OperationLigneDroite extends Operation {
     if (global.machineMode == global.MachineMode.cnc) {
       trajectoires.add('M5');
       trajectoires.add('M3 P0 S10000');
+    }
+    if (global.machineMode == global.MachineMode.laser) {
+      trajectoires.add('M98 P"laserOff.g"');
     }
 
     trajectoires.add('G4 S2');

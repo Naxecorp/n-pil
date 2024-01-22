@@ -52,9 +52,7 @@ class LaserToolPowerState extends State<LaserToolPower> {
                             color: const Color(0xFFF0F0F3),
                           ),
                           onPressed: () async {
-                            await API_Manager().sendGcodeCommand('M452 C"nil"');
-                            await API_Manager().sendGcodeCommand('M950 P1 C"out5-"');
-                            await API_Manager().sendGcodeCommand('M42 P1 S0.01');
+                            await API_Manager().sendGcodeCommand('M98 P"laserOn.g"');
                           },
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -84,9 +82,7 @@ class LaserToolPowerState extends State<LaserToolPower> {
                             color: const Color(0xFFF0F0F3),
                           ),
                           onPressed: () async {
-                            await API_Manager().sendGcodeCommand('M42 P1 S0');
-                            await API_Manager().sendGcodeCommand('M950 P1 C"nil"');
-                            await API_Manager().sendGcodeCommand('M452 C"out5-" S1');
+                            await API_Manager().sendGcodeCommand('M98 P"laserOff.g"');
                           },
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

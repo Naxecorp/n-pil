@@ -123,9 +123,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                   backgroundColor: Colors.blue,
                 ),
                 onPressed: () async {
-                  API_Manager().sendGcodeCommand('G28 Z');
-                  API_Manager().sendGcodeCommand('G28 X');
-                  API_Manager().sendGcodeCommand('G28 Y');
+                  await API_Manager().sendGcodeCommand('G28 Z');
+                  await API_Manager().sendGcodeCommand('G28 X');
+                  await API_Manager().sendGcodeCommand('G28 Y');
 
                   actualiserHomeMachine();
                   Navigator.of(context).pop();
