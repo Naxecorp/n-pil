@@ -622,7 +622,12 @@ class AdminScreenState extends State<AdminScreen>
                               if (global.AdminLogged) {
                                 await API_Manager()
                                     .sendGcodeCommand('M98 P"config.g"')
-                                    .then((_) => API_Manager().sendrr_reply());
+                                    .then((_) {
+                                  Future.delayed(
+                                      const Duration(milliseconds: 500), () {
+                                            API_Manager().sendrr_reply();                                  
+                                  });
+                                });
                               }
                             },
                             style: ElevatedButton.styleFrom(

@@ -596,8 +596,9 @@ class _DeplacementMachine extends State<DeplacementMachine> {
           Flexible(
               flex: 3,
               child: Container(
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  //scrollDirection: Axis.horizontal,
                   children: [
                     global.AdminLogged == true
                         ? Container(

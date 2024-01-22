@@ -68,7 +68,7 @@ class MachineN02Config {
             : List<dynamic>.from(Positions!.map((x) => x.toJson())),
         "Palpeur": Palpeur!.toJson(),
         "SetPosAffichage": SetPosAffichage,
-        "HasBedOnlaser": HasHeatBed,
+        "HasHeatBed": HasHeatBed,
         "HasFanOnEnclosure": HasFanOnEnclosure,
         "HasLedOnEnclosure": HasLedOnEnclosure,
       };
