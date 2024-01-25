@@ -557,6 +557,9 @@ class AdminScreenState extends State<AdminScreen>
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
                             ),
                             child: Text(
                               "clear",
@@ -580,6 +583,9 @@ class AdminScreenState extends State<AdminScreen>
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
                             ),
                             child: Text(
                               "Logout",
@@ -607,6 +613,9 @@ class AdminScreenState extends State<AdminScreen>
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
                             ),
                             child: Text(
                               "Visualiser",
@@ -625,13 +634,16 @@ class AdminScreenState extends State<AdminScreen>
                                     .then((_) {
                                   Future.delayed(
                                       const Duration(milliseconds: 500), () {
-                                            API_Manager().sendrr_reply();                                  
+                                    API_Manager().sendrr_reply();
                                   });
                                 });
                               }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
                             ),
                             child: Text(
                               "Run config.g",
@@ -657,6 +669,9 @@ class AdminScreenState extends State<AdminScreen>
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
                             ),
                             child: Text(
                               "Load Default Config",
@@ -682,6 +697,9 @@ class AdminScreenState extends State<AdminScreen>
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
                             ),
                             child: Text(
                               "Execute macro",

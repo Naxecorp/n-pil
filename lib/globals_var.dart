@@ -19,7 +19,7 @@ import 'service/system/SystemsFilesElement.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.4.3";
+String version = "Version 1.5.0";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -28,6 +28,7 @@ int secondsElapsedSinceBeginning =
     0; // Temps écoulé depuis le début en secondes
 double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
 bool isJobStartedByUser = false; // Si le programme a bien été lancé par le User
+double compensation = 0; // BabyStep Z
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
 ObjectModelMove objectModelMove = ObjectModelMove();

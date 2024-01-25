@@ -18,8 +18,6 @@ class BabyStepZ extends StatefulWidget {
 }
 
 class _BabyStepZState extends State<BabyStepZ> {
-  double compensation = 0;
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -31,7 +29,7 @@ class _BabyStepZState extends State<BabyStepZ> {
       child: Container(
         margin: const EdgeInsets.all(5),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ConstrainedBox(
@@ -79,7 +77,7 @@ class _BabyStepZState extends State<BabyStepZ> {
                       child: Padding(
                         padding: EdgeInsets.only(left: 100.0, top: 5.0),
                         child: Text(
-                          "$compensation",
+                          "${global.compensation}",
                           style: TextStyle(
                               color: Color(0xFF707585),
                               fontWeight: FontWeight.bold,
@@ -93,46 +91,89 @@ class _BabyStepZState extends State<BabyStepZ> {
               ),
             ),
             Flexible(
+              flex: 1,
               child: Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          API_Manager().sendGcodeCommand("M290 S+0.1");
-                          compensation += 0.1;
-                        },
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: const Color(0xFF20917F)),
-                        child: Container(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              API_Manager().sendGcodeCommand("M290 S+0.1");
+                              global.compensation += 0.1;
+                            },
+                            style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: const Color(0xFF20917F)),
+                            child: Container(
+                                width: 50,
+                                child: const Text(
+                                  "+ 0.1",
+                                  textAlign: TextAlign.center,
+                                ))),
+                        const Padding(padding: EdgeInsets.only(top: 3)),
+                        ElevatedButton(
+                          onPressed: () {
+                            API_Manager().sendGcodeCommand("M290 S-0.1");
+                            global.compensation -= 0.1;
+                          },
+                          style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: const Color(0xFF20917F)),
+                          child: Container(
                             width: 50,
                             child: const Text(
-                              "+ 0.1",
+                              "- 0.1",
                               textAlign: TextAlign.center,
-                            ))),
-                    const Padding(padding: EdgeInsets.only(top: 3)),
-                    ElevatedButton(
-                      onPressed: () {
-                        API_Manager().sendGcodeCommand("M290 S-0.1");
-                        compensation -= 0.1;
-                      },
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: const Color(0xFF20917F)),
-                      child: Container(
-                        width: 50,
-                        child: const Text(
-                          "- 0.1",
-                          textAlign: TextAlign.center,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              API_Manager().sendGcodeCommand("M290 S+0.01");
+                              global.compensation += 0.01;
+                            },
+                            style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: const Color(0xFF20917F)),
+                            child: Container(
+                                width: 50,
+                                child: const Text(
+                                  "+ 0.01",
+                                  textAlign: TextAlign.center,
+                                ))),
+                        const Padding(padding: EdgeInsets.only(top: 3)),
+                        ElevatedButton(
+                          onPressed: () {
+                            API_Manager().sendGcodeCommand("M290 S-0.01");
+                            global.compensation -= 0.01;
+                          },
+                          style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: const Color(0xFF20917F)),
+                          child: Container(
+                            width: 50,
+                            child: const Text(
+                              "- 0.01",
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

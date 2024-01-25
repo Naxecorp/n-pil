@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/screen/screens.dart';
 import 'package:nweb/service/API/API_Manager.dart';
@@ -24,10 +25,17 @@ TextEditingController ManualGcodeComand = TextEditingController();
 class SetPosition extends StatefulWidget {
   final VoidCallback? onClickOnSet;
 
+  // final TextEditingController? name;
   final TextEditingController? posX;
   final TextEditingController? posY;
   final TextEditingController? posZ;
-  SetPosition({super.key, this.onClickOnSet, this.posX, this.posY, this.posZ});
+  SetPosition(
+      {super.key,
+      this.onClickOnSet,
+      // this.name,
+      this.posX,
+      this.posY,
+      this.posZ});
 
   @override
   State<SetPosition> createState() =>
@@ -38,6 +46,7 @@ class _SetPositionState extends State<SetPosition> {
   final VoidCallback? _onClickOnSet;
 
   // Création de controller pour Set from actual
+  // final TextEditingController? _name;
   final TextEditingController? _posX;
   final TextEditingController? _posY;
   final TextEditingController? _posZ;
@@ -45,10 +54,6 @@ class _SetPositionState extends State<SetPosition> {
   _SetPositionState(this._onClickOnSet, this._posX, this._posY, this._posZ);
 
   // Création de controller pour Set from actual
-  //final posX = TextEditingController(text: '0');
-  //final posY = TextEditingController(text: '0');
-  //final posZ = TextEditingController(text: '0');
-
   String textX = global.machineObjectModel.result?.move?.axes
           ?.elementAt(0)!
           .machinePosition
@@ -81,6 +86,51 @@ class _SetPositionState extends State<SetPosition> {
           title2: " machine",
           child: Row(
             children: [
+              // Flexible(
+              //   flex: 1,
+              //   child: Container(
+              //     width: double.infinity,
+              //     //color: Colors.redAccent,
+              //     decoration: const BoxDecoration(
+              //         border: Border(
+              //             right: BorderSide(
+              //       color: Colors.grey,
+              //       width: 1.5,
+              //     ))),
+              //     height: double.infinity,
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         const Padding(
+              //           padding: EdgeInsets.all(5.0),
+              //           child: Text(
+              //             "Nom",
+              //             style: TextStyle(
+              //                 color: Color(0xFF707585),
+              //                 fontWeight: FontWeight.bold,
+              //                 fontSize: 20),
+              //           ),
+              //         ),
+              //         Container(
+              //           width: MediaQuery.of(context).size.width * 0.05,
+              //           //color: Colors.greenAccent,
+              //           child: TextFormField(
+              //             controller: _name,
+              //             textAlign: TextAlign.center,
+              //             decoration: const InputDecoration(
+              //               border: OutlineInputBorder(
+              //                 borderSide: BorderSide(),
+              //                 borderRadius:
+              //                     BorderRadius.all(Radius.circular(5)),
+              //                 gapPadding: 5.0,
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               Flexible(
                 flex: 1,
                 child: Container(
@@ -104,6 +154,15 @@ class _SetPositionState extends State<SetPosition> {
                         width: MediaQuery.of(context).size.width * 0.05,
                         //color: Colors.greenAccent,
                         child: TextFormField(
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9]+[.]{0,1}[0-9]*')),
+                            TextInputFormatter.withFunction(
+                              (oldValue, newValue) => newValue.copyWith(
+                                text: newValue.text.replaceAll('.', '.'),
+                              ),
+                            ),
+                          ], // saisie de nombres uniquement
                           controller: _posX,
                           textAlign: TextAlign.center,
                           decoration: const InputDecoration(
@@ -143,6 +202,15 @@ class _SetPositionState extends State<SetPosition> {
                         width: MediaQuery.of(context).size.width * 0.05,
                         //color: Colors.greenAccent,
                         child: TextFormField(
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9]+[.]{0,1}[0-9]*')),
+                            TextInputFormatter.withFunction(
+                              (oldValue, newValue) => newValue.copyWith(
+                                text: newValue.text.replaceAll('.', '.'),
+                              ),
+                            ),
+                          ], // saisie de nombres uniquement
                           controller: _posY,
                           textAlign: TextAlign.center,
                           decoration: const InputDecoration(
@@ -182,6 +250,15 @@ class _SetPositionState extends State<SetPosition> {
                         width: MediaQuery.of(context).size.width * 0.05,
                         //color: Colors.greenAccent,
                         child: TextFormField(
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9]+[.]{0,1}[0-9]*')),
+                            TextInputFormatter.withFunction(
+                              (oldValue, newValue) => newValue.copyWith(
+                                text: newValue.text.replaceAll('.', '.'),
+                              ),
+                            ),
+                          ], // saisie de nombres uniquement
                           controller: _posZ,
                           textAlign: TextAlign.center,
                           decoration: const InputDecoration(
@@ -210,16 +287,24 @@ class _SetPositionState extends State<SetPosition> {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(5.0),
-                        width: MediaQuery.of(context).size.width * 0.08,
+                        width: MediaQuery.of(context).size.width * 0.13,
                         child: NeumorphicButton(
                           onPressed: () {
-                            return _onClickOnSet!();
+                            _posX?.text = textX;
+                            _posY?.text = textY;
+                            _posZ?.text = textZ;
+                            _posX?.selection =
+                                TextSelection.collapsed(offset: textX.length);
+                            _posY?.selection =
+                                TextSelection.collapsed(offset: textY.length);
+                            _posZ?.selection =
+                                TextSelection.collapsed(offset: textZ.length);
                           },
                           style: const NeumorphicStyle(
                             color: Color(0xFFF0F0F3),
                           ),
                           child: const Text(
-                            "Set",
+                            "Afficher positions actuelles",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Color(0xFF707585),
@@ -230,7 +315,7 @@ class _SetPositionState extends State<SetPosition> {
                       ),
                       Container(
                         padding: const EdgeInsets.all(5.0),
-                        width: MediaQuery.of(context).size.width * 0.08,
+                        width: MediaQuery.of(context).size.width * 0.13,
                         child: NeumorphicButton(
                           onPressed: () {
                             API_Manager().sendGcodeCommand("G53 G0 Z189");
@@ -256,24 +341,16 @@ class _SetPositionState extends State<SetPosition> {
                       ),
                       Container(
                         padding: const EdgeInsets.all(5.0),
-                        width: MediaQuery.of(context).size.width * 0.08,
+                        width: MediaQuery.of(context).size.width * 0.13,
                         child: NeumorphicButton(
                           onPressed: () {
-                            _posX?.text = textX;
-                            _posY?.text = textY;
-                            _posZ?.text = textZ;
-                            _posX?.selection =
-                                TextSelection.collapsed(offset: textX.length);
-                            _posY?.selection =
-                                TextSelection.collapsed(offset: textY.length);
-                            _posZ?.selection =
-                                TextSelection.collapsed(offset: textZ.length);
+                            return _onClickOnSet!();
                           },
                           style: const NeumorphicStyle(
                             color: Color(0xFFF0F0F3),
                           ),
                           child: const Text(
-                            "Set from actual",
+                            "Sauvegarder",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Color(0xFF707585),
@@ -412,6 +489,7 @@ class SetPosState extends State<SetPos> {
           itemCount: global.MyMachineN02Config.Positions?.length ?? 0,
           itemBuilder: (BuildContext context, int index) {
             // Utilisez un contrôleur par élément de la liste
+            //TextEditingController controllerName = TextEditingController();
             TextEditingController controllerPosX = TextEditingController();
             TextEditingController controllerPosY = TextEditingController();
             TextEditingController controllerPosZ = TextEditingController();
@@ -419,6 +497,10 @@ class SetPosState extends State<SetPos> {
             // Remplissez les contrôleurs avec les valeurs actuelles si disponibles
             if (global.MyMachineN02Config.Positions != null &&
                 index < global.MyMachineN02Config.Positions!.length) {
+              // controllerName.text = global
+              //         .MyMachineN02Config.Positions![index].Name
+              //         ?.toString() ??
+              //     "Prog $index";
               controllerPosX.text = global
                       .MyMachineN02Config.Positions![index].PosX
                       ?.toString() ??
@@ -435,12 +517,14 @@ class SetPosState extends State<SetPos> {
 
             return SetPosition(
               // Utilisez le contrôleur approprié pour chaque champ de position
+              // name: controllerName,
               posX: controllerPosX,
               posY: controllerPosY,
               posZ: controllerPosZ,
               onClickOnSet: () {
                 // Mettez à jour la position dans la liste avec les nouvelles valeurs
                 global.MyMachineN02Config.Positions?[index] = Position(
+                  // Name: controllerName.text,
                   PosX: double.tryParse(controllerPosX.text),
                   PosY: double.tryParse(controllerPosY.text),
                   PosZ: double.tryParse(controllerPosZ.text),

@@ -32,7 +32,10 @@ class MachineN02Config {
       this.DefaultMode,
       this.Palpeur,
       this.Positions,
-      this.SetPosAffichage, this.HasHeatBed,this.HasFanOnEnclosure,this.HasLedOnEnclosure});
+      this.SetPosAffichage,
+      this.HasHeatBed,
+      this.HasFanOnEnclosure,
+      this.HasLedOnEnclosure});
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
