@@ -28,7 +28,7 @@ class VitesseBrocheState extends State<VitesseBroche> {
       sliderValue =
           global.machineObjectModel.result?.spindles?[0].current?.toDouble() ??
               0.1;
-      sliderValue = sliderValue / 24000;
+      sliderValue = sliderValue / global.MyMachineN02Config.VitesseBroche!;
     });
   }
 
@@ -108,15 +108,21 @@ class VitesseBrocheState extends State<VitesseBroche> {
                           TextButton(
                             onPressed: () {
                               setState(() {
-                                if ((sliderValue * 24000) >= 250)
-                                  sliderValue =
-                                      ((sliderValue * 24000 - 250) / 24000);
+                                if ((sliderValue *
+                                        global.MyMachineN02Config
+                                            .VitesseBroche!) >=
+                                    250)
+                                  sliderValue = ((sliderValue *
+                                              global.MyMachineN02Config
+                                                  .VitesseBroche! -
+                                          250) /
+                                      global.MyMachineN02Config.VitesseBroche!);
                                 API_Manager()
                                     .sendGcodeCommand("M5 P0")
                                     .then((value) {
                                   API_Manager()
                                       .sendGcodeCommand(
-                                          "M3 P0 S${sliderValue * 24000}")
+                                          "M3 P0 S${sliderValue * global.MyMachineN02Config.VitesseBroche!}")
                                       .then((value) {
                                     setState(() {});
                                   });
@@ -139,7 +145,7 @@ class VitesseBrocheState extends State<VitesseBroche> {
                                     .then((value) {
                                   API_Manager()
                                       .sendGcodeCommand(
-                                          "M3 P0 S${sliderValue * 24000}")
+                                          "M3 P0 S${sliderValue * global.MyMachineN02Config.VitesseBroche!}")
                                       .then((value) {
                                     setState(() {});
                                   });
@@ -154,15 +160,21 @@ class VitesseBrocheState extends State<VitesseBroche> {
                           TextButton(
                             onPressed: () {
                               setState(() {
-                                if ((sliderValue * 24000) < 24000)
-                                  sliderValue =
-                                      ((sliderValue * 24000 + 250) / 24000);
+                                if ((sliderValue *
+                                        global.MyMachineN02Config
+                                            .VitesseBroche!) <
+                                    global.MyMachineN02Config.VitesseBroche!)
+                                  sliderValue = ((sliderValue *
+                                              global.MyMachineN02Config
+                                                  .VitesseBroche! +
+                                          250) /
+                                      global.MyMachineN02Config.VitesseBroche!);
                                 API_Manager()
                                     .sendGcodeCommand("M5 P0")
                                     .then((value) {
                                   API_Manager()
                                       .sendGcodeCommand(
-                                          "M3 P0 S${sliderValue * 24000}")
+                                          "M3 P0 S${sliderValue * global.MyMachineN02Config.VitesseBroche!}")
                                       .then((value) {
                                     setState(() {});
                                   });

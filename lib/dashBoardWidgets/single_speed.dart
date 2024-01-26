@@ -92,18 +92,48 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                       child: NeumorphicButton(
                         style: const NeumorphicStyle(color: Color(0xFFF0F0F3)),
                         onPressed: () {
-                          setState(() {
-                            API_Manager()
-                                .sendGcodeCommand("M5 P0")
-                                .then((value) {
+                          if (int.parse(SpindleValueController.text) >
+                              int.parse(global.MyMachineN02Config.VitesseBroche
+                                  .toString())) {
+                            showDialog(
+                              context: context,
+                              barrierDismissible:
+                                  false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(
+                                      "La vitesse saisie est trop élevée !"),
+                                  actions: <Widget>[
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                      ),
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        "Ok",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            setState(() {
                               API_Manager()
-                                  .sendGcodeCommand(
-                                      "M3 P0 S${SpindleValueController.text}") // Demarrage broche
+                                  .sendGcodeCommand("M5 P0")
                                   .then((value) {
-                                SpindleValueController.clear();
+                                API_Manager()
+                                    .sendGcodeCommand(
+                                        "M3 P0 S${SpindleValueController.text}") // Demarrage broche
+                                    .then((value) {
+                                  SpindleValueController.clear();
+                                });
                               });
                             });
-                          });
+                          }
                         },
                         child: const Icon(
                           Icons.send,

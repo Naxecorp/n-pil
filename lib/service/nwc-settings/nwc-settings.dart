@@ -23,6 +23,7 @@ class MachineN02Config {
   int? HasHeatBed;
   int? HasFanOnEnclosure;
   int? HasLedOnEnclosure;
+  int? VitesseBroche;
 
   MachineN02Config(
       {this.IP,
@@ -35,7 +36,8 @@ class MachineN02Config {
       this.SetPosAffichage,
       this.HasHeatBed,
       this.HasFanOnEnclosure,
-      this.HasLedOnEnclosure});
+      this.HasLedOnEnclosure,
+      this.VitesseBroche});
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
@@ -58,6 +60,7 @@ class MachineN02Config {
         HasHeatBed: json["HasHeatBed"],
         HasFanOnEnclosure: json["HasFanOnEnclosure"],
         HasLedOnEnclosure: json["HasLedOnEnclosure"],
+        VitesseBroche: json["VitesseBroche"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -74,5 +77,6 @@ class MachineN02Config {
         "HasHeatBed": HasHeatBed,
         "HasFanOnEnclosure": HasFanOnEnclosure,
         "HasLedOnEnclosure": HasLedOnEnclosure,
+        "VitesseBroche": VitesseBroche,
       };
 }

@@ -64,13 +64,17 @@ void main() async {
     API_Manager().getMachineMode().then((value) => global.machineMode = value);
   });
 
-  API_Manager()
+  await API_Manager()
       .getMachineMoveObjectModel()
       .then((move) => global.objectModelMove = move);
 
-  API_Manager().getfileList().then((value) => global.ListofGcodeFile = value);
+  await API_Manager()
+      .getfileList()
+      .then((value) => global.ListofGcodeFile = value);
 
-  API_Manager().getfileListSys().then((value) => global.ListofSysFile = value);
+  await API_Manager()
+      .getfileListSys()
+      .then((value) => global.ListofSysFile = value);
 
   actualiserMachineObjectModel();
   actualiserMoveObjectModel();

@@ -43,7 +43,7 @@ class JobInfoState extends State<JobInfo> {
             ),
             ElevatedButton(
               child: Text("Recommencer Programme"),
-              onPressed: () {
+              onPressed: () async {
                 global.secondsElapsedSinceBeginning = 0;
                 global.timerStarted = false;
                 global.timer!.cancel();
@@ -55,14 +55,15 @@ class JobInfoState extends State<JobInfo> {
             ),
             ElevatedButton(
               child: Text("Dégager tête"),
-              onPressed: () {
+              onPressed: () async {
                 global.secondsElapsedSinceBeginning = 0;
                 global.timerStarted = false;
                 global.timer!.cancel();
                 Navigator.of(context).pop();
-                API_Manager().sendGcodeCommand("M106 P3 S0");
-                API_Manager().sendGcodeCommand("G53 G0 Z189").then((value) =>
-                    API_Manager().sendGcodeCommand("G53 G0 X0 Y550"));
+                await API_Manager().sendGcodeCommand('M98 P"degagerTete.g"');
+                // API_Manager().sendGcodeCommand("M106 P3 S0");
+                // API_Manager().sendGcodeCommand("G53 G0 Z189").then((value) =>
+                //     API_Manager().sendGcodeCommand("G53 G0 X0 Y550"));
                 Navigator.pushNamed(context, '/dashboard');
               },
             ),
@@ -120,6 +121,8 @@ class JobInfoState extends State<JobInfo> {
   void initState() {
     super.initState();
     if (!global.timerStarted && global.isJobStartedByUser == true) {
+      print(global.timerStarted);
+      print(global.isJobStartedByUser);
       actualiserJobObjectModel();
       global.timerStarted = true;
     }

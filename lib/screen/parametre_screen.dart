@@ -25,11 +25,11 @@ class ParametreScreen extends StatefulWidget {
 class ParametreScreenState extends State<ParametreScreen> {
   final TextEditingController _controllers = TextEditingController();
   Duration usedTime = new Duration();
-  bool _hasHeatbed = global.MyMachineN02Config.HasHeatBed==1;
-  bool _hasFanOnEnclosure = global.MyMachineN02Config.HasFanOnEnclosure==1;
-  bool _hasLedOnEnclosure = global.MyMachineN02Config.HasLedOnEnclosure==1;
-  
-  
+  bool _hasDegagerTete = global.hasDegagerTete == 1;
+  bool _hasHeatbed = global.MyMachineN02Config.HasHeatBed == 1;
+  bool _hasFanOnEnclosure = global.MyMachineN02Config.HasFanOnEnclosure == 1;
+  bool _hasLedOnEnclosure = global.MyMachineN02Config.HasLedOnEnclosure == 1;
+
   // Fonction pour noter la date
   static String formatDuration(Duration d) {
     var seconds = d.inSeconds;
@@ -206,6 +206,47 @@ class ParametreScreenState extends State<ParametreScreen> {
                                         horizontal: 10, vertical: 10),
                                     margin: const EdgeInsets.only(right: 15.0),
                                     child: Text(
+                                      'Vitesse de la broche  :',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.05,
+                                    child: TextFormField(
+                                      textAlign: TextAlign.end,
+                                      initialValue: global
+                                          .MyMachineN02Config.VitesseBroche
+                                          .toString(),
+                                      onChanged: (text) {
+                                        global.MyMachineN02Config
+                                                .VitesseBroche =
+                                            int.tryParse(text)!;
+                                      },
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5)),
+                                          gapPadding: 5.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 200,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
+                                    child: Text(
                                       'Coordonées du palpeur outil X  :',
                                       style: TextStyle(
                                         color: Colors.black26,
@@ -369,6 +410,41 @@ class ParametreScreenState extends State<ParametreScreen> {
                                     margin: const EdgeInsets.only(right: 15.0),
                                     width: 200,
                                     child: Text(
+                                      'Dégager Tête :',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Switch(
+                                      value: _hasDegagerTete,
+                                      activeColor: Color(0xFF20917F),
+                                      inactiveThumbColor:
+                                          Color.fromARGB(255, 15, 19, 18),
+                                      inactiveTrackColor:
+                                          Color.fromARGB(255, 237, 237, 237),
+                                      thumbIcon: thumbIcon,
+                                      onChanged: ((value) {
+                                        setState(() {
+                                          _hasDegagerTete = value;
+                                          if (_hasDegagerTete)
+                                            global.hasDegagerTete = 1;
+                                          else
+                                            global.hasDegagerTete = 0;
+                                        });
+                                      }))
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
+                                    width: 200,
+                                    child: Text(
                                       'Plateau chauffant:',
                                       style: TextStyle(
                                         color: Colors.black26,
@@ -377,19 +453,25 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       ),
                                     ),
                                   ),
-                                  Switch(value: _hasHeatbed, 
-                                  activeColor: Color(0xFF20917F),
-                                  inactiveThumbColor: Color.fromARGB(255, 15, 19, 18),
-                                  inactiveTrackColor: Color.fromARGB(255, 237, 237, 237),
-                                  thumbIcon: thumbIcon,
-                                  onChanged: ((value) {
-                                    setState(() {
-                                      _hasHeatbed=value;
-                                      if(_hasHeatbed)global.MyMachineN02Config.HasHeatBed=1;
-                                      else global.MyMachineN02Config.HasHeatBed=0;
-                                    });
-                                  })
-                                  )
+                                  Switch(
+                                      value: _hasHeatbed,
+                                      activeColor: Color(0xFF20917F),
+                                      inactiveThumbColor:
+                                          Color.fromARGB(255, 15, 19, 18),
+                                      inactiveTrackColor:
+                                          Color.fromARGB(255, 237, 237, 237),
+                                      thumbIcon: thumbIcon,
+                                      onChanged: ((value) {
+                                        setState(() {
+                                          _hasHeatbed = value;
+                                          if (_hasHeatbed)
+                                            global.MyMachineN02Config
+                                                .HasHeatBed = 1;
+                                          else
+                                            global.MyMachineN02Config
+                                                .HasHeatBed = 0;
+                                        });
+                                      }))
                                 ],
                               ),
                               Row(
@@ -408,19 +490,25 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       ),
                                     ),
                                   ),
-                                  Switch(value: _hasFanOnEnclosure, 
-                                  thumbIcon: thumbIcon,
-                                  activeColor: Color(0xFF20917F),
-                                  inactiveThumbColor: Color.fromARGB(255, 15, 19, 18),
-                                  inactiveTrackColor: Color.fromARGB(255, 237, 237, 237),
-                                  onChanged: ((value) {
-                                    setState(() {
-                                      _hasFanOnEnclosure=value;
-                                      if(_hasFanOnEnclosure)global.MyMachineN02Config.HasFanOnEnclosure=1;
-                                      else global.MyMachineN02Config.HasFanOnEnclosure=0;
-                                    });
-                                  })
-                                  )
+                                  Switch(
+                                      value: _hasFanOnEnclosure,
+                                      thumbIcon: thumbIcon,
+                                      activeColor: Color(0xFF20917F),
+                                      inactiveThumbColor:
+                                          Color.fromARGB(255, 15, 19, 18),
+                                      inactiveTrackColor:
+                                          Color.fromARGB(255, 237, 237, 237),
+                                      onChanged: ((value) {
+                                        setState(() {
+                                          _hasFanOnEnclosure = value;
+                                          if (_hasFanOnEnclosure)
+                                            global.MyMachineN02Config
+                                                .HasFanOnEnclosure = 1;
+                                          else
+                                            global.MyMachineN02Config
+                                                .HasFanOnEnclosure = 0;
+                                        });
+                                      }))
                                 ],
                               ),
                               Row(
@@ -439,19 +527,25 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       ),
                                     ),
                                   ),
-                                  Switch(value: _hasLedOnEnclosure, 
-                                  thumbIcon: thumbIcon,
-                                  activeColor: Color(0xFF20917F),
-                                  inactiveThumbColor: Color.fromARGB(255, 15, 19, 18),
-                                  inactiveTrackColor: Color.fromARGB(255, 237, 237, 237),
-                                  onChanged: ((value) {
-                                    setState(() {
-                                      _hasLedOnEnclosure=value;
-                                      if(_hasLedOnEnclosure)global.MyMachineN02Config.HasLedOnEnclosure=1;
-                                      else global.MyMachineN02Config.HasLedOnEnclosure=0;
-                                    });
-                                  })
-                                  )
+                                  Switch(
+                                      value: _hasLedOnEnclosure,
+                                      thumbIcon: thumbIcon,
+                                      activeColor: Color(0xFF20917F),
+                                      inactiveThumbColor:
+                                          Color.fromARGB(255, 15, 19, 18),
+                                      inactiveTrackColor:
+                                          Color.fromARGB(255, 237, 237, 237),
+                                      onChanged: ((value) {
+                                        setState(() {
+                                          _hasLedOnEnclosure = value;
+                                          if (_hasLedOnEnclosure)
+                                            global.MyMachineN02Config
+                                                .HasLedOnEnclosure = 1;
+                                          else
+                                            global.MyMachineN02Config
+                                                .HasLedOnEnclosure = 0;
+                                        });
+                                      }))
                                 ],
                               ),
                             ],
@@ -477,11 +571,11 @@ class ParametreScreenState extends State<ParametreScreen> {
                     saveConfig();
                     setState(() {
                       ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('Config sauvée'),
-                                duration: const Duration(milliseconds: 700),
-                              ),
-                            );
+                        SnackBar(
+                          content: const Text('Config sauvée'),
+                          duration: const Duration(milliseconds: 700),
+                        ),
+                      );
                     });
                   },
                   child: Text('Save Config'),

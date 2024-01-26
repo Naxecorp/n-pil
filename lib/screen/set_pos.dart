@@ -25,33 +25,34 @@ TextEditingController ManualGcodeComand = TextEditingController();
 class SetPosition extends StatefulWidget {
   final VoidCallback? onClickOnSet;
 
-  // final TextEditingController? name;
+  final TextEditingController? name;
   final TextEditingController? posX;
   final TextEditingController? posY;
   final TextEditingController? posZ;
   SetPosition(
       {super.key,
       this.onClickOnSet,
-      // this.name,
+      this.name,
       this.posX,
       this.posY,
       this.posZ});
 
   @override
   State<SetPosition> createState() =>
-      _SetPositionState(onClickOnSet, posX, posY, posZ);
+      _SetPositionState(onClickOnSet, name, posX, posY, posZ);
 }
 
 class _SetPositionState extends State<SetPosition> {
   final VoidCallback? _onClickOnSet;
 
   // Création de controller pour Set from actual
-  // final TextEditingController? _name;
+  final TextEditingController? _name;
   final TextEditingController? _posX;
   final TextEditingController? _posY;
   final TextEditingController? _posZ;
 
-  _SetPositionState(this._onClickOnSet, this._posX, this._posY, this._posZ);
+  _SetPositionState(
+      this._onClickOnSet, this._name, this._posX, this._posY, this._posZ);
 
   // Création de controller pour Set from actual
   String textX = global.machineObjectModel.result?.move?.axes
@@ -86,51 +87,51 @@ class _SetPositionState extends State<SetPosition> {
           title2: " machine",
           child: Row(
             children: [
-              // Flexible(
-              //   flex: 1,
-              //   child: Container(
-              //     width: double.infinity,
-              //     //color: Colors.redAccent,
-              //     decoration: const BoxDecoration(
-              //         border: Border(
-              //             right: BorderSide(
-              //       color: Colors.grey,
-              //       width: 1.5,
-              //     ))),
-              //     height: double.infinity,
-              //     child: Column(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       children: [
-              //         const Padding(
-              //           padding: EdgeInsets.all(5.0),
-              //           child: Text(
-              //             "Nom",
-              //             style: TextStyle(
-              //                 color: Color(0xFF707585),
-              //                 fontWeight: FontWeight.bold,
-              //                 fontSize: 20),
-              //           ),
-              //         ),
-              //         Container(
-              //           width: MediaQuery.of(context).size.width * 0.05,
-              //           //color: Colors.greenAccent,
-              //           child: TextFormField(
-              //             controller: _name,
-              //             textAlign: TextAlign.center,
-              //             decoration: const InputDecoration(
-              //               border: OutlineInputBorder(
-              //                 borderSide: BorderSide(),
-              //                 borderRadius:
-              //                     BorderRadius.all(Radius.circular(5)),
-              //                 gapPadding: 5.0,
-              //               ),
-              //             ),
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
+              Flexible(
+                flex: 1,
+                child: Container(
+                  width: double.infinity,
+                  //color: Colors.redAccent,
+                  decoration: const BoxDecoration(
+                      border: Border(
+                          right: BorderSide(
+                    color: Colors.grey,
+                    width: 1.5,
+                  ))),
+                  height: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Text(
+                          "Nom",
+                          style: TextStyle(
+                              color: Color(0xFF707585),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.05,
+                        //color: Colors.greenAccent,
+                        child: TextFormField(
+                          controller: _name,
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              gapPadding: 5.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Flexible(
                 flex: 1,
                 child: Container(
@@ -489,7 +490,7 @@ class SetPosState extends State<SetPos> {
           itemCount: global.MyMachineN02Config.Positions?.length ?? 0,
           itemBuilder: (BuildContext context, int index) {
             // Utilisez un contrôleur par élément de la liste
-            //TextEditingController controllerName = TextEditingController();
+            TextEditingController controllerName = TextEditingController();
             TextEditingController controllerPosX = TextEditingController();
             TextEditingController controllerPosY = TextEditingController();
             TextEditingController controllerPosZ = TextEditingController();
@@ -497,10 +498,10 @@ class SetPosState extends State<SetPos> {
             // Remplissez les contrôleurs avec les valeurs actuelles si disponibles
             if (global.MyMachineN02Config.Positions != null &&
                 index < global.MyMachineN02Config.Positions!.length) {
-              // controllerName.text = global
-              //         .MyMachineN02Config.Positions![index].Name
-              //         ?.toString() ??
-              //     "Prog $index";
+              controllerName.text = global
+                      .MyMachineN02Config.Positions![index].Name
+                      ?.toString() ??
+                  '';
               controllerPosX.text = global
                       .MyMachineN02Config.Positions![index].PosX
                       ?.toString() ??
@@ -517,14 +518,14 @@ class SetPosState extends State<SetPos> {
 
             return SetPosition(
               // Utilisez le contrôleur approprié pour chaque champ de position
-              // name: controllerName,
+              name: controllerName,
               posX: controllerPosX,
               posY: controllerPosY,
               posZ: controllerPosZ,
               onClickOnSet: () {
                 // Mettez à jour la position dans la liste avec les nouvelles valeurs
                 global.MyMachineN02Config.Positions?[index] = Position(
-                  // Name: controllerName.text,
+                  Name: controllerName.text,
                   PosX: double.tryParse(controllerPosX.text),
                   PosY: double.tryParse(controllerPosY.text),
                   PosZ: double.tryParse(controllerPosZ.text),

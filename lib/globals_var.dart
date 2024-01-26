@@ -19,7 +19,7 @@ import 'service/system/SystemsFilesElement.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.5.0";
+String version = "Version 1.5.3";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -45,15 +45,16 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
   email: "jordan.fortel@naxe.fr",
   DefaultMode: "CNC",
   Positions: [
-    Position(PosX: 20, PosY: 40, PosZ: 100),
-    Position(PosX: 21, PosY: 41, PosZ: 110),
-    Position(PosX: 22, PosY: 42, PosZ: 120),
-    Position(PosX: 23, PosY: 44, PosZ: 135)
+    Position(Name: "Prog1", PosX: 20, PosY: 40, PosZ: 100),
+    Position(Name: "Prog2", PosX: 21, PosY: 41, PosZ: 110),
+    Position(Name: "Prog3", PosX: 22, PosY: 42, PosZ: 120),
+    Position(Name: "Prog4", PosX: 23, PosY: 44, PosZ: 135)
   ],
   SetPosAffichage: 4,
   HasHeatBed: 0,
   HasFanOnEnclosure: 0,
   HasLedOnEnclosure: 0,
+  VitesseBroche: 24000,
 );
 
 MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
@@ -63,15 +64,16 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
   email: "defaultconfig",
   DefaultMode: "CNC",
   Positions: [
-    Position(PosX: 20, PosY: 40, PosZ: 100),
-    Position(PosX: 21, PosY: 41, PosZ: 110),
-    Position(PosX: 22, PosY: 42, PosZ: 120),
-    Position(PosX: 23, PosY: 44, PosZ: 135)
+    Position(Name: "Prog1", PosX: 20, PosY: 40, PosZ: 100),
+    Position(Name: "Prog2", PosX: 21, PosY: 41, PosZ: 110),
+    Position(Name: "Prog3", PosX: 22, PosY: 42, PosZ: 120),
+    Position(Name: "Prog4", PosX: 23, PosY: 44, PosZ: 135)
   ],
   SetPosAffichage: 4,
   HasHeatBed: 1,
   HasFanOnEnclosure: 1,
   HasLedOnEnclosure: 1,
+  VitesseBroche: 24000,
 );
 
 Ethernet_Connection myEthernet_connection = Ethernet_Connection();
@@ -105,3 +107,5 @@ Stream streamcontrollerContentGcodeToDisplay =
 
 Timer? timer;
 bool timerStarted = false;
+
+int hasDegagerTete = 0;
