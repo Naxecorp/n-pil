@@ -128,7 +128,7 @@ class API_Manager {
       if (response.statusCode == 200) {
         print(response.body);
         if (response.body.length < 2) return "response is empty";
-        global.ReplyList.add(response.body);
+        global.ReplyListFiFo.addItem(response.body);
         return response.body;
       } else {
         print(

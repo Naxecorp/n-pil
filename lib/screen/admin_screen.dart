@@ -501,15 +501,15 @@ class AdminScreenState extends State<AdminScreen>
                           border: Border.all(color: Colors.black26, width: 1),
                           borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: ListView.builder(
-                        itemCount: ReplyList?.length,
+                        itemCount: global.ReplyListFiFo.items.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Card(
                             elevation: 4,
                             child: ListTile(
                               tileColor:
-                                  ReplyList.elementAt(index).contains("Error")
+                                  global.ReplyListFiFo.items.elementAt(index).contains("Error")
                                       ? Colors.redAccent
-                                      : ReplyList.elementAt(index)
+                                      : global.ReplyListFiFo.items.elementAt(index)
                                               .contains("Warning")
                                           ? Colors.yellowAccent
                                           : Colors.white,
@@ -527,7 +527,7 @@ class AdminScreenState extends State<AdminScreen>
                                       width: 400,
                                       child: Text(
                                         overflow: TextOverflow.visible,
-                                        ReplyList!.elementAt(index)!,
+                                        global.ReplyListFiFo.items.elementAt(index),
                                         style: TextStyle(color: Colors.black),
                                       ),
                                     ),
@@ -550,7 +550,7 @@ class AdminScreenState extends State<AdminScreen>
                             onPressed: () {
                               if (global.AdminLogged) {
                                 setState(() {
-                                  global.ReplyList.clear();
+                                  global.ReplyListFiFo.items.clear();
                                 });
                               } else
                                 null;

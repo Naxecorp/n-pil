@@ -15,17 +15,17 @@ import 'service/gCode/gCodeProgram.dart';
 import 'service/nwc-settings/PalperOutil.dart';
 import 'service/nwc-settings/nwc-settings.dart';
 import 'service/system/SystemsFilesElement.dart';
+import 'service/system/replyListFiFO.dart';
 
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.5.3";
+String version = "Version 1.5.4";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
 int positions = 4;
-int secondsElapsedSinceBeginning =
-    0; // Temps écoulé depuis le début en secondes
+int secondsElapsedSinceBeginning =0; // Temps écoulé depuis le début en secondes
 double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
 bool isJobStartedByUser = false; // Si le programme a bien été lancé par le User
 double compensation = 0; // BabyStep Z
@@ -42,7 +42,7 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
   Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
   IP: "192.168.1.78",
   GlobalMachineUsedTime: 0,
-  email: "jordan.fortel@naxe.fr",
+  email: "contact@naxe.fr",
   DefaultMode: "CNC",
   Positions: [
     Position(Name: "Prog1", PosX: 20, PosY: 40, PosZ: 100),
@@ -82,7 +82,8 @@ bool isJobPaused = false;
 
 List<SysFileElement?>? ListofSysFile = [];
 
-List<String> ReplyList = [];
+//List<String> ReplyList = [];
+replyListFiFO ReplyListFiFo = replyListFiFO(15);
 
 StreamController<MachineObjectModel> controllerMachineObjectModel =
     StreamController<MachineObjectModel>.broadcast();
