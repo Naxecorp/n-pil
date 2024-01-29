@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nweb/OpeListView.dart';
+import 'package:nweb/service/ObjectModelJobManager.dart';
 import '../../screen/screens.dart';
 import '../../OpeListView.dart';
 import 'package:nweb/service/API/API_Manager.dart';
@@ -66,6 +67,41 @@ class _Menu2 extends State<Menu2> {
                       fileName = value; // Mettez à jour le nom du fichier
                       Navigator.of(context)
                           .pop(); // Fermez la boîte de dialogue
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                                "Le programme ${fileName} a bien été crée.\nSouhaitez-vous visualiser la liste des programmes ?"),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                ),
+                                onPressed: () async {
+                                  Navigator.pushNamed(context, '/programmes');
+                                },
+                                child: Text(
+                                  "Oui",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  "Non",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                       // Faites ce que vous devez faire avec fileName ici
                       List<String> buffer = [];
                       ListOfOperationCurrent.forEach((element) {
@@ -181,24 +217,7 @@ class _Menu2 extends State<Menu2> {
                     )))),
           ),
         ),
-        Flexible(flex: 12, child: Container()),
-        Flexible(
-          flex: 5,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2B9B80)),
-                onPressed: null,
-                child: SizedBox(
-                    height: 100,
-                    child: Center(
-                        child: Text(
-                      'Charger opération',
-                      textAlign: TextAlign.center,
-                    )))),
-          ),
-        ),
+        Flexible(flex: 15, child: Container()),
         Flexible(
           flex: 5,
           child: Padding(
@@ -213,7 +232,7 @@ class _Menu2 extends State<Menu2> {
                     height: 100,
                     child: Center(
                         child: Text(
-                      'Charger liste opération',
+                      'Créer programme',
                       style: TextStyle(color: Colors.white),
                       textAlign: TextAlign.center,
                     )))),

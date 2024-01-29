@@ -237,6 +237,16 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       ),
                                     ),
                                   ),
+                                  Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.05,
+                                      child: Text(
+                                        " tr/min",
+                                        style: TextStyle(
+                                          color: Colors.black26,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )),
                                 ],
                               ),
                               Row(

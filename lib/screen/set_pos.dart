@@ -539,7 +539,7 @@ class SetPosState extends State<SetPos> {
                 );
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text('Position n°${index + 1} enregistrée'),
-                  duration: const Duration(milliseconds: 600),
+                  duration: const Duration(milliseconds: 1000),
                 ));
               },
             );
