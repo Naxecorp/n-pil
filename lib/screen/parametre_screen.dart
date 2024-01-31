@@ -25,7 +25,6 @@ class ParametreScreen extends StatefulWidget {
 class ParametreScreenState extends State<ParametreScreen> {
   final TextEditingController _controllers = TextEditingController();
   Duration usedTime = new Duration();
-  bool _hasDegagerTete = global.hasDegagerTete == 1;
   bool _hasHeatbed = global.MyMachineN02Config.HasHeatBed == 1;
   bool _hasFanOnEnclosure = global.MyMachineN02Config.HasFanOnEnclosure == 1;
   bool _hasLedOnEnclosure = global.MyMachineN02Config.HasLedOnEnclosure == 1;
@@ -410,41 +409,6 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 10),
-                                    margin: const EdgeInsets.only(right: 15.0),
-                                    width: 200,
-                                    child: Text(
-                                      'Dégager Tête :',
-                                      style: TextStyle(
-                                        color: Colors.black26,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                  Switch(
-                                      value: _hasDegagerTete,
-                                      activeColor: Color(0xFF20917F),
-                                      inactiveThumbColor:
-                                          Color.fromARGB(255, 15, 19, 18),
-                                      inactiveTrackColor:
-                                          Color.fromARGB(255, 237, 237, 237),
-                                      thumbIcon: thumbIcon,
-                                      onChanged: ((value) {
-                                        setState(() {
-                                          _hasDegagerTete = value;
-                                          if (_hasDegagerTete)
-                                            global.hasDegagerTete = 1;
-                                          else
-                                            global.hasDegagerTete = 0;
-                                        });
-                                      }))
                                 ],
                               ),
                               Row(

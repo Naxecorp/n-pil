@@ -177,7 +177,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                   Navigator.pushNamed(context, '/jobStatus');
                 }),
             ElevatedButton(
-              child: Text("Démarrer"),
+              child: const Text("Démarrer"),
               onPressed: () async {
                 global.secondsElapsedSinceBeginning = 0;
                 global.isJobStartedByUser = true;
@@ -562,6 +562,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                 child: Text(
                                   'Démarrrer',
                                   textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
                             ),

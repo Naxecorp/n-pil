@@ -109,5 +109,3 @@ Stream streamcontrollerContentGcodeToDisplay =
 
 Timer? timer;
 bool timerStarted = false;
-
-int hasDegagerTete = 0;
