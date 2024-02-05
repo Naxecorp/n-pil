@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../ObjectModelManager.dart';
@@ -331,7 +332,7 @@ class API_Manager {
 
     var uri = Uri.parse(
         'http://${global.MyMachineN02Config.IP}/rr_upload?name=$path');
-        print("url : $uri");
+    print("url : $uri");
 
     try {
       var response = await http
@@ -444,6 +445,38 @@ class API_Manager {
     } catch (e) {
       print(e.toString());
       return global.MyMachineN02Config;
+    }
+  }
+
+  //Recupération données en BDD
+  Future getDataFromDB() async {
+    try {
+      var url = Uri.parse('https://naxe.fr/naxen02/get.php');
+      http.Response response = await http.get(url);
+      var data = jsonDecode(response.body);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  // Insertion en BDD
+  Future pushDataToDb(String serie, String action) async {
+    Map<String, String> requestHeaders = {
+      "Access-Control-Allow-Headers": "*",
+      "Content-Type": "application/json",
+      "Accept": "*/*",
+      "Accept-Encoding": "gzip, deflate",
+      "Access-Control-Allow-Origin": "*",
+      "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+      "Connection": "keep-alive",
+    };
+    try {
+      var url = Uri.parse(
+          'https://naxe.fr/naxen02/post.php?serie=${serie}&action=${action}');
+      http.Response response = await http.get(url);
+      var data = jsonDecode(response.body);
+    } catch (e) {
+      print(e.toString());
     }
   }
 }

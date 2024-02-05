@@ -228,6 +228,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                                   ?.toString() ==
                               "halted"
                           ? () {
+                              API_Manager().pushDataToDb(
+                                  global.MyMachineN02Config.Serie!,
+                                  "AR Urgence");
                               API_Manager().sendGcodeCommand("M999");
                               loadingPopup(context);
                             }

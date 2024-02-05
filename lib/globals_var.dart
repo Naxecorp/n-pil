@@ -20,7 +20,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.5.5";
+String version = "Version 1.6.0";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -41,6 +41,7 @@ MachineMode machineMode = MachineMode.unknow;
 
 MachineN02Config MyMachineN02Config = MachineN02Config(
   Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
+  Serie: "123456789",
   IP: "192.168.1.78",
   GlobalMachineUsedTime: 0,
   email: "contact@naxe.fr",
@@ -60,6 +61,7 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
 
 MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
   Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
+  Serie: "123456789",
   IP: "192.168.1.78",
   GlobalMachineUsedTime: 0,
   email: "defaultconfig",

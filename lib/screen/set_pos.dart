@@ -501,7 +501,7 @@ class SetPosState extends State<SetPos> {
               controllerName.text = global
                       .MyMachineN02Config.Positions![index].Name
                       ?.toString() ??
-                  '';
+                  'Prog';
               controllerPosX.text = global
                       .MyMachineN02Config.Positions![index].PosX
                       ?.toString() ??

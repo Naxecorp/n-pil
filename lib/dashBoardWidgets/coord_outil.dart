@@ -385,11 +385,13 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                         ?.status ==
                                     "processing"
                                 ? null
-                                : () {
-                                    API_Manager()
+                                : () async {
+                                    await API_Manager()
                                         .sendGcodeCommand("G53 G0 Z189");
-                                    API_Manager().sendGcodeCommand("G0 X0 Y0");
-                                    API_Manager().sendGcodeCommand("G0 Z0");
+                                    await API_Manager()
+                                        .sendGcodeCommand("G0 X0 Y0");
+                                    await API_Manager()
+                                        .sendGcodeCommand("G0 Z0");
                                   },
                             style: const NeumorphicStyle(
                               color: Color(0xFFF0F0F3),

@@ -104,6 +104,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
 
     filename = result.files.first.name.toString();
     if (!containsSpecialCharacters(filename)) {
+      print(result.files.first.bytes);
       API_Manager()
           .upLoadAFile("0:/gcodes/" + result.files.first.name.toString(),
               result.files.first.size.toString(), result.files.first.bytes!)
@@ -426,7 +427,9 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                         child: isLoading
                             ? Container(
                                 height: double.infinity,
-                                child: LinearProgressIndicator())
+                                child: const LinearProgressIndicator(
+                                  color: Colors.blue,
+                                ))
                             : Container(
                                 height: double.infinity,
                               )),

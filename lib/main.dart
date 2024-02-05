@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:camera/camera.dart';
@@ -15,6 +16,7 @@ import 'screen/programme_screen.dart';
 import 'screen/set_pos.dart';
 import 'service/API/API_Manager.dart';
 import 'globals_var.dart' as global;
+import 'package:http/http.dart' as http;
 import 'screen/screens.dart';
 
 int pageToShow = 1;
@@ -79,7 +81,12 @@ void main() async {
   actualiserMachineObjectModel();
   actualiserMoveObjectModel();
   actualiserMachineUsedTime();
-
+  await API_Manager().getDataFromDB();
+  await API_Manager().pushDataToDb(global.MyMachineN02Config.Serie!, "Start");
+  Timer.periodic(const Duration(minutes: 10), (timer) async {
+    await API_Manager()
+        .pushDataToDb(global.MyMachineN02Config.Serie!, "isAlive");
+  });
   runApp(const MyApp());
 }
 

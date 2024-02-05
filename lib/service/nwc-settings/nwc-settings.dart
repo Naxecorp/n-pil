@@ -12,6 +12,7 @@ String machineN02ConfigToJson(MachineN02Config data) =>
     json.encode(data.toJson());
 
 class MachineN02Config {
+  String? Serie;
   String? IP;
   String? email;
   String? Lastmodifition;
@@ -26,7 +27,8 @@ class MachineN02Config {
   int? VitesseBroche;
 
   MachineN02Config(
-      {this.IP,
+      {this.Serie,
+      this.IP,
       this.email,
       this.Lastmodifition,
       this.GlobalMachineUsedTime,
@@ -41,6 +43,7 @@ class MachineN02Config {
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
+        Serie: json["Serie"],
         IP: json["IP"],
         email: json["email"],
         Lastmodifition: json["lastmodification"],
@@ -64,6 +67,7 @@ class MachineN02Config {
       );
 
   Map<String, dynamic> toJson() => {
+        "Serie": Serie,
         "IP": IP,
         "email": email,
         "lastmodification": Lastmodifition,

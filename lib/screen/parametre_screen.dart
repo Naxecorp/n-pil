@@ -184,6 +184,17 @@ class ParametreScreenState extends State<ParametreScreen> {
                                   ),
                                 ),
                               ),
+                              Container(
+                                width: 500,
+                                child: Text(
+                                  "\nNuméro de série : ${global.MyMachineN02Config.Serie!}",
+                                  style: TextStyle(
+                                    color: Colors.black26,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -219,8 +230,9 @@ class ParametreScreenState extends State<ParametreScreen> {
                                     child: TextFormField(
                                       textAlign: TextAlign.end,
                                       initialValue: global
-                                          .MyMachineN02Config.VitesseBroche
-                                          .toString(),
+                                              .MyMachineN02Config.VitesseBroche
+                                              .toString() ??
+                                          "0",
                                       onChanged: (text) {
                                         global.MyMachineN02Config
                                                 .VitesseBroche =
