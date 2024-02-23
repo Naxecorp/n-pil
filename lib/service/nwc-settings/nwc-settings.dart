@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/service/nwc-settings/position.dart';
+import 'package:nweb/service/nwc-settings/offset.dart';
 
 import 'PalperOutil.dart';
 
@@ -25,6 +27,8 @@ class MachineN02Config {
   int? HasFanOnEnclosure;
   int? HasLedOnEnclosure;
   int? VitesseBroche;
+  int? VitesseDefaut;
+  List<Offset>? Offsets;
 
   MachineN02Config(
       {this.Serie,
@@ -39,7 +43,9 @@ class MachineN02Config {
       this.HasHeatBed,
       this.HasFanOnEnclosure,
       this.HasLedOnEnclosure,
-      this.VitesseBroche});
+      this.VitesseBroche,
+      this.VitesseDefaut,
+      this.Offsets});
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
@@ -64,6 +70,14 @@ class MachineN02Config {
         HasFanOnEnclosure: json["HasFanOnEnclosure"],
         HasLedOnEnclosure: json["HasLedOnEnclosure"],
         VitesseBroche: json["VitesseBroche"],
+        VitesseDefaut: json["VitesseDefaut"],
+        Offsets: json["Offset"] == null
+            ? []
+            : List<Offset>.from(
+                json["Positions"]!.map(
+                  (x) => Offset.fromJson(x),
+                ),
+              ),
       );
 
   Map<String, dynamic> toJson() => {
@@ -82,5 +96,9 @@ class MachineN02Config {
         "HasFanOnEnclosure": HasFanOnEnclosure,
         "HasLedOnEnclosure": HasLedOnEnclosure,
         "VitesseBroche": VitesseBroche,
+        "VitesseDefaut": VitesseDefaut,
+        "Offset": Offsets == null
+            ? []
+            : List<dynamic>.from(Offsets!.map((x) => x.toJson())),
       };
 }

@@ -222,7 +222,7 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                             0)
                           API_Manager().sendGcodeCommand("M5 P0").then((value) {
                             API_Manager().sendGcodeCommand(
-                                "M3 P0 S6000"); // Demarrage broche à 6.000 trs/min
+                                "M3 P0 S${global.MyMachineN02Config.VitesseDefaut ?? 6000}"); // Demarrage broche à 6.000 trs/min
                             setState(() {});
                           });
                         else

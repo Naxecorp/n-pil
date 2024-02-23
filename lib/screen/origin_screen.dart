@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
@@ -25,6 +26,203 @@ import '../widgetUtils/window.dart';
 import '../widgetUtils/ArretUrgence.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
+
+class Offset extends StatefulWidget {
+  final VoidCallback? onClickOnSet;
+  final TextEditingController? decalX;
+  final TextEditingController? decalY;
+  final TextEditingController? decalZ;
+  Offset({super.key, this.onClickOnSet, this.decalX, this.decalY, this.decalZ});
+
+  @override
+  State<Offset> createState() =>
+      _OffsetState(onClickOnSet, decalX, decalY, decalZ);
+}
+
+class _OffsetState extends State<Offset> {
+  final VoidCallback? _onClickOnSet;
+  final TextEditingController? _decalX;
+  final TextEditingController? _decalY;
+  final TextEditingController? _decalZ;
+  _OffsetState(this._onClickOnSet, this._decalX, this._decalY, this._decalZ);
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.orange,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(5.0),
+                child: Text(
+                  "X",
+                  style: TextStyle(
+                      color: Color(0xFF707585),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.05,
+                // color: Colors.greenAccent,
+                child: TextFormField(
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-9]+[.]{0,1}[0-9]*')),
+                    TextInputFormatter.withFunction(
+                      (oldValue, newValue) => newValue.copyWith(
+                        text: newValue.text.replaceAll('.', '.'),
+                      ),
+                    ),
+                  ], // saisie de nombres uniquement
+                  controller: _decalX,
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(),
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      gapPadding: 5.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(5.0),
+                  child: Text(
+                    "Y",
+                    style: TextStyle(
+                        color: Color(0xFF707585),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.05,
+                  //color: Colors.greenAccent,
+                  child: TextFormField(
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'[0-9]+[.]{0,1}[0-9]*')),
+                      TextInputFormatter.withFunction(
+                        (oldValue, newValue) => newValue.copyWith(
+                          text: newValue.text.replaceAll('.', '.'),
+                        ),
+                      ),
+                    ], // saisie de nombres uniquement
+                    controller: _decalY,
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(),
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        gapPadding: 5.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(5.0),
+                child: Text(
+                  "Z",
+                  style: TextStyle(
+                      color: Color(0xFF707585),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.05,
+                //color: Colors.greenAccent,
+                child: TextFormField(
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-9]+[.]{0,1}[0-9]*')),
+                    TextInputFormatter.withFunction(
+                      (oldValue, newValue) => newValue.copyWith(
+                        text: newValue.text.replaceAll('.', '.'),
+                      ),
+                    ),
+                  ], // saisie de nombres uniquement
+                  controller: _decalZ,
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(),
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      gapPadding: 5.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(5.0),
+                width: MediaQuery.of(context).size.width * 0.13,
+                child: NeumorphicButton(
+                  onPressed: () {},
+                  style: const NeumorphicStyle(
+                    color: Color(0xFFF0F0F3),
+                  ),
+                  child: const Text(
+                    "Modifier",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xFF707585),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(5.0),
+                width: MediaQuery.of(context).size.width * 0.13,
+                child: NeumorphicButton(
+                  onPressed: () {
+                    return _onClickOnSet!();
+                  },
+                  style: const NeumorphicStyle(
+                    color: Color(0xFFF0F0F3),
+                  ),
+                  child: const Text(
+                    "Appliquer",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xFF707585),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    throw UnimplementedError();
+  }
+}
 
 class OriginScreen extends StatefulWidget {
   OriginScreen({super.key, required this.notifyParent});
@@ -108,8 +306,8 @@ class OriginScreenState extends State<OriginScreen> {
             Flexible(
                 flex: 1,
                 child: Window(
-                  title1: "Changement d'outil",
-                  title2: " manuel",
+                  title1: "Mesure Hauteur",
+                  title2: " fraise",
                   child: Column(
                     children: [
                       Flexible(
@@ -363,15 +561,69 @@ class OriginScreenState extends State<OriginScreen> {
                     ],
                   ),
                 )),
-            const Flexible(
-                flex: 1,
-                child: Window(
-                  title1: "Changement d'outil",
-                  title2: " automatique",
-                  child: Center(
-                    child: Text("Bientôt disponible"),
-                  ),
-                )),
+            Flexible(
+              flex: 1,
+              child: Window(
+                title1: "Offset",
+                title2: " outils",
+                child: Column(
+                  children: [
+                    Flexible(
+                      flex: 1,
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ),
+                    Flexible(
+                      flex: 1,
+                      child: ListView.builder(
+                        itemCount:
+                            global.MyMachineN02Config.Offsets?.length ?? 0,
+                        itemBuilder: (BuildContext context, int index) {
+                          TextEditingController controllerPosX =
+                              TextEditingController();
+                          TextEditingController controllerPosY =
+                              TextEditingController();
+                          TextEditingController controllerPosZ =
+                              TextEditingController();
+                          if (global.MyMachineN02Config.Offsets != null &&
+                              index <
+                                  global.MyMachineN02Config.Offsets!.length) {
+                            controllerPosX.text = global
+                                    .MyMachineN02Config.Offsets![index].DecalX
+                                    ?.toString() ??
+                                '';
+                            controllerPosY.text = global
+                                    .MyMachineN02Config.Offsets![index].DecalY
+                                    ?.toString() ??
+                                '';
+                            controllerPosZ.text = global
+                                    .MyMachineN02Config.Offsets![index].DecalZ
+                                    ?.toString() ??
+                                '';
+                          }
+                          return Offset(
+                            decalX: controllerPosX,
+                            decalY: controllerPosY,
+                            decalZ: controllerPosZ,
+                            onClickOnSet: () {
+                              print("OK");
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    Flexible(
+                      flex: 1,
+                      child: Container(
+                        height: double.infinity,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -77,12 +77,11 @@ void main() async {
   await API_Manager()
       .getfileListSys()
       .then((value) => global.ListofSysFile = value);
-
+  await API_Manager().pushDataToDb(global.MyMachineN02Config.Serie!, "Start");
   actualiserMachineObjectModel();
   actualiserMoveObjectModel();
   actualiserMachineUsedTime();
-  await API_Manager().getDataFromDB();
-  await API_Manager().pushDataToDb(global.MyMachineN02Config.Serie!, "Start");
+
   Timer.periodic(const Duration(minutes: 10), (timer) async {
     await API_Manager()
         .pushDataToDb(global.MyMachineN02Config.Serie!, "isAlive");

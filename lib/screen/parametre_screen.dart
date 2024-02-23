@@ -216,7 +216,60 @@ class ParametreScreenState extends State<ParametreScreen> {
                                         horizontal: 10, vertical: 10),
                                     margin: const EdgeInsets.only(right: 15.0),
                                     child: Text(
-                                      'Vitesse de la broche  :',
+                                      'Vitesse min de la broche :',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.05,
+                                    child: TextFormField(
+                                      textAlign: TextAlign.end,
+                                      initialValue: global
+                                              .MyMachineN02Config.VitesseDefaut
+                                              .toString() ??
+                                          "0",
+                                      onChanged: (text) {
+                                        global.MyMachineN02Config
+                                                .VitesseDefaut =
+                                            int.tryParse(text)!;
+                                      },
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5)),
+                                          gapPadding: 5.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.05,
+                                    child: Text(
+                                      " tr/min",
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 200,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
+                                    child: Text(
+                                      'Vitesse max de la broche :',
                                       style: TextStyle(
                                         color: Colors.black26,
                                         fontWeight: FontWeight.bold,
@@ -249,15 +302,16 @@ class ParametreScreenState extends State<ParametreScreen> {
                                     ),
                                   ),
                                   Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.05,
-                                      child: Text(
-                                        " tr/min",
-                                        style: TextStyle(
-                                          color: Colors.black26,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      )),
+                                    width: MediaQuery.of(context).size.width *
+                                        0.05,
+                                    child: Text(
+                                      " tr/min",
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                               Row(
@@ -268,7 +322,7 @@ class ParametreScreenState extends State<ParametreScreen> {
                                         horizontal: 10, vertical: 10),
                                     margin: const EdgeInsets.only(right: 15.0),
                                     child: Text(
-                                      'Coordonées du palpeur outil X  :',
+                                      'Coordonées du palpeur outil X :',
                                       style: TextStyle(
                                         color: Colors.black26,
                                         fontWeight: FontWeight.bold,
@@ -308,7 +362,7 @@ class ParametreScreenState extends State<ParametreScreen> {
                                     margin: const EdgeInsets.only(right: 15.0),
                                     width: 200,
                                     child: Text(
-                                      'Coordonées du palpeur outil Y  :',
+                                      'Coordonées du palpeur outil Y :',
                                       style: TextStyle(
                                         color: Colors.black26,
                                         fontWeight: FontWeight.bold,
@@ -348,7 +402,7 @@ class ParametreScreenState extends State<ParametreScreen> {
                                     margin: const EdgeInsets.only(right: 15.0),
                                     width: 200,
                                     child: Text(
-                                      'Hauteur du palpeur outil Z  :',
+                                      'Hauteur du palpeur outil Z :',
                                       style: TextStyle(
                                         color: Colors.black26,
                                         fontWeight: FontWeight.bold,

@@ -29,6 +29,7 @@ class SetPosition extends StatefulWidget {
   final TextEditingController? posX;
   final TextEditingController? posY;
   final TextEditingController? posZ;
+
   SetPosition(
       {super.key,
       this.onClickOnSet,
@@ -461,29 +462,6 @@ class SetPosState extends State<SetPos> {
           ],
         ),
       ),
-      // body: Container(
-      //   color: Colors.white,
-      //   child: ListView.builder(
-      //     itemCount: global.MyMachineN02Config.Positions?.length,
-      //     itemBuilder: (BuildContext context, int index) {
-      //       List<TextEditingController> listPosX = [TextEditingController()];
-      //       List<TextEditingController> listPosY = [TextEditingController()];
-      //       List<TextEditingController> listPosZ = [TextEditingController()];
-      //       return SetPosition(
-      //         posX: listPosX[index = 0],
-      //         posY: listPosY[index = 0],
-      //         posZ: listPosZ[index = 0],
-      //         onClickOnSet: () {
-      //           global.MyMachineN02Config.Positions?[index] = Position(
-      //             PosX: double.tryParse(listPosX[index].text),
-      //             PosY: double.tryParse(listPosY[index].text),
-      //             PosZ: double.tryParse(listPosZ[index].text),
-      //           );
-      //         },
-      //       );
-      //     },
-      //   ),
-      // ),
       body: Container(
         color: Colors.white,
         child: ListView.builder(

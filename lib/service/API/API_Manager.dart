@@ -449,18 +449,18 @@ class API_Manager {
   }
 
   //Recupération données en BDD
-  Future getDataFromDB() async {
-    try {
-      var url = Uri.parse('https://naxe.fr/naxen02/get.php');
-      http.Response response = await http.get(url);
-      var data = jsonDecode(response.body);
-    } catch (e) {
-      print(e.toString());
-    }
-  }
+  // Future getDataFromDB() async {
+  //   try {
+  //     var url = Uri.parse('https://naxe.fr/naxen02/get.php');
+  //     http.Response response = await http.get(url);
+  //     var data = jsonDecode(response.body);
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  // }
 
   // Insertion en BDD
-  Future pushDataToDb(String serie, String action) async {
+  Future<String> pushDataToDb(String serie, String action) async {
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
       "Content-Type": "application/json",
@@ -470,13 +470,23 @@ class API_Manager {
       "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
       "Connection": "keep-alive",
     };
+
+    var uri = Uri.parse(
+        'http://naxe.fr/naxen02/post.php?serie=${serie}&action=${action}');
     try {
-      var url = Uri.parse(
-          'https://naxe.fr/naxen02/post.php?serie=${serie}&action=${action}');
-      http.Response response = await http.get(url);
-      var data = jsonDecode(response.body);
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      print(response.body);
+      if (response.statusCode == 200) {
+        return 'ok';
+      } else {
+        print(
+            'Fail to Send commnand, error : ' + response.statusCode.toString());
+        return 'nok';
+      }
     } catch (e) {
-      print(e.toString());
+      return 'nok';
     }
   }
 }

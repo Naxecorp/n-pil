@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Naxe Pilotage"
-#define MyAppVersion "1.5.5"
+#define MyAppVersion "1.6.1"
 #define MyAppPublisher "Naxe"
 #define MyAppURL "https://www.naxe.fr/"
 #define MyAppExeName "nweb.exe"
