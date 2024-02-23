@@ -82,11 +82,11 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                               children: [
                                 Text("Head"),
                                 Text(global.machineObjectModel.result?.heat
-                                        ?.heaters?[0].current
+                                        ?.heaters?[1].current
                                         .toString() ??
                                     "..."),
                                 Text(
-                                    "/ ${(global.machineObjectModel.result?.heat?.heaters?[0].standby) ?? 0}"),
+                                    "/ ${(global.machineObjectModel.result?.heat?.heaters?[1].standby) ?? 0}"),
                               ],
                             ),
                           ),
@@ -107,11 +107,11 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                               children: [
                                 Text("Bed"),
                                 Text(global.machineObjectModel.result?.heat
-                                        ?.heaters?[1].current
+                                        ?.heaters?[0].current
                                         .toString() ??
                                     "..."),
                                 Text(
-                                    "/ ${(global.machineObjectModel.result?.heat?.heaters?[1].standby) ?? 0}"),
+                                    "/ ${(global.machineObjectModel.result?.heat?.heaters?[0].standby) ?? 0}"),
                               ],
                             ),
                           ),
@@ -134,7 +134,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                           onPressed: () {
                             setState(() {
                               global.ExtrudeFactor = global.objectModelMove
-                                      .result?.extruders?[0].factor
+                                      .result?.extruders?[1].factor
                                       ?.toDouble() ??
                                   global.ExtrudeFactor;
                               global.ExtrudeFactor += 10;
@@ -223,6 +223,48 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                         )
                       ],
                     ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        NeumorphicButton(
+                          style:
+                              const NeumorphicStyle(color: Color(0xFFF0F0F3)),
+                          onPressed: () {
+                            setState(() {
+                              API_Manager()
+                                  .sendGcodeCommand(
+                                      "M83\n G1 E-5 F500\n M82")
+                                  .then(
+                                      (value) => API_Manager().sendrr_reply());
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_circle_up,
+                            color: Color(0xFF707585),
+                          ),
+                        ),
+                        Text(
+                            "Extruder 5mm"),
+                        NeumorphicButton(
+                          style:
+                              const NeumorphicStyle(color: Color(0xFFF0F0F3)),
+                          onPressed: () {
+                            setState(() {
+                              API_Manager()
+                                  .sendGcodeCommand(
+                                      "M83\n G1 E5 F500\n M82")
+                                  .then(
+                                      (value) => API_Manager().sendrr_reply());
+                            });
+                          },
+                          child: const Icon(
+                            Icons.arrow_circle_down_rounded,
+                            color: Color(0xFF707585),
+                          ),
+                        )
+                      ],
+                    ),
+                  
                   ],
                 ))
           ],
