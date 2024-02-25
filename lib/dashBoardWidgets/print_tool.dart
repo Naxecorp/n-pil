@@ -67,7 +67,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      AspectRatio(
+                      (global.machineObjectModel.result?.heat?.heaters?.length)! >= 2 ? AspectRatio(
                         aspectRatio: 1,
                         child: Padding(
                           padding: EdgeInsets.all(
@@ -91,7 +91,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                             ),
                           ),
                         ),
-                      ),
+                      ):Container(),
                       AspectRatio(
                         aspectRatio: 1,
                         child: Padding(
@@ -183,6 +183,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                                       .result?.fans?[0]?.actualValue
                                       ?.toDouble() ??
                                   global.VentilatorFan;
+                                  global.VentilatorFan *=10;
                               global.VentilatorFan += 10;
                               API_Manager()
                                   .sendGcodeCommand(
@@ -223,7 +224,7 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                         )
                       ],
                     ),
-                    Column(
+                    global.machineObjectModel.result!.state!.status == "idle" ? Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         NeumorphicButton(
@@ -263,8 +264,22 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                           ),
                         )
                       ],
-                    ),
-                  
+                    ):Container(),
+                  global.machineObjectModel.result!.state!.status == "idle" ?
+                  AspectRatio(
+                        aspectRatio: 1,
+                        child: Padding(
+                          padding: EdgeInsets.all(
+                              (MediaQuery.of(context).size.height * 0.05)
+                                  .toDouble()),
+                          child: NeumorphicButton(
+                            onPressed: () {
+                              API_Manager().sendGcodeCommand("G30").then((value) => API_Manager().sendrr_reply());
+                            },
+                            child: Icon(Icons.get_app_outlined),
+                          ),
+                        ),
+                      ):Container()
                   ],
                 ))
           ],
