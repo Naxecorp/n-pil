@@ -1,12 +1,12 @@
-class Offset {
+class Offsets {
   String? Name;
   double? DecalX;
   double? DecalY;
   double? DecalZ;
 
-  Offset({this.Name, this.DecalX, this.DecalY, this.DecalZ});
+  Offsets({this.Name, this.DecalX, this.DecalY, this.DecalZ});
 
-  Offset.fromJson(Map<String, dynamic> json)
+  Offsets.fromJson(Map<String, dynamic> json)
       : Name = json["Name"],
         DecalX = json['DecalX'],
         DecalY = json['DecalY'],

@@ -21,7 +21,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.6.1";
+String version = "Version 1.6.3";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -59,9 +59,9 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
     HasLedOnEnclosure: 0,
     VitesseBroche: 24000,
     VitesseDefaut: 6400,
-    Offsets: [
-      Offset(Name: "Offset3D", DecalX: 1, DecalY: 2, DecalZ: 3),
-      Offset(Name: "OffsetLaser", DecalX: 4, DecalY: 5, DecalZ: 6),
+    Offset: [
+      Offsets(Name: "Offset 3D", DecalX: 1, DecalY: 2, DecalZ: 3),
+      Offsets(Name: "Offset Laser", DecalX: 4, DecalY: 5, DecalZ: 6),
     ]);
 
 MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
@@ -83,9 +83,9 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     HasLedOnEnclosure: 1,
     VitesseBroche: 24000,
     VitesseDefaut: 6400,
-    Offsets: [
-      Offset(Name: "Offset3D", DecalX: 1, DecalY: 2, DecalZ: 3),
-      Offset(Name: "OffsetLaser", DecalX: 4, DecalY: 5, DecalZ: 6),
+    Offset: [
+      Offsets(Name: "Offset 3D", DecalX: 1, DecalY: 2, DecalZ: 3),
+      Offsets(Name: "Offset Laser", DecalX: 4, DecalY: 5, DecalZ: 6),
     ]);
 
 Ethernet_Connection myEthernet_connection = Ethernet_Connection();

@@ -28,7 +28,7 @@ class MachineN02Config {
   int? HasLedOnEnclosure;
   int? VitesseBroche;
   int? VitesseDefaut;
-  List<Offset>? Offsets;
+  List<Offsets>? Offset;
 
   MachineN02Config(
       {this.Serie,
@@ -45,7 +45,7 @@ class MachineN02Config {
       this.HasLedOnEnclosure,
       this.VitesseBroche,
       this.VitesseDefaut,
-      this.Offsets});
+      this.Offset});
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
@@ -71,11 +71,11 @@ class MachineN02Config {
         HasLedOnEnclosure: json["HasLedOnEnclosure"],
         VitesseBroche: json["VitesseBroche"],
         VitesseDefaut: json["VitesseDefaut"],
-        Offsets: json["Offset"] == null
+        Offset: json["Offset"] == null
             ? []
-            : List<Offset>.from(
-                json["Positions"]!.map(
-                  (x) => Offset.fromJson(x),
+            : List<Offsets>.from(
+                json["Offset"]!.map(
+                  (x) => Offsets.fromJson(x),
                 ),
               ),
       );
@@ -97,8 +97,8 @@ class MachineN02Config {
         "HasLedOnEnclosure": HasLedOnEnclosure,
         "VitesseBroche": VitesseBroche,
         "VitesseDefaut": VitesseDefaut,
-        "Offset": Offsets == null
+        "Offset": Offset == null
             ? []
-            : List<dynamic>.from(Offsets!.map((x) => x.toJson())),
+            : List<dynamic>.from(Offset!.map((x) => x.toJson())),
       };
 }

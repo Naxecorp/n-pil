@@ -11,6 +11,7 @@ import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:nweb/service/nwc-settings/offset.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -54,7 +55,7 @@ class _OffsetState extends State<Offset> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.orange,
+      // color: Colors.orange,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -76,7 +77,7 @@ class _OffsetState extends State<Offset> {
                 child: TextFormField(
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(
-                        RegExp(r'[0-9]+[.]{0,1}[0-9]*')),
+                        RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
                     TextInputFormatter.withFunction(
                       (oldValue, newValue) => newValue.copyWith(
                         text: newValue.text.replaceAll('.', '.'),
@@ -115,7 +116,7 @@ class _OffsetState extends State<Offset> {
                   child: TextFormField(
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(
-                          RegExp(r'[0-9]+[.]{0,1}[0-9]*')),
+                          RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
                       TextInputFormatter.withFunction(
                         (oldValue, newValue) => newValue.copyWith(
                           text: newValue.text.replaceAll('.', '.'),
@@ -154,7 +155,7 @@ class _OffsetState extends State<Offset> {
                 child: TextFormField(
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(
-                        RegExp(r'[0-9]+[.]{0,1}[0-9]*')),
+                        RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
                     TextInputFormatter.withFunction(
                       (oldValue, newValue) => newValue.copyWith(
                         text: newValue.text.replaceAll('.', '.'),
@@ -181,12 +182,14 @@ class _OffsetState extends State<Offset> {
                 padding: const EdgeInsets.all(5.0),
                 width: MediaQuery.of(context).size.width * 0.13,
                 child: NeumorphicButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    return _onClickOnSet!();
+                  },
                   style: const NeumorphicStyle(
                     color: Color(0xFFF0F0F3),
                   ),
                   child: const Text(
-                    "Modifier",
+                    "Sauvegarder",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Color(0xFF707585),
@@ -199,8 +202,29 @@ class _OffsetState extends State<Offset> {
                 padding: const EdgeInsets.all(5.0),
                 width: MediaQuery.of(context).size.width * 0.13,
                 child: NeumorphicButton(
-                  onPressed: () {
-                    return _onClickOnSet!();
+                  onPressed: () async {
+                    print(global.MyMachineN02Config.Offset?.length);
+                    print(global.MyMachineN02Config.Offset?[0]);
+                    // String? userPosX = global
+                    //         .machineObjectModel.result?.move?.axes
+                    //         ?.elementAt(0)!
+                    //         .userPosition!
+                    //         .toString() ??
+                    //     "0";
+                    // String? userPosY = global
+                    //         .machineObjectModel.result?.move?.axes
+                    //         ?.elementAt(1)!
+                    //         .userPosition!
+                    //         .toString() ??
+                    //     "0";
+                    // String? userPosZ = global
+                    //         .machineObjectModel.result?.move?.axes
+                    //         ?.elementAt(2)
+                    //         .userPosition
+                    //         .toString() ??
+                    //     "0";
+                    //   await API_Manager().sendGcodeCommand(
+                    //       "G92 X${userPosX! + _decalX!.text} Y${userPosY! + _decalY!.text} Z${userPosZ! + _decalZ!.text}");
                   },
                   style: const NeumorphicStyle(
                     color: Color(0xFFF0F0F3),
@@ -259,9 +283,9 @@ class OriginScreenState extends State<OriginScreen> {
                 child: Container(
                     child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
-                flex: 10,
-                child: Container(
-                    child: Row(
+              flex: 10,
+              child: Container(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Spacer(),
@@ -295,7 +319,9 @@ class OriginScreenState extends State<OriginScreen> {
                       style: TextStyle(color: Color(0xFF707585)),
                     ),
                   ],
-                ))),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -304,263 +330,277 @@ class OriginScreenState extends State<OriginScreen> {
         child: Row(
           children: [
             Flexible(
-                flex: 1,
-                child: Window(
-                  title1: "Mesure Hauteur",
-                  title2: " fraise",
-                  child: Column(
-                    children: [
-                      Flexible(
-                          flex: 3,
-                          child: Container(
-                            height: double.infinity,
-                          )),
-                      Flexible(
-                          flex: 2,
-                          child: Container(
-                            //height: double.infinity,
-                            width: double.infinity,
-                            //color: Colors.blue,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: NeumorphicButton(
-                                    margin: EdgeInsets.all(15),
-                                    style: NeumorphicStyle(
-                                      color: Color(0xFFF0F0F3),
-                                    ),
-                                    onPressed: () {
-                                      API_Manager()
-                                          .sendGcodeCommand("G53 G1 Z189")
-                                          .then((value) => API_Manager()
-                                              .sendGcodeCommand(
-                                                  "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}"));
-                                    },
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Icon(
-                                            Icons.arrow_right,
-                                            color: Color(0xFF707585),
-                                          ),
-                                          FittedBox(
-                                              fit: BoxFit.fitHeight,
-                                              child: Text(
-                                                'Vers palpeur',
-                                                style: TextStyle(
-                                                    color: Color(0xFF707585)),
-                                              ))
-                                        ]),
-                                  ),
+              flex: 1,
+              child: Window(
+                title1: "Mesure Hauteur",
+                title2: " fraise",
+                child: Column(
+                  children: [
+                    Flexible(
+                      flex: 3,
+                      child: Container(
+                        height: double.infinity,
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: Container(
+                        //height: double.infinity,
+                        width: double.infinity,
+                        //color: Colors.blue,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: NeumorphicButton(
+                                margin: EdgeInsets.all(15),
+                                style: NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
                                 ),
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: NeumorphicButton(
-                                    margin: EdgeInsets.all(15),
-                                    style: NeumorphicStyle(
-                                      color: Color(0xFFF0F0F3),
+                                onPressed: () {
+                                  API_Manager()
+                                      .sendGcodeCommand("G53 G1 Z189")
+                                      .then((value) => API_Manager()
+                                          .sendGcodeCommand(
+                                              "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}"));
+                                },
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Icon(
+                                      Icons.arrow_right,
+                                      color: Color(0xFF707585),
                                     ),
-                                    onPressed: () {
-                                      API_Manager()
-                                          .sendGcodeCommand("M106 P3 S255")
-                                          .then((value) => API_Manager()
-                                              .sendGcodeCommand("G38.2 Z-200")
-                                              .then((value) => API_Manager()
-                                                  .sendGcodeCommand(
-                                                      "M106 P3 S0")));
-                                    },
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Icon(
-                                            Icons.get_app,
-                                            color: Color(0xFF707585),
-                                          ),
-                                          FittedBox(
-                                              fit: BoxFit.fitHeight,
-                                              child: Text(
-                                                'Palper outil actuel',
-                                                style: TextStyle(
-                                                    color: Color(0xFF707585)),
-                                              ))
-                                        ]),
-                                  ),
+                                    FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Text(
+                                        'Vers palpeur',
+                                        style:
+                                            TextStyle(color: Color(0xFF707585)),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: NeumorphicButton(
-                                    margin: EdgeInsets.all(15),
-                                    style: const NeumorphicStyle(
-                                      color: Color(0xFFF0F0F3),
-                                    ),
-                                    onPressed: () {
-                                      ZSaved = global.machineObjectModel.result!
-                                          .move!.axes![2].userPosition!
-                                          .toDouble();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              const Text('Hauteur Enregistrée'),
-                                          duration:
-                                              const Duration(milliseconds: 400),
-                                        ),
-                                      );
-                                    },
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          const Icon(
-                                            Icons.save_outlined,
-                                            color: Color(0xFF707585),
-                                          ),
-                                          const FittedBox(
-                                              fit: BoxFit.fitHeight,
-                                              child: Text(
-                                                'Enregistrer hauteur',
-                                                style: TextStyle(
-                                                    color: Color(0xFF707585)),
-                                              ))
-                                        ]),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          )),
-                      Flexible(
-                          flex: 1,
-                          child: Container(
-                            height: double.infinity,
-                          )),
-                      Flexible(
-                          flex: 2,
-                          child: Container(
-                            //color: Colors.orange,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: NeumorphicButton(
-                                    margin: const EdgeInsets.all(15),
-                                    style: const NeumorphicStyle(
-                                      color: Color(0xFFF0F0F3),
-                                    ),
-                                    onPressed: () {
-                                      API_Manager().sendGcodeCommand(
-                                          "G53 G1 Z189 F2000");
-                                    },
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          const Icon(
-                                            Icons.arrow_drop_up,
-                                            color: Color(0xFF707585),
-                                          ),
-                                          const FittedBox(
-                                              fit: BoxFit.fitHeight,
-                                              child: Text(
-                                                "Changer d'outil",
-                                                style: TextStyle(
-                                                    color: Color(0xFF707585)),
-                                              ))
-                                        ]),
-                                  ),
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: NeumorphicButton(
+                                margin: EdgeInsets.all(15),
+                                style: NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
                                 ),
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: NeumorphicButton(
-                                    margin: const EdgeInsets.all(15),
-                                    style: const NeumorphicStyle(
-                                      color: Color(0xFFF0F0F3),
-                                    ),
-                                    onPressed: () {
-                                      API_Manager()
-                                          .sendGcodeCommand("M106 P3 S255")
+                                onPressed: () {
+                                  API_Manager()
+                                      .sendGcodeCommand("M106 P3 S255")
+                                      .then((value) => API_Manager()
+                                          .sendGcodeCommand("G38.2 Z-200")
                                           .then((value) => API_Manager()
-                                              .sendGcodeCommand("G38.2 Z-200")
-                                              .then((value) => API_Manager()
-                                                  .sendGcodeCommand(
-                                                      "M106 P3 S0")));
-                                    },
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          const Icon(
-                                            Icons.get_app,
-                                            color: Color(0xFF707585),
-                                          ),
-                                          const FittedBox(
-                                              fit: BoxFit.fitHeight,
-                                              child: Text(
-                                                'Palper outil',
-                                                style: TextStyle(
-                                                    color: Color(0xFF707585)),
-                                              ))
-                                        ]),
-                                  ),
-                                ),
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: NeumorphicButton(
-                                    margin: const EdgeInsets.all(15),
-                                    style: const NeumorphicStyle(
-                                      color: Color(0xFFF0F0F3),
+                                              .sendGcodeCommand("M106 P3 S0")));
+                                },
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Icon(
+                                      Icons.get_app,
+                                      color: Color(0xFF707585),
                                     ),
-                                    onPressed: () {
-                                      API_Manager()
-                                          .sendGcodeCommand("G10 L20 P1 Z" +
-                                              ZSaved.toStringAsFixed(2))
-                                          .then((value) => API_Manager()
-                                              .sendGcodeCommand("G54"));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              const Text('Hauteur Enregistrée'),
-                                          duration:
-                                              const Duration(milliseconds: 400),
-                                        ),
-                                      );
-                                      API_Manager().sendGcodeCommand(
-                                          "G91\nG1 Z50 F3700\nG90\n");
-                                    },
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          const Icon(
-                                            Icons.height,
-                                            color: Color(0xFF707585),
-                                          ),
-                                          const FittedBox(
-                                              fit: BoxFit.fitHeight,
-                                              child: Text(
-                                                'Restituer hauteur outil',
-                                                style: TextStyle(
-                                                    color: Color(0xFF707585)),
-                                              ))
-                                        ]),
-                                  ),
+                                    FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Text(
+                                        'Palper outil actuel',
+                                        style:
+                                            TextStyle(color: Color(0xFF707585)),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          )),
-                      Flexible(
-                          flex: 3,
-                          child: Container(
-                            height: double.infinity,
-                          )),
-                    ],
-                  ),
-                )),
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: NeumorphicButton(
+                                margin: EdgeInsets.all(15),
+                                style: const NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                onPressed: () {
+                                  ZSaved = global.machineObjectModel.result!
+                                      .move!.axes![2].userPosition!
+                                      .toDouble();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content:
+                                          const Text('Hauteur Enregistrée'),
+                                      duration:
+                                          const Duration(milliseconds: 400),
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    const Icon(
+                                      Icons.save_outlined,
+                                      color: Color(0xFF707585),
+                                    ),
+                                    const FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Text(
+                                        'Enregistrer hauteur',
+                                        style:
+                                            TextStyle(color: Color(0xFF707585)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 1,
+                      child: Container(
+                        height: double.infinity,
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: Container(
+                        //color: Colors.orange,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: NeumorphicButton(
+                                margin: const EdgeInsets.all(15),
+                                style: const NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                onPressed: () {
+                                  API_Manager()
+                                      .sendGcodeCommand("G53 G1 Z189 F2000");
+                                },
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    const Icon(
+                                      Icons.arrow_drop_up,
+                                      color: Color(0xFF707585),
+                                    ),
+                                    const FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Text(
+                                        "Changer d'outil",
+                                        style:
+                                            TextStyle(color: Color(0xFF707585)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: NeumorphicButton(
+                                margin: const EdgeInsets.all(15),
+                                style: const NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                onPressed: () {
+                                  API_Manager()
+                                      .sendGcodeCommand("M106 P3 S255")
+                                      .then((value) => API_Manager()
+                                          .sendGcodeCommand("G38.2 Z-200")
+                                          .then((value) => API_Manager()
+                                              .sendGcodeCommand("M106 P3 S0")));
+                                },
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    const Icon(
+                                      Icons.get_app,
+                                      color: Color(0xFF707585),
+                                    ),
+                                    const FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Text(
+                                        'Palper outil',
+                                        style:
+                                            TextStyle(color: Color(0xFF707585)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: NeumorphicButton(
+                                margin: const EdgeInsets.all(15),
+                                style: const NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                onPressed: () {
+                                  API_Manager()
+                                      .sendGcodeCommand("G10 L20 P1 Z" +
+                                          ZSaved.toStringAsFixed(2))
+                                      .then((value) => API_Manager()
+                                          .sendGcodeCommand("G54"));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content:
+                                          const Text('Hauteur Enregistrée'),
+                                      duration:
+                                          const Duration(milliseconds: 400),
+                                    ),
+                                  );
+                                  API_Manager().sendGcodeCommand(
+                                      "G91\nG1 Z50 F3700\nG90\n");
+                                },
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    const Icon(
+                                      Icons.height,
+                                      color: Color(0xFF707585),
+                                    ),
+                                    const FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Text(
+                                        'Restituer hauteur outil',
+                                        style:
+                                            TextStyle(color: Color(0xFF707585)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 3,
+                      child: Container(
+                        height: double.infinity,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Flexible(
               flex: 1,
               child: Window(
@@ -579,7 +619,7 @@ class OriginScreenState extends State<OriginScreen> {
                       flex: 1,
                       child: ListView.builder(
                         itemCount:
-                            global.MyMachineN02Config.Offsets?.length ?? 0,
+                            global.MyMachineN02Config.Offset?.length ?? 1,
                         itemBuilder: (BuildContext context, int index) {
                           TextEditingController controllerPosX =
                               TextEditingController();
@@ -587,19 +627,19 @@ class OriginScreenState extends State<OriginScreen> {
                               TextEditingController();
                           TextEditingController controllerPosZ =
                               TextEditingController();
-                          if (global.MyMachineN02Config.Offsets != null &&
+                          if (global.MyMachineN02Config.Offset != null &&
                               index <
-                                  global.MyMachineN02Config.Offsets!.length) {
+                                  global.MyMachineN02Config.Offset!.length) {
                             controllerPosX.text = global
-                                    .MyMachineN02Config.Offsets![index].DecalX
+                                    .MyMachineN02Config.Offset![index].DecalX
                                     ?.toString() ??
                                 '';
                             controllerPosY.text = global
-                                    .MyMachineN02Config.Offsets![index].DecalY
+                                    .MyMachineN02Config.Offset![index].DecalY
                                     ?.toString() ??
                                 '';
                             controllerPosZ.text = global
-                                    .MyMachineN02Config.Offsets![index].DecalZ
+                                    .MyMachineN02Config.Offset![index].DecalZ
                                     ?.toString() ??
                                 '';
                           }
@@ -608,7 +648,29 @@ class OriginScreenState extends State<OriginScreen> {
                             decalY: controllerPosY,
                             decalZ: controllerPosZ,
                             onClickOnSet: () {
-                              print("OK");
+                              global.MyMachineN02Config.Offset?[index] =
+                                  Offsets(
+                                Name: global
+                                    .MyMachineN02Config.Offset![index].Name,
+                                DecalX: double.tryParse(controllerPosX!.text),
+                                DecalY: double.tryParse(controllerPosY!.text),
+                                DecalZ: double.tryParse(controllerPosZ!.text),
+                              );
+                              API_Manager().upLoadAFile(
+                                "0:/sys/nwc-settings.json",
+                                global.MyMachineN02Config.toJson()
+                                    .length
+                                    .toString(),
+                                Uint8List.fromList(machineN02ConfigToJson(
+                                        global.MyMachineN02Config)
+                                    .codeUnits),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                    '${global.MyMachineN02Config.Offset![index].Name} enregistrée'),
+                                duration: const Duration(milliseconds: 1000),
+                              ));
                             },
                           );
                         },
