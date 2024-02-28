@@ -42,7 +42,7 @@ MachineMode machineMode = MachineMode.unknow;
 
 MachineN02Config MyMachineN02Config = MachineN02Config(
     Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
-    Serie: "N022824",
+    Serie: "01902",
     IP: "192.168.1.78",
     GlobalMachineUsedTime: 0,
     email: "contact@naxe.fr",
@@ -66,7 +66,7 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
 
 MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
-    Serie: "N022824",
+    Serie: "01902",
     IP: "192.168.1.78",
     GlobalMachineUsedTime: 0,
     email: "defaultconfig",
