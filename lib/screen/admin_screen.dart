@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -41,6 +42,26 @@ class AdminScreenState extends State<AdminScreen>
     // html.AnchorElement(href: urlBase + FileName);
     // anchorElement.download = 'test.gcode';
     // anchorElement.click();
+  }
+  Future<String> SaveFileContent(String Content) async {
+    String? outputFile = await FilePicker.platform.saveFile(
+      dialogTitle: 'Please select an output file:',
+      fileName: 'program.g',
+    );
+
+    if (outputFile == null) {
+      // User canceled the picker
+      return "canceled";
+    }
+
+    final file = File(outputFile);
+    var sink = file.openWrite();
+    sink.write(Content);
+    // _companies.forEach((_company) {
+    //   sink.write('${_company.name};${_company.contactMail}\n');
+    // });
+    sink.close();
+    return "Done";
   }
 
   final _formKey2 = const Key('__RIKEY1__');
@@ -342,15 +363,17 @@ class AdminScreenState extends State<AdminScreen>
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.white),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (global.AdminLogged) {
-                                String fileName = ListofSysFile!
-                                    .elementAt(selectedFileIndex)!
-                                    .name
-                                    .toString();
-                                downloadFile(
-                                    "http://${global.MyMachineN02Config.IP}/rr_download?name=0:/sys/",
-                                    fileName);
+                                String FileContent =
+                                    await API_Manager().downLoadAFile(
+                                  "sys",
+                                  ListofSysFile!
+                                      .elementAt(selectedFileIndex)!
+                                      .name
+                                      .toString(),
+                                );
+                                await SaveFileContent(FileContent);
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -506,13 +529,15 @@ class AdminScreenState extends State<AdminScreen>
                           return Card(
                             elevation: 4,
                             child: ListTile(
-                              tileColor:
-                                  global.ReplyListFiFo.items.elementAt(index).contains("Error")
-                                      ? Colors.redAccent
-                                      : global.ReplyListFiFo.items.elementAt(index)
-                                              .contains("Warning")
-                                          ? Colors.yellowAccent
-                                          : Colors.white,
+                              tileColor: global.ReplyListFiFo.items
+                                      .elementAt(index)
+                                      .contains("Error")
+                                  ? Colors.redAccent
+                                  : global.ReplyListFiFo.items
+                                          .elementAt(index)
+                                          .contains("Warning")
+                                      ? Colors.yellowAccent
+                                      : Colors.white,
                               leading: Icon(
                                 Icons.arrow_right,
                                 color: Colors.blue,
@@ -527,7 +552,8 @@ class AdminScreenState extends State<AdminScreen>
                                       width: 400,
                                       child: Text(
                                         overflow: TextOverflow.visible,
-                                        global.ReplyListFiFo.items.elementAt(index),
+                                        global.ReplyListFiFo.items
+                                            .elementAt(index),
                                         style: TextStyle(color: Colors.black),
                                       ),
                                     ),

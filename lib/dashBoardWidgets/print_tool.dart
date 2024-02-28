@@ -97,31 +97,34 @@ class PrintToolsTemperatureState extends State<PrintToolsTemperature> {
                             ),
                           )
                         : Container(),
-                    AspectRatio(
-                      aspectRatio: 1,
-                      child: Padding(
-                        padding: EdgeInsets.all(
-                            (MediaQuery.of(context).size.height * 0.05)
-                                .toDouble()),
-                        child: NeumorphicButton(
-                          onPressed: () {
-                            setTemperaturePopUp(context, "bed");
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text("Bed"),
-                              Text(global.machineObjectModel.result?.heat
-                                      ?.heaters?[0].current
-                                      .toString() ??
-                                  "..."),
-                              Text(
-                                  "/ ${(global.machineObjectModel.result?.heat?.heaters?[0].standby) ?? 0}"),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    global.MyMachineN02Config.HasHeatBed == 1
+                        ? AspectRatio(
+                            aspectRatio: 1,
+                            child: Padding(
+                              padding: EdgeInsets.all(
+                                  (MediaQuery.of(context).size.height * 0.05)
+                                      .toDouble()),
+                              child: NeumorphicButton(
+                                onPressed: () {
+                                  setTemperaturePopUp(context, "bed");
+                                },
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text("Bed"),
+                                    Text(global.machineObjectModel.result?.heat
+                                            ?.heaters?[0].current
+                                            .toString() ??
+                                        "..."),
+                                    Text(
+                                        "/ ${(global.machineObjectModel.result?.heat?.heaters?[0].standby) ?? 0}"),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(),
                   ],
                 ),
               )),

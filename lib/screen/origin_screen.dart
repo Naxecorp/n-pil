@@ -55,7 +55,7 @@ class _OffsetState extends State<Offset> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // color: Colors.orange,
+      //color: Colors.orange,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -97,45 +97,43 @@ class _OffsetState extends State<Offset> {
               ),
             ],
           ),
-          Container(
-            child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Text(
-                    "Y",
-                    style: TextStyle(
-                        color: Color(0xFF707585),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
+          Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(5.0),
+                child: Text(
+                  "Y",
+                  style: TextStyle(
+                      color: Color(0xFF707585),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.05,
-                  //color: Colors.greenAccent,
-                  child: TextFormField(
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
-                      TextInputFormatter.withFunction(
-                        (oldValue, newValue) => newValue.copyWith(
-                          text: newValue.text.replaceAll('.', '.'),
-                        ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.05,
+                //color: Colors.greenAccent,
+                child: TextFormField(
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
+                    TextInputFormatter.withFunction(
+                      (oldValue, newValue) => newValue.copyWith(
+                        text: newValue.text.replaceAll('.', '.'),
                       ),
-                    ], // saisie de nombres uniquement
-                    controller: _decalY,
-                    textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(),
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                        gapPadding: 5.0,
-                      ),
+                    ),
+                  ], // saisie de nombres uniquement
+                  controller: _decalY,
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(),
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      gapPadding: 5.0,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Column(
             children: [
@@ -176,71 +174,90 @@ class _OffsetState extends State<Offset> {
             ],
           ),
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.all(5.0),
-                width: MediaQuery.of(context).size.width * 0.13,
-                child: NeumorphicButton(
-                  onPressed: () {
-                    return _onClickOnSet!();
-                  },
-                  style: const NeumorphicStyle(
-                    color: Color(0xFFF0F0F3),
-                  ),
-                  child: const Text(
-                    "Sauvegarder",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFF707585),
-                      fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(5.0),
+                    width: MediaQuery.of(context).size.width * 0.13,
+                    child: NeumorphicButton(
+                      onPressed: () {
+                        return _onClickOnSet!();
+                      },
+                      style: const NeumorphicStyle(
+                        color: Color(0xFFF0F0F3),
+                      ),
+                      child: const Text(
+                        "Sauvegarder",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF707585),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-              Container(
-                padding: const EdgeInsets.all(5.0),
-                width: MediaQuery.of(context).size.width * 0.13,
-                child: NeumorphicButton(
-                  onPressed: () async {
-                    print(global.MyMachineN02Config.Offset?.length);
-                    print(global.MyMachineN02Config.Offset?[0]);
-                    // String? userPosX = global
-                    //         .machineObjectModel.result?.move?.axes
-                    //         ?.elementAt(0)!
-                    //         .userPosition!
-                    //         .toString() ??
-                    //     "0";
-                    // String? userPosY = global
-                    //         .machineObjectModel.result?.move?.axes
-                    //         ?.elementAt(1)!
-                    //         .userPosition!
-                    //         .toString() ??
-                    //     "0";
-                    // String? userPosZ = global
-                    //         .machineObjectModel.result?.move?.axes
-                    //         ?.elementAt(2)
-                    //         .userPosition
-                    //         .toString() ??
-                    //     "0";
-                    //   await API_Manager().sendGcodeCommand(
-                    //       "G92 X${userPosX! + _decalX!.text} Y${userPosY! + _decalY!.text} Z${userPosZ! + _decalZ!.text}");
-                  },
-                  style: const NeumorphicStyle(
-                    color: Color(0xFFF0F0F3),
-                  ),
-                  child: const Text(
-                    "Appliquer",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFF707585),
-                      fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(5.0),
+                    width: MediaQuery.of(context).size.width * 0.13,
+                    child: NeumorphicButton(
+                      onPressed: () async {
+                        String? userPosX = global
+                                .machineObjectModel.result?.move?.axes
+                                ?.elementAt(0)!
+                                .userPosition!
+                                .toString() ??
+                            "0";
+                        String? userPosY = global
+                                .machineObjectModel.result?.move?.axes
+                                ?.elementAt(1)!
+                                .userPosition!
+                                .toString() ??
+                            "0";
+                        String? userPosZ = global
+                                .machineObjectModel.result?.move?.axes
+                                ?.elementAt(2)
+                                .userPosition
+                                .toString() ??
+                            "0";
+                        await API_Manager()
+                            .sendGcodeCommand(
+                                "G10 L20 P1 X${double.parse(userPosX) + double.parse(_decalX!.text)} Y${double.parse(userPosY) + double.parse(_decalY!.text)} Z${double.parse(userPosZ) + double.parse(_decalZ!.text)}")
+                            .then(
+                              (value) =>
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Positions utilisateur modifiées'),
+                                  duration: Duration(milliseconds: 1000),
+                                ),
+                              ),
+                            );
+                      },
+                      style: const NeumorphicStyle(
+                        color: Color(0xFFF0F0F3),
+                      ),
+                      child: const Text(
+                        "Appliquer",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF707585),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
+          SizedBox(
+            height: 150,
+          )
         ],
       ),
     );
@@ -609,14 +626,14 @@ class OriginScreenState extends State<OriginScreen> {
                 child: Column(
                   children: [
                     Flexible(
-                      flex: 1,
+                      flex: 4,
                       child: Container(
                         width: double.infinity,
                         height: double.infinity,
                       ),
                     ),
                     Flexible(
-                      flex: 1,
+                      flex: 5,
                       child: ListView.builder(
                         itemCount:
                             global.MyMachineN02Config.Offset?.length ?? 1,
@@ -677,7 +694,7 @@ class OriginScreenState extends State<OriginScreen> {
                       ),
                     ),
                     Flexible(
-                      flex: 1,
+                      flex: 4,
                       child: Container(
                         height: double.infinity,
                       ),
