@@ -146,7 +146,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Êtes vous sûr?"),
+          title: Text("Êtes vous sûr ?"),
           content: Text(
               "Programme sélectionné : ${(ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString())}"),
           actions: <Widget>[
@@ -419,7 +419,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                         margin: EdgeInsets.all(20),
                         child: FittedBox(
                           fit: BoxFit.fitWidth,
-                          child: Text("Liste des programmes: "),
+                          child: Text("Liste des programmes : "),
                         ),
                       ),
                     ),
@@ -552,6 +552,49 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                               child: Center(
                                 child: Text(
                                   'Visualiser',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Spacer(),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
+                            onPressed: () async {
+                              if (ListofGcodeFile!
+                                      .elementAt(selectedGcodeFileIndex)!
+                                      .size! <
+                                  100000) {
+                                await API_Manager()
+                                    .downLoadAFile(
+                                        'gcodes',
+                                        ListofGcodeFile!
+                                            .elementAt(selectedGcodeFileIndex)!
+                                            .name
+                                            .toString())
+                                    .then((value) =>
+                                        global.ContentofFileToEdit = value);
+                                Navigator.pushNamed(context, '/editor');
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text(
+                                      'Fichier trop volumineux pour être édité'),
+                                  duration: Duration(milliseconds: 3000),
+                                ));
+                              }
+                            },
+                            child: SizedBox(
+                              height: 50,
+                              child: Center(
+                                child: Text(
+                                  'Éditer',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(color: Colors.white),
                                 ),
