@@ -400,7 +400,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(seconds: 50));
       global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         return response.body;
@@ -411,7 +411,7 @@ class API_Manager {
       }
     } catch (e) {
       print(e.toString());
-      return 'nok';
+      return 'NOK';
     }
   }
 

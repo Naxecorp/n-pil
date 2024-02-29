@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nweb/OpeListView.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
@@ -521,17 +522,30 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                               ),
                             ),
                             onPressed: () async {
-                              LoadedFileContentString = await API_Manager()
-                                  .downLoadAFile(
-                                      "gcodes",
-                                      ListofGcodeFile!
-                                          .elementAt(selectedGcodeFileIndex)!
-                                          .name
-                                          .toString());
-                              List<String> _LoadedFileContent =
-                                  convertStringToList(LoadedFileContentString);
-                              global.controllerContentGcodeToDisplay
-                                  .add(_LoadedFileContent);
+                              if (ListofGcodeFile!
+                                      .elementAt(selectedGcodeFileIndex)!
+                                      .size! <
+                                  3000000) {
+                                LoadedFileContentString = await API_Manager()
+                                    .downLoadAFile(
+                                        "gcodes",
+                                        ListofGcodeFile!
+                                            .elementAt(selectedGcodeFileIndex)!
+                                            .name
+                                            .toString());
+                                List<String> _LoadedFileContent =
+                                    convertStringToList(
+                                        LoadedFileContentString);
+                                global.controllerContentGcodeToDisplay
+                                    .add(_LoadedFileContent);
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text(
+                                      'Fichier trop volumineux pour être visualisé'),
+                                  duration: Duration(milliseconds: 3000),
+                                ));
+                              }
                             },
                             child: SizedBox(
                               height: 50,
