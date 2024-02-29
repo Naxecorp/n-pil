@@ -33,11 +33,18 @@ class Offset extends StatefulWidget {
   final TextEditingController? decalX;
   final TextEditingController? decalY;
   final TextEditingController? decalZ;
-  Offset({super.key, this.onClickOnSet, this.decalX, this.decalY, this.decalZ});
+  final String? offsetName;
+  Offset(
+      {super.key,
+      this.onClickOnSet,
+      this.decalX,
+      this.decalY,
+      this.decalZ,
+      this.offsetName});
 
   @override
   State<Offset> createState() =>
-      _OffsetState(onClickOnSet, decalX, decalY, decalZ);
+      _OffsetState(onClickOnSet, decalX, decalY, decalZ, offsetName);
 }
 
 class _OffsetState extends State<Offset> {
@@ -45,7 +52,9 @@ class _OffsetState extends State<Offset> {
   final TextEditingController? _decalX;
   final TextEditingController? _decalY;
   final TextEditingController? _decalZ;
-  _OffsetState(this._onClickOnSet, this._decalX, this._decalY, this._decalZ);
+  final String? _offsetName;
+  _OffsetState(this._onClickOnSet, this._decalX, this._decalY, this._decalZ,
+      this._offsetName);
 
   @override
   void dispose() {
@@ -56,208 +65,217 @@ class _OffsetState extends State<Offset> {
   Widget build(BuildContext context) {
     return Container(
       //color: Colors.orange,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(5.0),
-                child: Text(
-                  "X",
-                  style: TextStyle(
-                      color: Color(0xFF707585),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.05,
-                // color: Colors.greenAccent,
-                child: TextFormField(
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
-                    TextInputFormatter.withFunction(
-                      (oldValue, newValue) => newValue.copyWith(
-                        text: newValue.text.replaceAll('.', '.'),
-                      ),
-                    ),
-                  ], // saisie de nombres uniquement
-                  controller: _decalX,
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(),
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      gapPadding: 5.0,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Text("${_offsetName} :"),
           ),
-          Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(5.0),
-                child: Text(
-                  "Y",
-                  style: TextStyle(
-                      color: Color(0xFF707585),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.05,
-                //color: Colors.greenAccent,
-                child: TextFormField(
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
-                    TextInputFormatter.withFunction(
-                      (oldValue, newValue) => newValue.copyWith(
-                        text: newValue.text.replaceAll('.', '.'),
-                      ),
-                    ),
-                  ], // saisie de nombres uniquement
-                  controller: _decalY,
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(),
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      gapPadding: 5.0,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(5.0),
-                child: Text(
-                  "Z",
-                  style: TextStyle(
-                      color: Color(0xFF707585),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.05,
-                //color: Colors.greenAccent,
-                child: TextFormField(
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
-                    TextInputFormatter.withFunction(
-                      (oldValue, newValue) => newValue.copyWith(
-                        text: newValue.text.replaceAll('.', '.'),
-                      ),
-                    ),
-                  ], // saisie de nombres uniquement
-                  controller: _decalZ,
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(),
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      gapPadding: 5.0,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Column(
-            children: [
-              Row(
+              Column(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(5.0),
-                    width: MediaQuery.of(context).size.width * 0.13,
-                    child: NeumorphicButton(
-                      onPressed: () {
-                        return _onClickOnSet!();
-                      },
-                      style: const NeumorphicStyle(
-                        color: Color(0xFFF0F0F3),
-                      ),
-                      child: const Text(
-                        "Sauvegarder",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
+                  const Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: Text(
+                      "X",
+                      style: TextStyle(
                           color: Color(0xFF707585),
                           fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.05,
+                    // color: Colors.greenAccent,
+                    child: TextFormField(
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
+                        TextInputFormatter.withFunction(
+                          (oldValue, newValue) => newValue.copyWith(
+                            text: newValue.text.replaceAll('.', '.'),
+                          ),
+                        ),
+                      ], // saisie de nombres uniquement
+                      controller: _decalX,
+                      textAlign: TextAlign.center,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(),
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          gapPadding: 5.0,
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-              Row(
+              Column(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(5.0),
-                    width: MediaQuery.of(context).size.width * 0.13,
-                    child: NeumorphicButton(
-                      onPressed: () async {
-                        String? userPosX = global
-                                .machineObjectModel.result?.move?.axes
-                                ?.elementAt(0)!
-                                .userPosition!
-                                .toString() ??
-                            "0";
-                        String? userPosY = global
-                                .machineObjectModel.result?.move?.axes
-                                ?.elementAt(1)!
-                                .userPosition!
-                                .toString() ??
-                            "0";
-                        String? userPosZ = global
-                                .machineObjectModel.result?.move?.axes
-                                ?.elementAt(2)
-                                .userPosition
-                                .toString() ??
-                            "0";
-                        await API_Manager()
-                            .sendGcodeCommand(
-                                "G10 L20 P1 X${double.parse(userPosX) + double.parse(_decalX!.text)} Y${double.parse(userPosY) + double.parse(_decalY!.text)} Z${double.parse(userPosZ) + double.parse(_decalZ!.text)}")
-                            .then(
-                              (value) =>
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('Positions utilisateur modifiées'),
-                                  duration: Duration(milliseconds: 1000),
-                                ),
-                              ),
-                            );
-                      },
-                      style: const NeumorphicStyle(
-                        color: Color(0xFFF0F0F3),
-                      ),
-                      child: const Text(
-                        "Appliquer",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
+                  const Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: Text(
+                      "Y",
+                      style: TextStyle(
                           color: Color(0xFF707585),
                           fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.05,
+                    //color: Colors.greenAccent,
+                    child: TextFormField(
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
+                        TextInputFormatter.withFunction(
+                          (oldValue, newValue) => newValue.copyWith(
+                            text: newValue.text.replaceAll('.', '.'),
+                          ),
+                        ),
+                      ], // saisie de nombres uniquement
+                      controller: _decalY,
+                      textAlign: TextAlign.center,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(),
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          gapPadding: 5.0,
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
+              Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: Text(
+                      "Z",
+                      style: TextStyle(
+                          color: Color(0xFF707585),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.05,
+                    //color: Colors.greenAccent,
+                    child: TextFormField(
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'-?[0-9]+[.]{0,1}[0-9]*')),
+                        TextInputFormatter.withFunction(
+                          (oldValue, newValue) => newValue.copyWith(
+                            text: newValue.text.replaceAll('.', '.'),
+                          ),
+                        ),
+                      ], // saisie de nombres uniquement
+                      controller: _decalZ,
+                      textAlign: TextAlign.center,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(),
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          gapPadding: 5.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(5.0),
+                        width: MediaQuery.of(context).size.width * 0.13,
+                        child: NeumorphicButton(
+                          onPressed: () {
+                            return _onClickOnSet!();
+                          },
+                          style: const NeumorphicStyle(
+                            color: Color(0xFFF0F0F3),
+                          ),
+                          child: const Text(
+                            "Sauvegarder",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF707585),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(5.0),
+                        width: MediaQuery.of(context).size.width * 0.13,
+                        child: NeumorphicButton(
+                          onPressed: () async {
+                            String? userPosX = global
+                                    .machineObjectModel.result?.move?.axes
+                                    ?.elementAt(0)!
+                                    .userPosition!
+                                    .toString() ??
+                                "0";
+                            String? userPosY = global
+                                    .machineObjectModel.result?.move?.axes
+                                    ?.elementAt(1)!
+                                    .userPosition!
+                                    .toString() ??
+                                "0";
+                            String? userPosZ = global
+                                    .machineObjectModel.result?.move?.axes
+                                    ?.elementAt(2)
+                                    .userPosition
+                                    .toString() ??
+                                "0";
+                            await API_Manager()
+                                .sendGcodeCommand(
+                                    "G10 L20 P1 X${double.parse(userPosX) + double.parse(_decalX!.text)} Y${double.parse(userPosY) + double.parse(_decalY!.text)} Z${double.parse(userPosZ) + double.parse(_decalZ!.text)}")
+                                .then(
+                                  (value) => ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Positions utilisateur modifiées'),
+                                      duration: Duration(milliseconds: 1000),
+                                    ),
+                                  ),
+                                );
+                          },
+                          style: const NeumorphicStyle(
+                            color: Color(0xFFF0F0F3),
+                          ),
+                          child: const Text(
+                            "Appliquer",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF707585),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 150,
+              )
             ],
           ),
-          SizedBox(
-            height: 150,
-          )
         ],
       ),
     );
@@ -664,6 +682,8 @@ class OriginScreenState extends State<OriginScreen> {
                             decalX: controllerPosX,
                             decalY: controllerPosY,
                             decalZ: controllerPosZ,
+                            offsetName:
+                                global.MyMachineN02Config.Offset![index].Name,
                             onClickOnSet: () {
                               global.MyMachineN02Config.Offset?[index] =
                                   Offsets(

@@ -58,6 +58,7 @@ class EditorPage extends StatelessWidget {
       files: files, // the files created above
       // you can customize the editor as you want
       styleOptions: EditorModelStyleOptions(
+        heightOfContainer: MediaQuery.of(context).size.height * 0.7,
         fontSize: 13,
       ),
     );
