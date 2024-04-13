@@ -59,32 +59,48 @@ Future<void> actualiserMoveObjectModel() async {
 
 void main() async {
   await API_Manager().downLoadNwcSettings().then((value) {
-    global.MyMachineN02Config = value;
-  });
+    if (value.hasAnyNull())
+      global.MyMachineN02Config = global.MyMachineN02ConfigDeflaut;
+    else
+      global.MyMachineN02Config = value;
+  }).timeout(Duration(seconds: 5));
 
   await API_Manager().sendGcodeCommand("M453").then((_) {
-    API_Manager().getMachineMode().then((value) => global.machineMode = value);
+    API_Manager()
+        .getMachineMode()
+        .then((value) => global.machineMode = value)
+        .timeout(Duration(seconds: 5));
   });
 
   await API_Manager()
       .getMachineMoveObjectModel()
-      .then((move) => global.objectModelMove = move);
+      .then((move) => global.objectModelMove = move)
+      .timeout(Duration(seconds: 5));
 
   await API_Manager()
       .getfileList()
-      .then((value) => global.ListofGcodeFile = value);
+      .then((value) => global.ListofGcodeFile = value)
+      .timeout(Duration(seconds: 5));
 
   await API_Manager()
       .getfileListSys()
-      .then((value) => global.ListofSysFile = value);
-  await API_Manager().pushDataToDb(global.MyMachineN02Config.Serie!, "Start");
+      .then((value) => global.ListofSysFile = value)
+      .timeout(Duration(seconds: 5));
+
+  if ((global.MyMachineN02Config.Serie ?? "NUMSTD") == "DEFAULT") {
+  } else
+    await API_Manager()
+        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "Start")
+        .timeout(Duration(seconds: 5));
+
   actualiserMachineObjectModel();
   actualiserMoveObjectModel();
   actualiserMachineUsedTime();
 
   Timer.periodic(const Duration(minutes: 10), (timer) async {
     await API_Manager()
-        .pushDataToDb(global.MyMachineN02Config.Serie!, "isAlive");
+        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "isAlive")
+        .timeout(Duration(seconds: 5));
   });
   runApp(const MyApp());
 }

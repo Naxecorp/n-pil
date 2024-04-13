@@ -30,6 +30,25 @@ class MachineN02Config {
   int? VitesseDefaut;
   List<Offsets>? Offset;
 
+  bool hasAnyNull() {
+    return [
+      Palpeur, // You might need a separate check for each property of PalpeurOutil if they can be null individually
+      Serie,
+      IP,
+      GlobalMachineUsedTime,
+      email,
+      DefaultMode,
+      Positions, // Same note as PalpeurOutil for items in the list
+      SetPosAffichage,
+      HasHeatBed,
+      HasFanOnEnclosure,
+      HasLedOnEnclosure,
+      VitesseBroche,
+      VitesseDefaut,
+      Offset, // And for Offsets
+    ].any((element) => element == null);
+  }
+
   MachineN02Config(
       {this.Serie,
       this.IP,
@@ -46,6 +65,8 @@ class MachineN02Config {
       this.VitesseBroche,
       this.VitesseDefaut,
       this.Offset});
+
+      
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
@@ -101,4 +122,7 @@ class MachineN02Config {
             ? []
             : List<dynamic>.from(Offset!.map((x) => x.toJson())),
       };
+
+
+      
 }

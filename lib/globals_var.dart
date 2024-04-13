@@ -66,7 +66,7 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
 
 MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
-    Serie: "01902",
+    Serie: "DEFAULT",
     IP: "192.168.1.78",
     GlobalMachineUsedTime: 0,
     email: "defaultconfig",
