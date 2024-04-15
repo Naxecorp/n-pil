@@ -99,9 +99,12 @@ void main() async {
 
   Timer.periodic(const Duration(minutes: 10), (timer) async {
     await API_Manager()
-        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "isAlive")
+        .pushDataToDb(global.MyMachineN02Config.Serie??"NUMSTD", "isAlive")
         .timeout(Duration(seconds: 5));
   });
+  
+  
+  
   runApp(const MyApp());
 }
 
