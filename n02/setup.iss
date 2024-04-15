@@ -2,9 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Naxe Pilotage"
-#define MyAppVersion "1.6.5"
+#define MyAppVersion "1.6.6"
 #define MyAppPublisher "Naxe"
-#define MyAppURL "https://www.naxe.fr/"
+#define MyAppURL "https://naxe.fr"
 #define MyAppExeName "nweb.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
@@ -13,7 +13,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{33EE8FC2-8F19-4BA8-B64A-C2C621E6E7B9}
+AppId={{B09DE046-8BBC-40F2-8964-185F49BA1332}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -26,9 +26,9 @@ ChangesAssociations=yes
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=C:\Users\Eleve\Documents\Naxe\Flutter\nweb\n02
+OutputDir=C:\Users\Jordan\AndroidStudioProjects\nweb\n02
 OutputBaseFilename=Naxe Pilotage v{#MyAppVersion}
-SetupIconFile=C:\Users\Eleve\Downloads\iconnaxe-_3_.ico
+SetupIconFile=C:\Users\Jordan\Downloads\LOGO-100X100.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -40,12 +40,12 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Eleve\Documents\Naxe\Flutter\nweb\build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Eleve\Documents\Naxe\Flutter\nweb\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\Eleve\Documents\Naxe\Flutter\nweb\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Eleve\Documents\Naxe\Flutter\nweb\build\windows\x64\runner\Release\msvcp140.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Eleve\Documents\Naxe\Flutter\nweb\build\windows\x64\runner\Release\vcruntime140.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Eleve\Documents\Naxe\Flutter\nweb\build\windows\x64\runner\Release\vcruntime140_1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\msvcp140.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\vcruntime140.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\vcruntime140_1.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
