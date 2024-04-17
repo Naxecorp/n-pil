@@ -175,6 +175,10 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                       .elementAt(selectedGcodeFileIndex)!
                       .name
                       .toString();
+                  await API_Manager()
+                      .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD",
+                          "Start prog ${progName}")
+                      .timeout(Duration(seconds: 5));
                   Navigator.of(context).pop();
                   Navigator.pushNamed(context, '/jobStatus');
                 }),
@@ -194,6 +198,10 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                     .elementAt(selectedGcodeFileIndex)!
                     .name
                     .toString();
+                await API_Manager()
+                    .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD",
+                        "Start prog ${progName}")
+                    .timeout(Duration(seconds: 5));
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, '/jobStatus');
               },
@@ -228,9 +236,9 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                 child: Container(
                     child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
-                flex: 10,
-                child: Container(
-                    child: Row(
+              flex: 10,
+              child: Container(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Spacer(),
@@ -264,7 +272,9 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                       style: TextStyle(color: Color(0xFF707585)),
                     ),
                   ],
-                ))),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -571,6 +581,13 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                       .elementAt(selectedGcodeFileIndex)!
                                       .size! <
                                   100000) {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return const AlertDialog(
+                                        title: Text("Chargement en cours..."),
+                                      );
+                                    });
                                 await API_Manager()
                                     .downLoadAFile(
                                         'gcodes',
@@ -580,6 +597,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                             .toString())
                                     .then((value) =>
                                         global.ContentofFileToEdit = value);
+                                Navigator.of(context).pop();
                                 Navigator.pushNamed(context, '/editor');
                               } else {
                                 ScaffoldMessenger.of(context)
