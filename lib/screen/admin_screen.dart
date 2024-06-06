@@ -253,7 +253,7 @@ class AdminScreenState extends State<AdminScreen>
       body: Row(
         children: [
           Flexible(
-              flex: 10,
+              flex: 11,
               child: Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Container(
@@ -267,12 +267,19 @@ class AdminScreenState extends State<AdminScreen>
                           width: double.infinity,
                           height: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            child: Text(
-                              'Charger depuis PC',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
+                          child: ElevatedButton.icon(
+                            label: const Text(
+                              "Charger depuis PC",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            icon: const Icon(
+                              Icons.download_rounded,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
                               ),
                             ),
                             onPressed: () {
@@ -282,12 +289,6 @@ class AdminScreenState extends State<AdminScreen>
                               } else
                                 null;
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF2B879B),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                            ),
                           ),
                         ),
                       ),
@@ -297,11 +298,23 @@ class AdminScreenState extends State<AdminScreen>
                           width: double.infinity,
                           height: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            child: Text(
-                              'Diagnostique X',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white),
+                          child: ElevatedButton.icon(
+                            label: const FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "Diagnostique X",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.bug_report_outlined,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
                             ),
                             onPressed: () {
                               if (global.AdminLogged) {
@@ -310,12 +323,6 @@ class AdminScreenState extends State<AdminScreen>
                               } else
                                 null;
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF2B879B),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                            ),
                           ),
                         ),
                       ),
@@ -325,11 +332,23 @@ class AdminScreenState extends State<AdminScreen>
                           width: double.infinity,
                           height: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            child: Text(
-                              'Diagnostique Y',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white),
+                          child: ElevatedButton.icon(
+                            label: const FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "Diagnostique Y",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.bug_report_outlined,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
                             ),
                             onPressed: () {
                               if (global.AdminLogged) {
@@ -338,12 +357,6 @@ class AdminScreenState extends State<AdminScreen>
                               } else
                                 null;
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF2B879B),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                            ),
                           ),
                         ),
                       ),
@@ -353,15 +366,24 @@ class AdminScreenState extends State<AdminScreen>
                             height: double.infinity,
                           )),
                       Flexible(
-                        flex: 4,
+                        flex: 5,
                         child: Container(
                           height: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            child: Text(
-                              'Télécharger Programme',
-                              textAlign: TextAlign.center,
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: ElevatedButton.icon(
+                            label: const Text(
+                              "Télécharger programme",
                               style: TextStyle(color: Colors.white),
+                            ),
+                            icon: const Icon(
+                              Icons.download_rounded,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blueAccent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
                             ),
                             onPressed: () async {
                               if (global.AdminLogged) {
@@ -376,12 +398,6 @@ class AdminScreenState extends State<AdminScreen>
                                 await SaveFileContent(FileContent);
                               }
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blueAccent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                            ),
                           ),
                         ),
                       ),
@@ -390,11 +406,20 @@ class AdminScreenState extends State<AdminScreen>
                         child: Container(
                           height: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            child: Text(
-                              'Supprimer Programme',
-                              textAlign: TextAlign.center,
+                          child: ElevatedButton.icon(
+                            label: const Text(
+                              "Supprimer programme",
                               style: TextStyle(color: Colors.white),
+                            ),
+                            icon: const Icon(
+                              Icons.delete_outline_outlined,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF9B2B2B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
                             ),
                             onPressed: () {
                               setState(() {});
@@ -415,12 +440,6 @@ class AdminScreenState extends State<AdminScreen>
                               } else
                                 null;
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF9B2B2B),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                            ),
                           ),
                         ),
                       ),

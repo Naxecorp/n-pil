@@ -40,7 +40,7 @@ class _Menu2 extends State<Menu2> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Définir un nom de programme"),
+          title: const Text("Définir un nom de programme"),
           content: Container(
             height: 80,
             child: Column(
@@ -55,7 +55,7 @@ class _Menu2 extends State<Menu2> {
                       FilteringTextInputFormatter.allow(RegExp(
                           r'[a-zA-Z0-9\s]')), // Permet seulement les lettres, chiffres et espaces
                     ],
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(
                         borderSide: BorderSide(),
                         borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -81,7 +81,7 @@ class _Menu2 extends State<Menu2> {
                                 onPressed: () async {
                                   Navigator.pushNamed(context, '/programmes');
                                 },
-                                child: Text(
+                                child: const Text(
                                   "Oui",
                                   style: TextStyle(color: Colors.white),
                                 ),
@@ -93,7 +93,7 @@ class _Menu2 extends State<Menu2> {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text(
+                                child: const Text(
                                   "Non",
                                   style: TextStyle(color: Colors.white),
                                 ),
@@ -129,7 +129,7 @@ class _Menu2 extends State<Menu2> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text("Annuler"),
+              child: const Text("Annuler"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -150,29 +150,37 @@ class _Menu2 extends State<Menu2> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Flexible(
-          flex: 4,
+          flex: 5,
           child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: ElevatedButton(
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: Color(0xFF696969)),
-              onPressed: () {
-                global.viewListOfOperation = !global.viewListOfOperation;
-
-                setState(() {});
-                global.bottomMenuToShow = 'Menu1';
-                return onAnytap!();
-              },
-              child: SizedBox(
-                height: double.infinity,
-                child: Center(
+            padding: const EdgeInsets.all(5),
+            child: SizedBox(
+              width: double.infinity,
+              height: 50, // Hauteur fixe pour tous les boutons
+              child: ElevatedButton.icon(
+                label: const FittedBox(
+                  fit: BoxFit.scaleDown,
                   child: Text(
-                    'Retour opérations',
+                    "Retour opérations",
                     style: TextStyle(color: Colors.white),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
                   ),
                 ),
+                icon: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: Colors.white,
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(10),
+                  backgroundColor: const Color(0xFF696969),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
+                onPressed: () {
+                  global.viewListOfOperation = !global.viewListOfOperation;
+                  setState(() {});
+                  global.bottomMenuToShow = 'Menu1';
+                  return onAnytap!();
+                },
               ),
             ),
           ),
@@ -181,61 +189,101 @@ class _Menu2 extends State<Menu2> {
         Flexible(
           flex: 5,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
+            padding: const EdgeInsets.all(5.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 50, // Hauteur fixe pour tous les boutons
+              child: ElevatedButton.icon(
+                label: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    "Editer opérations",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                icon: const Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                ),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2B879B)),
+                  padding: const EdgeInsets.all(10),
+                  backgroundColor: const Color(0xFF2B879B),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
                 onPressed: null,
-                child: SizedBox(
-                    height: 100,
-                    child: Center(
-                        child: Text(
-                      'Editer opération',
-                      textAlign: TextAlign.center,
-                    )))),
+              ),
+            ),
           ),
         ),
         Flexible(
           flex: 5,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
+            padding: const EdgeInsets.all(5.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 50, // Hauteur fixe pour tous les boutons
+              child: ElevatedButton.icon(
+                label: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    "Supprimer opérations",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                icon: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: Colors.white,
+                ),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFCD805F)),
+                  padding: const EdgeInsets.all(10),
+                  backgroundColor: const Color(0xFFCD805F),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
                 onPressed: () {
                   ListOfOperationCurrent.removeAt(selectedIndex);
                   if (selectedIndex >= 1) selectedIndex--;
                   return onAnytap!();
                 },
-                child: SizedBox(
-                    height: 100,
-                    child: Center(
-                        child: Text(
-                      'Supprimer opération',
-                      style: TextStyle(color: Colors.white),
-                      textAlign: TextAlign.center,
-                    )))),
+              ),
+            ),
           ),
         ),
         Flexible(flex: 15, child: Container()),
         Flexible(
           flex: 5,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
+            padding: const EdgeInsets.all(5.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 50, // Hauteur fixe pour le bouton
+              child: ElevatedButton.icon(
+                label: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    "Créer programme",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                icon: const Icon(
+                  Icons.add_circle_outline_rounded,
+                  color: Colors.white,
+                ),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2B9B80)),
+                  padding: const EdgeInsets.all(10),
+                  backgroundColor: const Color(0xFF2B9B80),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
                 onPressed: () async {
                   await askForNameFile();
                 },
-                child: SizedBox(
-                    height: 100,
-                    child: Center(
-                        child: Text(
-                      'Créer programme',
-                      style: TextStyle(color: Colors.white),
-                      textAlign: TextAlign.center,
-                    )))),
+              ),
+            ),
           ),
         ),
       ],

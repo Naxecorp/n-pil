@@ -54,7 +54,7 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                             fontSize: 2000, color: Color(0xFF707585)),
                       ),
                       const Text(
-                        " Trs/min",
+                        " tr/min",
                         style:
                             TextStyle(fontSize: 800, color: Color(0xFF707585)),
                       ),

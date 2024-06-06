@@ -39,26 +39,31 @@ class _Menu1 extends State<Menu1> {
             flex: 5,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF2B879B)),
-                  onPressed: () {
-                    global.viewListOfOperation = !global.viewListOfOperation;
-                    print(global.viewListOfOperation);
-                    setState(() {
-                      OpeSelected = 0;
-                    });
-                    global.bottomMenuToShow = 'Menu2';
-                    return onAnytap!();
-                  },
-                  child: SizedBox(
-                      height: 100,
-                      child: Center(
-                          child: Text(
-                        'Voir liste opération',
-                        style: TextStyle(color: Colors.white),
-                        textAlign: TextAlign.center,
-                      )))),
+              child: ElevatedButton.icon(
+                label: const Text(
+                  "Voir liste opération",
+                  style: TextStyle(color: Colors.white),
+                ),
+                icon: const Icon(
+                  Icons.visibility_rounded,
+                  color: Colors.white,
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2B879B),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
+                onPressed: () {
+                  global.viewListOfOperation = !global.viewListOfOperation;
+                  print(global.viewListOfOperation);
+                  setState(() {
+                    OpeSelected = 0;
+                  });
+                  global.bottomMenuToShow = 'Menu2';
+                  return onAnytap!();
+                },
+              ),
             ),
           ),
           Flexible(flex: 10, child: Container()),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:intl/intl.dart';
 import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../globals_var.dart' as global;
 import 'package:nweb/service/API/API_Manager.dart';
@@ -77,7 +78,7 @@ class _BabyStepZState extends State<BabyStepZ> {
                       child: Padding(
                         padding: EdgeInsets.only(left: 100.0, top: 5.0),
                         child: Text(
-                          "${global.compensation}",
+                          "${NumberFormat('0.0#').format(global.compensation)}",
                           style: TextStyle(
                               color: Color(0xFF707585),
                               fontWeight: FontWeight.bold,

@@ -3,6 +3,7 @@ library my_prj.globals;
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/nwc-settings/position.dart';
 import 'package:nweb/service/nwc-settings/offset.dart';
@@ -21,16 +22,18 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.6.7";
+String version = "Version 1.6.10";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
 int positions = 4;
 int secondsElapsedSinceBeginning =
     0; // Temps écoulé depuis le début en secondes
+String globalTimeValue = "00:00:00";
 double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
 bool isJobStartedByUser = false; // Si le programme a bien été lancé par le User
 double compensation = 0; // BabyStep Z
+double sliderValueSpeedFactor = 0;
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
 ObjectModelMove objectModelMove = ObjectModelMove();

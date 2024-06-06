@@ -99,11 +99,16 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                   style: const NeumorphicStyle(
                                     color: Color(0xFFF0F0F3),
                                   ),
-                                  onPressed: () async {
-                                    await API_Manager()
-                                        .sendGcodeCommand("G28 X")
-                                        .then((value) => print(value));
-                                  },
+                                  onPressed: global.objectModelMove.result?.axes
+                                              ?.elementAt(0)
+                                              .homed ==
+                                          false
+                                      ? () async {
+                                          await API_Manager()
+                                              .sendGcodeCommand("G28 X")
+                                              .then((value) => print(value));
+                                        }
+                                      : null,
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -156,11 +161,16 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                   style: const NeumorphicStyle(
                                     color: Color(0xFFF0F0F3),
                                   ),
-                                  onPressed: () async {
-                                    await API_Manager()
-                                        .sendGcodeCommand("G28 Y")
-                                        .then((value) => print(value));
-                                  },
+                                  onPressed: global.objectModelMove.result?.axes
+                                              ?.elementAt(1)
+                                              .homed ==
+                                          false
+                                      ? () async {
+                                          await API_Manager()
+                                              .sendGcodeCommand("G28 Y")
+                                              .then((value) => print(value));
+                                        }
+                                      : null,
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -214,11 +224,16 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                   style: const NeumorphicStyle(
                                     color: Color(0xFFF0F0F3),
                                   ),
-                                  onPressed: () async {
-                                    await API_Manager()
-                                        .sendGcodeCommand("G28 Z")
-                                        .then((value) => print(value));
-                                  },
+                                  onPressed: global.objectModelMove.result?.axes
+                                              ?.elementAt(2)
+                                              .homed ==
+                                          false
+                                      ? () async {
+                                          await API_Manager()
+                                              .sendGcodeCommand("G28 Z")
+                                              .then((value) => print(value));
+                                        }
+                                      : null,
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,

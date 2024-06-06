@@ -18,7 +18,7 @@ class JobInfo extends StatefulWidget {
 }
 
 class JobInfoState extends State<JobInfo> {
-  String globalTimeValue = "00:00:00"; // Variable pour stocker le temps global
+  // Variable pour stocker le temps global
   bool isJobPaused = false;
   bool isPercentage = false; //dit si le programme a été a 100%
 
@@ -29,13 +29,14 @@ class JobInfoState extends State<JobInfo> {
         return AlertDialog(
           title: Text("Tâche terminée"),
           content: Text(
-              "Le programme est terminé. Durée du dernier programme : $globalTimeValue"),
+              "Le programme est terminé. Durée du dernier programme : ${global.globalTimeValue}"),
           actions: <Widget>[
             ElevatedButton(
               child: Text("OK"),
               onPressed: () {
                 global.secondsElapsedSinceBeginning = 0;
                 global.timerStarted = false;
+                global.globalTimeValue = "00:00:00";
                 global.timer!.cancel();
                 Navigator.of(context).pop();
                 API_Manager().sendGcodeCommand("M106 P3 S0");
@@ -45,6 +46,7 @@ class JobInfoState extends State<JobInfo> {
               child: Text("Recommencer Programme"),
               onPressed: () async {
                 global.secondsElapsedSinceBeginning = 0;
+                global.globalTimeValue = "00:00:00";
                 global.timerStarted = false;
                 global.timer!.cancel();
                 Navigator.of(context).pop();
@@ -57,14 +59,17 @@ class JobInfoState extends State<JobInfo> {
               child: Text("Dégager tête"),
               onPressed: () async {
                 global.secondsElapsedSinceBeginning = 0;
+                global.globalTimeValue = "00:00:00";
                 global.timerStarted = false;
                 global.timer!.cancel();
-                Navigator.of(context).pop();
-                await API_Manager().sendGcodeCommand('M98 P"degagerTete.g"');
+                Future.delayed(const Duration(seconds: 1), () {
+                  Navigator.of(context).pop();
+                  API_Manager().sendGcodeCommand('M98 P"degagerTete.g"').then(
+                      (value) => Navigator.pushNamed(context, '/dashboard'));
+                });
                 // API_Manager().sendGcodeCommand("M106 P3 S0");
                 // API_Manager().sendGcodeCommand("G53 G0 Z189").then((value) =>
                 //     API_Manager().sendGcodeCommand("G53 G0 X0 Y550"));
-                Navigator.pushNamed(context, '/dashboard');
               },
             ),
           ],
@@ -138,7 +143,7 @@ class JobInfoState extends State<JobInfo> {
         setState(() {
           Duration durreDepuisLeDebut =
               Duration(seconds: global.secondsElapsedSinceBeginning);
-          globalTimeValue = formatDuration(durreDepuisLeDebut);
+          global.globalTimeValue = formatDuration(durreDepuisLeDebut);
         });
       }
 
@@ -250,7 +255,7 @@ class JobInfoState extends State<JobInfo> {
                             style: const TextStyle(color: Color(0xFF494949)),
                           ),
                           Text(
-                            globalTimeValue,
+                            global.globalTimeValue,
                             style: const TextStyle(
                               fontWeight: FontWeight.w300,
                               fontSize: 15,

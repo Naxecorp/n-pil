@@ -18,15 +18,13 @@ class CoefVitesse extends StatefulWidget {
 }
 
 class CoefVitesseState extends State<CoefVitesse> {
-  double sliderValueSpeedFactor = 0;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    sliderValueSpeedFactor =
+    global.sliderValueSpeedFactor =
         global.objectModelMove.result?.speedFactor?.toDouble() ?? 2;
-    sliderValueSpeedFactor = sliderValueSpeedFactor / 2;
+    global.sliderValueSpeedFactor = global.sliderValueSpeedFactor / 2;
   }
 
   @override
@@ -92,8 +90,7 @@ class CoefVitesseState extends State<CoefVitesse> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    global.objectModelMove.result?.speedFactor
-                            ?.toStringAsFixed(1) ??
+                    "${global.objectModelMove.result?.speedFactor?.toStringAsFixed(1)}" ??
                         "???",
                     style:
                         const TextStyle(fontSize: 15, color: Color(0xFF707585)),
@@ -102,59 +99,64 @@ class CoefVitesseState extends State<CoefVitesse> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       TextButton(
-                          onPressed: () {
-                            setState(() {
-                              sliderValueSpeedFactor =
-                                  ((sliderValueSpeedFactor * 200 - 10) / 200);
-                              API_Manager()
-                                  .sendGcodeCommand(
-                                      "M220 S${sliderValueSpeedFactor * 200}")
-                                  .then((value) {
-                                setState(() {});
-                              });
-                            });
-                          },
-                          child: const Text(
-                            "-",
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.black26),
-                          )),
-                      Slider(
-                          activeColor: const Color(0xFF20917F),
-                          inactiveColor:
-                              const Color(0xFF20917F).withOpacity(0.2),
-                          onChangeEnd: (double value) {
+                        onPressed: () {
+                          setState(() {
+                            global.sliderValueSpeedFactor =
+                                ((global.sliderValueSpeedFactor * 200 - 10) /
+                                    200);
                             API_Manager()
                                 .sendGcodeCommand(
-                                    "M220 S${sliderValueSpeedFactor * 200}")
+                                    "M220 S${global.sliderValueSpeedFactor * 200}")
                                 .then((value) {
                               setState(() {});
                             });
-                          },
-                          value: sliderValueSpeedFactor,
-                          onChanged: (double value) {
-                            setState(() {
-                              sliderValueSpeedFactor = value;
-                            });
-                          }),
+                          });
+                        },
+                        child: const Text(
+                          "-",
+                          style: TextStyle(fontSize: 20, color: Colors.black26),
+                        ),
+                      ),
+                      Slider(
+                        activeColor: const Color(0xFF20917F),
+                        inactiveColor: const Color(0xFF20917F).withOpacity(0.2),
+                        onChangeEnd: (double value) {
+                          API_Manager()
+                              .sendGcodeCommand(
+                                  "M220 S${global.sliderValueSpeedFactor * 200}")
+                              .then((value) {
+                            setState(() {});
+                          });
+                        },
+                        value: global.sliderValueSpeedFactor,
+                        onChanged: (double value) {
+                          setState(() {
+                            global.sliderValueSpeedFactor = value;
+                          });
+                        },
+                      ),
                       TextButton(
-                          onPressed: () {
-                            setState(() {
-                              sliderValueSpeedFactor =
-                                  ((sliderValueSpeedFactor * 200 + 10) / 200);
-                              API_Manager()
-                                  .sendGcodeCommand(
-                                      "M220 S${sliderValueSpeedFactor * 200}")
-                                  .then((value) {
-                                setState(() {});
-                              });
-                            });
-                          },
-                          child: const Text(
-                            "+",
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.black26),
-                          )),
+                        onPressed: global.sliderValueSpeedFactor > 1.0
+                            ? null
+                            : () {
+                                setState(() {
+                                  global.sliderValueSpeedFactor =
+                                      ((global.sliderValueSpeedFactor * 200 +
+                                              10) /
+                                          200);
+                                  API_Manager()
+                                      .sendGcodeCommand(
+                                          "M220 S${global.sliderValueSpeedFactor * 200}")
+                                      .then((value) {
+                                    setState(() {});
+                                  });
+                                });
+                              },
+                        child: const Text(
+                          "+",
+                          style: TextStyle(fontSize: 20, color: Colors.black26),
+                        ),
+                      ),
                     ],
                   )
                 ],

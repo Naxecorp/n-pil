@@ -161,6 +161,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                     "Set la position actuel a '0' puis démarre le programme"),
                 onPressed: () async {
                   global.secondsElapsedSinceBeginning = 0;
+                  global.globalTimeValue = "00:00:00";
                   global.isJobStartedByUser = true;
                   await API_Manager().sendGcodeCommand("G10 L20 P1 X0 Y0 Z0");
                   await API_Manager().sendGcodeCommand("G10 L20 P1");
@@ -186,6 +187,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
               child: const Text("Démarrer"),
               onPressed: () async {
                 global.secondsElapsedSinceBeginning = 0;
+                global.globalTimeValue = "00:00:00";
                 global.isJobStartedByUser = true;
                 await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
                     ListofGcodeFile!
@@ -281,139 +283,153 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
       body: Row(
         children: [
           Flexible(
-              flex: 1,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Container(
-                  //color: Colors.redAccent.withOpacity(0.5),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Flexible(
-                        flex: 5,
-                        child: Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            child: Text(
-                              'Charger depuis PC',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onPressed: () {
-                              isLoading = true;
-                              _pickFile();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF2B879B),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
+            flex: 1,
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Container(
+                //color: Colors.redAccent.withOpacity(0.5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      flex: 5,
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: ElevatedButton.icon(
+                          label: const Text(
+                            "Charger depuis PC",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          icon: const Icon(
+                            Icons.download_rounded,
+                            color: Colors.white,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2B879B),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
                             ),
                           ),
+                          onPressed: () {
+                            isLoading = true;
+                            _pickFile();
+                          },
                         ),
                       ),
-                      Flexible(
-                        flex: 5,
-                        child: Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            child: Text(
-                              'Charger depuis Liste Conversationel',
-                              textAlign: TextAlign.center,
-                            ),
-                            onPressed: null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF2B879B),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
+                    ),
+                    Flexible(
+                      flex: 5,
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: ElevatedButton.icon(
+                          label: const Text(
+                            "Charger depuis Liste Conversationel",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          icon: const Icon(
+                            Icons.file_download_off_outlined,
+                            color: Colors.white,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2B879B),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
                             ),
                           ),
+                          onPressed: null,
                         ),
                       ),
-                      Flexible(
-                          flex: 19,
-                          child: Container(
-                            height: double.infinity,
-                          )),
-                      Flexible(
-                        flex: 4,
+                    ),
+                    Flexible(
+                        flex: 19,
                         child: Container(
                           height: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            child: Text(
-                              'Télécharger Programme',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onPressed: () async {
-                              String FileContent = await API_Manager()
-                                  .downLoadAFile(
-                                      "gcodes",
-                                      ListofGcodeFile!
-                                          .elementAt(selectedGcodeFileIndex)!
-                                          .name
-                                          .toString());
-                              //print(FileContent);
-                              await SaveFileContent(FileContent);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blueAccent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
+                        )),
+                    Flexible(
+                      flex: 4,
+                      child: Container(
+                        height: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: ElevatedButton.icon(
+                          label: const Text(
+                            "Télécharger programme",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          icon: const Icon(
+                            Icons.download_rounded,
+                            color: Colors.white,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueAccent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
                             ),
                           ),
+                          onPressed: () async {
+                            String FileContent = await API_Manager()
+                                .downLoadAFile(
+                                    "gcodes",
+                                    ListofGcodeFile!
+                                        .elementAt(selectedGcodeFileIndex)!
+                                        .name
+                                        .toString());
+                            //print(FileContent);
+                            await SaveFileContent(FileContent);
+                          },
                         ),
                       ),
-                      Flexible(
-                        flex: 4,
-                        child: Container(
-                          height: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            child: Text(
-                              'Supprimer Programme',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white),
+                    ),
+                    Flexible(
+                      flex: 4,
+                      child: Container(
+                        height: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: ElevatedButton.icon(
+                          label: const Text(
+                            "Supprimer programme",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          icon: const Icon(
+                            Icons.delete_outline_outlined,
+                            color: Colors.white,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF9B2B2B),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
                             ),
-                            onPressed: () {
-                              print(ListofGcodeFile?.elementAt(
-                                      selectedGcodeFileIndex)
-                                  ?.name
-                                  .toString());
-                              API_Manager()
-                                  .deleteAFile(
-                                      ListofGcodeFile!
-                                          .elementAt(selectedGcodeFileIndex)!
-                                          .name
-                                          .toString(),
-                                      "gcodes")
-                                  .then((_) {
-                                API_Manager().getfileList().then((value) {
-                                  global.ListofGcodeFile = value;
-                                  setState(() {});
-                                });
+                          ),
+                          onPressed: () {
+                            print(ListofGcodeFile?.elementAt(
+                                    selectedGcodeFileIndex)
+                                ?.name
+                                .toString());
+                            API_Manager()
+                                .deleteAFile(
+                                    ListofGcodeFile!
+                                        .elementAt(selectedGcodeFileIndex)!
+                                        .name
+                                        .toString(),
+                                    "gcodes")
+                                .then((_) {
+                              API_Manager().getfileList().then((value) {
+                                global.ListofGcodeFile = value;
+                                setState(() {});
                               });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF9B2B2B),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                            ),
-                          ),
+                            });
+                          },
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              )),
+              ),
+            ),
+          ),
           Flexible(
               flex: 3,
               child: Padding(
@@ -521,14 +537,22 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                   Flexible(
                     flex: 2,
                     child: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Row(
                         children: [
-                          ElevatedButton(
+                          ElevatedButton.icon(
+                            label: const Text(
+                              "Visualiser",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            icon: const Icon(
+                              Icons.visibility_outlined,
+                              color: Colors.white,
+                            ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF2B879B),
+                              backgroundColor: const Color(0xFF2B879B),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
+                                borderRadius: BorderRadius.circular(5.0),
                               ),
                             ),
                             onPressed: () async {
@@ -557,23 +581,21 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                 ));
                               }
                             },
-                            child: SizedBox(
-                              height: 50,
-                              child: Center(
-                                child: Text(
-                                  'Visualiser',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ),
                           ),
-                          Spacer(),
-                          ElevatedButton(
+                          const Spacer(),
+                          ElevatedButton.icon(
+                            label: const Text(
+                              "Editer",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                            ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF2B879B),
+                              backgroundColor: const Color(0xFF2B879B),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
+                                borderRadius: BorderRadius.circular(5.0),
                               ),
                             ),
                             onPressed: () async {
@@ -608,23 +630,21 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                 ));
                               }
                             },
-                            child: SizedBox(
-                              height: 50,
-                              child: Center(
-                                child: Text(
-                                  'Éditer',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ),
                           ),
-                          Spacer(),
-                          ElevatedButton(
+                          const Spacer(),
+                          ElevatedButton.icon(
+                            label: const Text(
+                              "Démarrer",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            icon: const Icon(
+                              Icons.start_rounded,
+                              color: Colors.white,
+                            ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF2B9B80),
+                              backgroundColor: const Color(0xFF2B879B),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
+                                borderRadius: BorderRadius.circular(5.0),
                               ),
                             ),
                             onPressed: global.machineObjectModel.result?.state
@@ -634,21 +654,11 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                     StartProgPopup(context);
                                   }
                                 : null,
-                            child: SizedBox(
-                              height: 50,
-                              child: Center(
-                                child: Text(
-                                  'Démarrrer',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ),
                           ),
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

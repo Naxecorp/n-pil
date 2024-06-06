@@ -33,9 +33,13 @@ class GlobalAppBarState extends State<GlobalAppBar> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Flexible(
-              flex: 2,
-              child:
-                  Container(child: Image(image: AssetImage("assets/iconnaxe.png")))),
+            flex: 2,
+            child: Container(
+              child: Image(
+                image: AssetImage("assets/iconnaxe.png"),
+              ),
+            ),
+          ),
           Flexible(
               flex: 10,
               child: Container(
@@ -59,8 +63,9 @@ class GlobalAppBarState extends State<GlobalAppBar> {
                       onSubmitted: (Commande) {
                         setState(() {
                           ManualGcodeComand.clear();
-                          API_Manager().sendGcodeCommand(Commande).then(
-                              (value) => API_Manager().sendrr_reply());
+                          API_Manager()
+                              .sendGcodeCommand(Commande)
+                              .then((value) => API_Manager().sendrr_reply());
                         });
                         print(Commande);
                       },

@@ -319,14 +319,23 @@ class _SetPositionState extends State<SetPosition> {
                         padding: const EdgeInsets.all(5.0),
                         width: MediaQuery.of(context).size.width * 0.13,
                         child: NeumorphicButton(
-                          onPressed: () {
-                            API_Manager().sendGcodeCommand("G53 G0 Z189");
-                            API_Manager()
-                                .sendGcodeCommand("G53 G0 X${_posX?.text}");
-                            API_Manager()
-                                .sendGcodeCommand("G53 G0 Y${_posY?.text}");
-                            API_Manager()
-                                .sendGcodeCommand("G53 G0 Z${_posZ?.text}");
+                          onPressed: () async {
+                            await API_Manager().sendGcodeCommand("G28 Z");
+                            await Future.delayed(const Duration(seconds: 1),
+                                () async {
+                              await API_Manager()
+                                  .sendGcodeCommand("G53 G0 X${_posX?.text}");
+                              await Future.delayed(const Duration(seconds: 1),
+                                  () async {
+                                await API_Manager()
+                                    .sendGcodeCommand("G53 G0 Y${_posY?.text}");
+                                Future.delayed(const Duration(seconds: 1),
+                                    () async {
+                                  await API_Manager().sendGcodeCommand(
+                                      "G53 G0 Z${_posZ?.text}");
+                                });
+                              });
+                            });
                           },
                           style: const NeumorphicStyle(
                             color: Color(0xFFF0F0F3),
