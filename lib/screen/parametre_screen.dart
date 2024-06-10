@@ -103,9 +103,9 @@ class ParametreScreenState extends State<ParametreScreen> {
                 child: Container(
                     child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
-                flex: 10,
-                child: Container(
-                    child: Row(
+              flex: 10,
+              child: Container(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Spacer(),
@@ -136,10 +136,14 @@ class ParametreScreenState extends State<ParametreScreen> {
                     Spacer(),
                     Text(
                       global.Title,
-                      style: TextStyle(color: Color(0xFF707585)),
+                      style: TextStyle(
+                        color: Color(0xFF707585),
+                      ),
                     ),
                   ],
-                ))),
+                ),
+              ),
+            ),
           ],
         ),
       ),

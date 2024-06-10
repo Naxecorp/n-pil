@@ -398,7 +398,10 @@ class OriginScreenState extends State<OriginScreen> {
                                       .sendGcodeCommand("G53 G1 Z189")
                                       .then((value) => API_Manager()
                                           .sendGcodeCommand(
-                                              "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}"));
+                                              "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}")
+                                          .then((value) => API_Manager()
+                                              .sendGcodeCommand(
+                                                  'M98 P"palper1.g"')));
                                 },
                                 child: Column(
                                   mainAxisAlignment:
@@ -411,7 +414,7 @@ class OriginScreenState extends State<OriginScreen> {
                                     FittedBox(
                                       fit: BoxFit.fitHeight,
                                       child: Text(
-                                        'Vers palpeur',
+                                        'Palper outil 1',
                                         style:
                                             TextStyle(color: Color(0xFF707585)),
                                       ),
@@ -420,81 +423,81 @@ class OriginScreenState extends State<OriginScreen> {
                                 ),
                               ),
                             ),
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: EdgeInsets.all(15),
-                                style: NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                onPressed: () {
-                                  API_Manager()
-                                      .sendGcodeCommand("M106 P3 S255")
-                                      .then((value) => API_Manager()
-                                          .sendGcodeCommand("G38.2 Z-200")
-                                          .then((value) => API_Manager()
-                                              .sendGcodeCommand("M106 P3 S0")));
-                                },
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Icon(
-                                      Icons.get_app,
-                                      color: Color(0xFF707585),
-                                    ),
-                                    FittedBox(
-                                      fit: BoxFit.fitHeight,
-                                      child: Text(
-                                        'Palper outil actuel',
-                                        style:
-                                            TextStyle(color: Color(0xFF707585)),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: EdgeInsets.all(15),
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                onPressed: () {
-                                  ZSaved = global.machineObjectModel.result!
-                                      .move!.axes![2].userPosition!
-                                      .toDouble();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content:
-                                          const Text('Hauteur Enregistrée'),
-                                      duration:
-                                          const Duration(milliseconds: 400),
-                                    ),
-                                  );
-                                },
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    const Icon(
-                                      Icons.save_outlined,
-                                      color: Color(0xFF707585),
-                                    ),
-                                    const FittedBox(
-                                      fit: BoxFit.fitHeight,
-                                      child: Text(
-                                        'Enregistrer hauteur',
-                                        style:
-                                            TextStyle(color: Color(0xFF707585)),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
+                            // AspectRatio(
+                            //   aspectRatio: 1,
+                            //   child: NeumorphicButton(
+                            //     margin: EdgeInsets.all(15),
+                            //     style: NeumorphicStyle(
+                            //       color: Color(0xFFF0F0F3),
+                            //     ),
+                            //     onPressed: () {
+                            //       API_Manager()
+                            //           .sendGcodeCommand("M106 P3 S255")
+                            //           .then((value) => API_Manager()
+                            //               .sendGcodeCommand("G38.2 Z-200")
+                            //               .then((value) => API_Manager()
+                            //                   .sendGcodeCommand("M106 P3 S0")));
+                            //     },
+                            //     child: Column(
+                            //       mainAxisAlignment:
+                            //           MainAxisAlignment.spaceEvenly,
+                            //       children: [
+                            //         Icon(
+                            //           Icons.get_app,
+                            //           color: Color(0xFF707585),
+                            //         ),
+                            //         FittedBox(
+                            //           fit: BoxFit.fitHeight,
+                            //           child: Text(
+                            //             'Palper outil actuel',
+                            //             style:
+                            //                 TextStyle(color: Color(0xFF707585)),
+                            //           ),
+                            //         )
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
+                            // AspectRatio(
+                            //   aspectRatio: 1,
+                            //   child: NeumorphicButton(
+                            //     margin: EdgeInsets.all(15),
+                            //     style: const NeumorphicStyle(
+                            //       color: Color(0xFFF0F0F3),
+                            //     ),
+                            //     onPressed: () {
+                            //       ZSaved = global.machineObjectModel.result!
+                            //           .move!.axes![2].userPosition!
+                            //           .toDouble();
+                            //       ScaffoldMessenger.of(context).showSnackBar(
+                            //         SnackBar(
+                            //           content:
+                            //               const Text('Hauteur Enregistrée'),
+                            //           duration:
+                            //               const Duration(milliseconds: 400),
+                            //         ),
+                            //       );
+                            //     },
+                            //     child: Column(
+                            //       mainAxisAlignment:
+                            //           MainAxisAlignment.spaceEvenly,
+                            //       children: [
+                            //         const Icon(
+                            //           Icons.save_outlined,
+                            //           color: Color(0xFF707585),
+                            //         ),
+                            //         const FittedBox(
+                            //           fit: BoxFit.fitHeight,
+                            //           child: Text(
+                            //             'Enregistrer hauteur',
+                            //             style:
+                            //                 TextStyle(color: Color(0xFF707585)),
+                            //           ),
+                            //         )
+                            //       ],
+                            //     ),
+                            //   ),m
+                            // ),
                           ],
                         ),
                       ),
@@ -521,7 +524,7 @@ class OriginScreenState extends State<OriginScreen> {
                                 ),
                                 onPressed: () {
                                   API_Manager()
-                                      .sendGcodeCommand("G53 G1 Z189 F2000");
+                                      .sendGcodeCommand('M98 P"palper2.g"');
                                 },
                                 child: Column(
                                   mainAxisAlignment:
@@ -534,7 +537,7 @@ class OriginScreenState extends State<OriginScreen> {
                                     const FittedBox(
                                       fit: BoxFit.fitHeight,
                                       child: Text(
-                                        "Changer d'outil",
+                                        "Palper outil 2",
                                         style:
                                             TextStyle(color: Color(0xFF707585)),
                                       ),
@@ -543,85 +546,116 @@ class OriginScreenState extends State<OriginScreen> {
                                 ),
                               ),
                             ),
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: const EdgeInsets.all(15),
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                onPressed: () {
-                                  API_Manager()
-                                      .sendGcodeCommand("M106 P3 S255")
-                                      .then((value) => API_Manager()
-                                          .sendGcodeCommand("G38.2 Z-200")
-                                          .then((value) => API_Manager()
-                                              .sendGcodeCommand("M106 P3 S0")));
-                                },
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    const Icon(
-                                      Icons.get_app,
-                                      color: Color(0xFF707585),
-                                    ),
-                                    const FittedBox(
-                                      fit: BoxFit.fitHeight,
-                                      child: Text(
-                                        'Palper outil',
-                                        style:
-                                            TextStyle(color: Color(0xFF707585)),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: const EdgeInsets.all(15),
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                onPressed: () {
-                                  API_Manager()
-                                      .sendGcodeCommand("G10 L20 P1 Z" +
-                                          ZSaved.toStringAsFixed(2))
-                                      .then((value) => API_Manager()
-                                          .sendGcodeCommand("G54"));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content:
-                                          const Text('Hauteur Enregistrée'),
-                                      duration:
-                                          const Duration(milliseconds: 400),
-                                    ),
-                                  );
-                                  API_Manager().sendGcodeCommand(
-                                      "G91\nG1 Z50 F3700\nG90\n");
-                                },
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    const Icon(
-                                      Icons.height,
-                                      color: Color(0xFF707585),
-                                    ),
-                                    const FittedBox(
-                                      fit: BoxFit.fitHeight,
-                                      child: Text(
-                                        'Restituer hauteur outil',
-                                        style:
-                                            TextStyle(color: Color(0xFF707585)),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
+                            // AspectRatio(
+                            //   aspectRatio: 1,
+                            //   child: NeumorphicButton(
+                            //     margin: const EdgeInsets.all(15),
+                            //     style: const NeumorphicStyle(
+                            //       color: Color(0xFFF0F0F3),
+                            //     ),
+                            //     onPressed: () {
+                            //       API_Manager()
+                            //           .sendGcodeCommand("G53 G1 Z189 F2000");
+                            //     },
+                            //     child: Column(
+                            //       mainAxisAlignment:
+                            //           MainAxisAlignment.spaceEvenly,
+                            //       children: [
+                            //         const Icon(
+                            //           Icons.arrow_drop_up,
+                            //           color: Color(0xFF707585),
+                            //         ),
+                            //         const FittedBox(
+                            //           fit: BoxFit.fitHeight,
+                            //           child: Text(
+                            //             "Changer d'outil",
+                            //             style:
+                            //                 TextStyle(color: Color(0xFF707585)),
+                            //           ),
+                            //         )
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
+                            // AspectRatio(
+                            //   aspectRatio: 1,
+                            //   child: NeumorphicButton(
+                            //     margin: const EdgeInsets.all(15),
+                            //     style: const NeumorphicStyle(
+                            //       color: Color(0xFFF0F0F3),
+                            //     ),
+                            //     onPressed: () {
+                            //       API_Manager()
+                            //           .sendGcodeCommand("M106 P3 S255")
+                            //           .then((value) => API_Manager()
+                            //               .sendGcodeCommand("G38.2 Z-200")
+                            //               .then((value) => API_Manager()
+                            //                   .sendGcodeCommand("M106 P3 S0")));
+                            //     },
+                            //     child: Column(
+                            //       mainAxisAlignment:
+                            //           MainAxisAlignment.spaceEvenly,
+                            //       children: [
+                            //         const Icon(
+                            //           Icons.get_app,
+                            //           color: Color(0xFF707585),
+                            //         ),
+                            //         const FittedBox(
+                            //           fit: BoxFit.fitHeight,
+                            //           child: Text(
+                            //             'Palper outil',
+                            //             style:
+                            //                 TextStyle(color: Color(0xFF707585)),
+                            //           ),
+                            //         )
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
+                            // AspectRatio(
+                            //   aspectRatio: 1,
+                            //   child: NeumorphicButton(
+                            //     margin: const EdgeInsets.all(15),
+                            //     style: const NeumorphicStyle(
+                            //       color: Color(0xFFF0F0F3),
+                            //     ),
+                            //     onPressed: () {
+                            //       API_Manager()
+                            //           .sendGcodeCommand("G10 L20 P1 Z" +
+                            //               ZSaved.toStringAsFixed(2))
+                            //           .then((value) => API_Manager()
+                            //               .sendGcodeCommand("G54"));
+                            //       ScaffoldMessenger.of(context).showSnackBar(
+                            //         SnackBar(
+                            //           content:
+                            //               const Text('Hauteur Enregistrée'),
+                            //           duration:
+                            //               const Duration(milliseconds: 400),
+                            //         ),
+                            //       );
+                            //       API_Manager().sendGcodeCommand(
+                            //           "G91\nG1 Z50 F3700\nG90\n");
+                            //     },
+                            //     child: Column(
+                            //       mainAxisAlignment:
+                            //           MainAxisAlignment.spaceEvenly,
+                            //       children: [
+                            //         const Icon(
+                            //           Icons.height,
+                            //           color: Color(0xFF707585),
+                            //         ),
+                            //         const FittedBox(
+                            //           fit: BoxFit.fitHeight,
+                            //           child: Text(
+                            //             'Restituer hauteur outil',
+                            //             style:
+                            //                 TextStyle(color: Color(0xFF707585)),
+                            //           ),
+                            //         )
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
