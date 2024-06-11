@@ -146,7 +146,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Êtes vous sûr ?"),
+          title: const Text("Êtes vous sûr ?"),
           content: Text(
               "Programme sélectionné : ${(ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString())}"),
           actions: <Widget>[
@@ -157,7 +157,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
               },
             ),
             ElevatedButton(
-                child: Text(
+                child: const Text(
                     "Set la position actuel a '0' puis démarre le programme"),
                 onPressed: () async {
                   global.secondsElapsedSinceBeginning = 0;
@@ -268,7 +268,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                         },
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Text(
                       global.Title,
                       style: TextStyle(color: Color(0xFF707585)),

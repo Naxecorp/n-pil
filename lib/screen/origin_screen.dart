@@ -394,21 +394,110 @@ class OriginScreenState extends State<OriginScreen> {
                                   color: Color(0xFFF0F0F3),
                                 ),
                                 onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text("Mesure en cours..."),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: const [
+                                            CircularProgressIndicator(
+                                              color: Colors.blue,
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              API_Manager()
+                                                  .sendGcodeCommand("M112");
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red,
+                                              textStyle: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            child: const Text(
+                                              'Arrêt immédiat',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
                                   API_Manager()
-                                      .sendGcodeCommand("G53 G1 Z189")
-                                      .then((value) => API_Manager()
-                                          .sendGcodeCommand(
-                                              "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}")
-                                          .then((value) => API_Manager()
-                                              .sendGcodeCommand(
-                                                  'M98 P"palper1.g"')));
+                                      .sendGcodeCommand("G53 G1 Z188")
+                                      .then((value) {
+                                    return API_Manager().sendGcodeCommand(
+                                        "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}");
+                                  }).then((value) {
+                                    return API_Manager()
+                                        .sendGcodeCommand('M98 P"palper1.g"');
+                                  }).then((value) {
+                                    Timer.periodic(
+                                      const Duration(milliseconds: 500),
+                                      (timer) {
+                                        API_Manager()
+                                            .sendrr_reply()
+                                            .then((response) {
+                                          if (response
+                                              .contains("end of palper1.g")) {
+                                            timer.cancel();
+                                            Navigator.of(context).pop();
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      'Notification'),
+                                                  content: const Text(
+                                                    'Vous pouvez changer d\'outil',
+                                                    style:
+                                                        TextStyle(fontSize: 16),
+                                                  ),
+                                                  actions: <Widget>[
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        backgroundColor:
+                                                            Colors.blue,
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                      ),
+                                                      child: const Text(
+                                                        'Fermer',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
+                                        });
+                                      },
+                                    );
+                                  });
                                 },
-                                child: Column(
+                                child: const Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Icon(
-                                      Icons.arrow_right,
+                                      Icons.looks_one_outlined,
                                       color: Color(0xFF707585),
                                     ),
                                     FittedBox(
@@ -523,18 +612,127 @@ class OriginScreenState extends State<OriginScreen> {
                                   color: Color(0xFFF0F0F3),
                                 ),
                                 onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text("Mesure en cours..."),
+                                        content: const Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            CircularProgressIndicator(
+                                              color: Colors.blue,
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              API_Manager()
+                                                  .sendGcodeCommand("M112");
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red,
+                                              textStyle: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            child: const Text(
+                                              'Arrêt immédiat',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
                                   API_Manager()
-                                      .sendGcodeCommand('M98 P"palper2.g"');
+                                      .sendGcodeCommand("G53 G1 Z189")
+                                      .then(
+                                        (value) => API_Manager()
+                                            .sendGcodeCommand(
+                                                "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}")
+                                            .then(
+                                              (value) =>
+                                                  API_Manager()
+                                                      .sendGcodeCommand(
+                                                          'M98 P"palper2.g"')
+                                                      .then(
+                                                        (value) =>
+                                                            Timer.periodic(
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  500),
+                                                          (timer) {
+                                                            API_Manager()
+                                                                .sendrr_reply()
+                                                                .then(
+                                                                    (response) {
+                                                              if (response.contains(
+                                                                  "end of palper2.g")) {
+                                                                timer.cancel();
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                                showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (BuildContext
+                                                                          context) {
+                                                                    return AlertDialog(
+                                                                      title: const Text(
+                                                                          'Notification'),
+                                                                      content:
+                                                                          const Text(
+                                                                        'Mesure terminé ! ',
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                16),
+                                                                      ),
+                                                                      actions: <Widget>[
+                                                                        ElevatedButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            Navigator.of(context).pop();
+                                                                          },
+                                                                          style:
+                                                                              ElevatedButton.styleFrom(
+                                                                            backgroundColor:
+                                                                                Colors.blue,
+                                                                            textStyle:
+                                                                                const TextStyle(color: Colors.white),
+                                                                          ),
+                                                                          child:
+                                                                              const Text(
+                                                                            'Fermer',
+                                                                            style:
+                                                                                TextStyle(color: Colors.white),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    );
+                                                                  },
+                                                                );
+                                                              }
+                                                            });
+                                                          },
+                                                        ),
+                                                      ),
+                                            ),
+                                      );
                                 },
-                                child: Column(
+                                child: const Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    const Icon(
-                                      Icons.arrow_drop_up,
+                                    Icon(
+                                      Icons.looks_two_outlined,
                                       color: Color(0xFF707585),
                                     ),
-                                    const FittedBox(
+                                    FittedBox(
                                       fit: BoxFit.fitHeight,
                                       child: Text(
                                         "Palper outil 2",

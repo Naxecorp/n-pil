@@ -165,7 +165,7 @@ class _SideMenu extends State<SideMenu> {
                   Navigator.pushNamed(context, '/origin');
                 },
                 leading: Icon(
-                  Icons.play_arrow_sharp,
+                  Icons.handyman,
                   color: pageToShow == 6 ? Colors.white : Color(0xFF9A9A9A),
                 ),
                 title: Text(
@@ -251,7 +251,7 @@ class _SideMenu extends State<SideMenu> {
                   Navigator.pushNamed(context, '/admin');
                 },
                 leading: Icon(
-                  Icons.settings,
+                  Icons.admin_panel_settings_outlined,
                   color: pageToShow == 7 ? Colors.white : Color(0xFF9A9A9A),
                 ),
                 title: Text(
