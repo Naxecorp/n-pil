@@ -36,6 +36,7 @@ class JobInfoState extends State<JobInfo> {
               onPressed: () {
                 global.secondsElapsedSinceBeginning = 0;
                 global.timerStarted = false;
+                global.isJobPausedByUser = false;
                 global.globalTimeValue = "00:00:00";
                 global.timer!.cancel();
                 Navigator.of(context).pop();
@@ -47,6 +48,7 @@ class JobInfoState extends State<JobInfo> {
               onPressed: () async {
                 global.secondsElapsedSinceBeginning = 0;
                 global.globalTimeValue = "00:00:00";
+                global.isJobPausedByUser = false;
                 global.timerStarted = false;
                 global.timer!.cancel();
                 Navigator.of(context).pop();
@@ -60,6 +62,7 @@ class JobInfoState extends State<JobInfo> {
               onPressed: () async {
                 global.secondsElapsedSinceBeginning = 0;
                 global.globalTimeValue = "00:00:00";
+                global.isJobPausedByUser = false;
                 global.timerStarted = false;
                 global.timer!.cancel();
                 Future.delayed(const Duration(seconds: 1), () {

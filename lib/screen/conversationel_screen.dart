@@ -32,6 +32,14 @@ class ConversationelScreen extends StatefulWidget {
 
 class ConversationelScreenState extends State<ConversationelScreen> {
   @override
+  void initState() {
+    global.checkAndShowDialog(context);
+    Future.delayed(const Duration(seconds: 2), () {
+      global.checkCaissonOpen(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: SideMenu(

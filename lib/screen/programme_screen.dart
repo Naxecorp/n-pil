@@ -72,6 +72,10 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
         setState(() {});
       });
     ProgressBarcontroller.repeat(reverse: false);
+    global.checkAndShowDialog(context);
+    Future.delayed(const Duration(seconds: 2), () {
+      global.checkCaissonOpen(context);
+    });
     super.initState();
   }
 

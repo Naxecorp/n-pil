@@ -58,6 +58,10 @@ class ParametreScreenState extends State<ParametreScreen> {
   initState() {
     super.initState();
     onReceivedData();
+    global.checkAndShowDialog(context);
+    Future.delayed(const Duration(seconds: 2), () {
+      global.checkCaissonOpen(context);
+    });
     global.streamMachineObjectModel.listen((value) {
       setState(() {});
     });

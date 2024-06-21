@@ -599,7 +599,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                       print("light off");
                                     }),
                                     child: GestureDetector(
-                                      onDoubleTap: () {
+                                      onLongPress: () {
                                         API_Manager()
                                             .sendGcodeCommand("M42 P4 S0");
                                         print("light on");

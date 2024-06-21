@@ -3,11 +3,10 @@ library my_prj.globals;
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/nwc-settings/position.dart';
 import 'package:nweb/service/nwc-settings/offset.dart';
-import 'package:nweb/service/system/SystemsFiles.dart';
 
 import 'service/API/Ethernet_connection.dart';
 import 'service/ObjectModelManager.dart';
@@ -22,7 +21,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.7.0";
+String version = "Version 1.8.3";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -32,8 +31,14 @@ int secondsElapsedSinceBeginning =
 String globalTimeValue = "00:00:00";
 double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
 bool isJobStartedByUser = false; // Si le programme a bien été lancé par le User
+bool popupEstAffiche = false;
+bool popupCaisson = false;
+bool isRestarting = false;
 double compensation = 0; // BabyStep Z
 double sliderValueSpeedFactor = 0;
+bool isJobPausedByUser =
+    false; // Si le programme a bien été mis en pause par le User
+bool isErrorDriver = false;
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
 ObjectModelMove objectModelMove = ObjectModelMove();
@@ -123,3 +128,124 @@ Stream streamcontrollerContentGcodeToDisplay =
 
 Timer? timer;
 bool timerStarted = false;
+
+void checkAndShowDialog(context) async {
+  Timer.periodic(
+    const Duration(milliseconds: 600),
+    (timer) {
+      if ((machineObjectModel.result?.state?.status
+                  ?.toString()
+                  .contains("pausing") ??
+              false) ||
+          (machineObjectModel.result?.state?.status
+                  ?.toString()
+                  .contains("busy") ??
+              false)) {
+        if (popupEstAffiche == false) {
+          if ((machineObjectModel.result?.sensors?.gpIn?[9]?.value ?? 1) == 1) {
+            popupEstAffiche = true;
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text(
+                    "L'un des axes est surchargé et demande trop de puissance\nVérifiez vos paramètres d'usinage",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  actions: <Widget>[
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        textStyle: const TextStyle(color: Colors.white),
+                      ),
+                      onPressed: () {
+                        API_Manager().sendGcodeCommand("M0");
+                        Future.delayed(const Duration(seconds: 1), () {
+                          API_Manager().sendGcodeCommand("M106 P3 S0");
+                          Future.delayed(const Duration(seconds: 1), () {
+                            API_Manager().sendGcodeCommand("M18 X Y");
+                            Future.delayed(const Duration(seconds: 1), () {
+                              API_Manager().sendGcodeCommand("M17 X Y");
+                              Navigator.pushNamed(context, '/dashboard');
+                              popupEstAffiche = false;
+                              isJobPausedByUser = false;
+                              isErrorDriver = true;
+                            });
+                          });
+                        });
+                      },
+                      child: const Text(
+                        "Réinitialiser les drivers & arrêter le programme",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                  ],
+                );
+              },
+            );
+          }
+        }
+      }
+    },
+  );
+}
+
+void checkCaissonOpen(BuildContext context) {
+  popupCaisson = false;
+  Timer.periodic(const Duration(milliseconds: 600), (timer) {
+    print("2check");
+    if ((machineObjectModel.result?.sensors?.gpIn?[10]?.value ?? 1) == 0) {
+      print('InCondition');
+      if (popupCaisson == false) {
+        print("PoPUp");
+        popupCaisson = true;
+        if ((machineObjectModel.result?.state?.status
+                    ?.toString()
+                    .contains("idle") ??
+                false) ||
+            (machineObjectModel.result?.state?.status
+                    ?.toString()
+                    .contains("processing") ??
+                false) ||
+            (machineObjectModel.result?.state?.status
+                    ?.toString()
+                    .contains("pausing") ??
+                false) ||
+            (machineObjectModel.result?.state?.status
+                    ?.toString()
+                    .contains("paused") ??
+                false)) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text(
+                  "La porte du caisson s'est ouverte !",
+                  style: TextStyle(color: Colors.black),
+                ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      textStyle: const TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () {
+                      popupCaisson = false;
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      "Fermer",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
+              );
+            },
+          );
+        }
+      }
+    }
+  });
+}

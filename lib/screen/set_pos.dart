@@ -78,6 +78,14 @@ class _SetPositionState extends State<SetPosition> {
   }
 
   @override
+  void initState() {
+    global.checkAndShowDialog(context);
+    Future.delayed(const Duration(seconds: 2), () {
+      global.checkCaissonOpen(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: 215,

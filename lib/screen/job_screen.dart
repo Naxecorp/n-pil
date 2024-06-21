@@ -48,6 +48,10 @@ class JobScreenState extends State<JobScreen> {
     global.streamMachineObjectModel.listen((value) {
       setState(() {});
     });
+    global.checkAndShowDialog(context);
+    Future.delayed(const Duration(seconds: 2), () {
+      global.checkCaissonOpen(context);
+    });
 
     sliderValue =
         global.machineObjectModel.result?.spindles?[0].current?.toDouble() ??
@@ -167,194 +171,319 @@ class JobScreenState extends State<JobScreen> {
                         children: [
                           Flexible(flex: 80, child: JobInfo()),
                           Flexible(
-                              flex: 50,
-                              child: Container(
-                                //color: Colors.green,
-                                height: double.infinity,
-                                //color: Colors.white,
-                                margin: EdgeInsets.all(0),
-                                child: Window(
-                                  title1: "Capteurs",
-                                  title2: " machine",
-                                  child: Container(
-                                      //color: Colors.green,
-                                      child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Flexible(
-                                          flex: 1,
-                                          child: Container(
-                                            margin: EdgeInsets.all(1),
-                                            //color: Colors.green,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Text(
-                                                  "Status",
+                            flex: 50,
+                            child: Container(
+                              //color: Colors.green,
+                              height: double.infinity,
+                              //color: Colors.white,
+                              margin: EdgeInsets.all(0),
+                              child: Window(
+                                title1: "Capteurs",
+                                title2: " machine",
+                                child: Container(
+                                    //color: Colors.green,
+                                    child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Flexible(
+                                        flex: 1,
+                                        child: Container(
+                                          margin: EdgeInsets.all(1),
+                                          //color: Colors.green,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                "Status",
+                                                style: TextStyle(
+                                                    color: Color(0xFF707585),
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                  global.machineObjectModel
+                                                          .result?.state?.status
+                                                          .toString() ??
+                                                      "???",
                                                   style: TextStyle(
-                                                      color: Color(0xFF707585),
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                    global
-                                                            .machineObjectModel
-                                                            .result
-                                                            ?.state
-                                                            ?.status
-                                                            .toString() ??
-                                                        "???",
-                                                    style: TextStyle(
-                                                        color: global
-                                                                    .machineObjectModel
-                                                                    .result
-                                                                    ?.state
-                                                                    ?.status
-                                                                    .toString() ==
-                                                                "pausing"
-                                                            ? Colors
-                                                                .yellowAccent
-                                                            : Color(
-                                                                0xFF707585))),
-                                              ],
-                                            ),
-                                          )),
-                                      Flexible(
-                                          flex: 1,
-                                          child: Container(
-                                            margin: EdgeInsets.all(1),
-                                            //color: Colors.green,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Text(
-                                                  "MCU Température",
-                                                  style: TextStyle(
-                                                      color: Color(0xFF707585),
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                        global.machineObjectModel
-                                                                .result?.boards
-                                                                ?.elementAt(0)
-                                                                .mcuTemp
-                                                                ?.current
-                                                                ?.toStringAsFixed(
-                                                                    1) ??
-                                                            "...",
-                                                        style: TextStyle(
-                                                            color: Color(
-                                                                0xFF707585))),
-                                                    Text("°C",
-                                                        style: TextStyle(
-                                                            color: Color(
-                                                                0xFF707585)))
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          )),
-                                      Flexible(
-                                          flex: 1,
-                                          child: Container(
-                                            margin: EdgeInsets.all(1),
-                                            //color: Colors.green,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Text(
-                                                  "V12",
-                                                  style: TextStyle(
-                                                      color: Color(0xFF707585),
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Text(
+                                                      color: global
+                                                                  .machineObjectModel
+                                                                  .result
+                                                                  ?.state
+                                                                  ?.status
+                                                                  .toString() ==
+                                                              "pausing"
+                                                          ? Colors.yellowAccent
+                                                          : Color(0xFF707585))),
+                                            ],
+                                          ),
+                                        )),
+                                    Flexible(
+                                        flex: 1,
+                                        child: Container(
+                                          margin: EdgeInsets.all(1),
+                                          //color: Colors.green,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                "MCU Température",
+                                                style: TextStyle(
+                                                    color: Color(0xFF707585),
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
                                                       global.machineObjectModel
                                                               .result?.boards
                                                               ?.elementAt(0)
-                                                              .v12
+                                                              .mcuTemp
                                                               ?.current
                                                               ?.toStringAsFixed(
                                                                   1) ??
                                                           "...",
                                                       style: TextStyle(
                                                           color: Color(
-                                                              0xFF707585)),
-                                                    ),
-                                                    Text(" V",
-                                                        style: TextStyle(
-                                                            color: Color(
-                                                                0xFF707585))),
-                                                  ],
-                                                ),
-                                              ],
+                                                              0xFF707585))),
+                                                  Text("°C",
+                                                      style: TextStyle(
+                                                          color: Color(
+                                                              0xFF707585)))
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        )),
+                                    Flexible(
+                                        flex: 1,
+                                        child: Container(
+                                          margin: EdgeInsets.all(1),
+                                          //color: Colors.green,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                "V12",
+                                                style: TextStyle(
+                                                    color: Color(0xFF707585),
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    global.machineObjectModel
+                                                            .result?.boards
+                                                            ?.elementAt(0)
+                                                            .v12
+                                                            ?.current
+                                                            ?.toStringAsFixed(
+                                                                1) ??
+                                                        "...",
+                                                    style: TextStyle(
+                                                        color:
+                                                            Color(0xFF707585)),
+                                                  ),
+                                                  Text(" V",
+                                                      style: TextStyle(
+                                                          color: Color(
+                                                              0xFF707585))),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        )),
+                                    Flexible(
+                                      flex: 1,
+                                      child: Container(
+                                        margin: EdgeInsets.all(1),
+                                        //color: Colors.green,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Text(
+                                              "Vin",
+                                              style: TextStyle(
+                                                  color: Color(0xFF707585),
+                                                  fontWeight: FontWeight.bold),
                                             ),
-                                          )),
-                                      Flexible(
-                                          flex: 1,
-                                          child: Container(
-                                            margin: EdgeInsets.all(1),
-                                            //color: Colors.green,
-                                            child: Column(
+                                            Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
                                               children: [
                                                 Text(
-                                                  "Vin",
-                                                  style: TextStyle(
-                                                      color: Color(0xFF707585),
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
+                                                    global.machineObjectModel
+                                                            .result?.boards
+                                                            ?.elementAt(0)
+                                                            .vIn
+                                                            ?.current
+                                                            ?.toStringAsFixed(
+                                                                1) ??
+                                                        "...",
+                                                    style: TextStyle(
+                                                        color:
+                                                            Color(0xFF707585))),
+                                                Text(" V",
+                                                    style: TextStyle(
+                                                        color:
+                                                            Color(0xFF707585))),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      flex: 1,
+                                      child: Container(
+                                        margin: EdgeInsets.all(1),
+                                        //color: Colors.green,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Column(
                                                   children: [
-                                                    Text(
-                                                        global.machineObjectModel
-                                                                .result?.boards
-                                                                ?.elementAt(0)
-                                                                .vIn
-                                                                ?.current
-                                                                ?.toStringAsFixed(
-                                                                    1) ??
-                                                            "...",
-                                                        style: TextStyle(
-                                                            color: Color(
-                                                                0xFF707585))),
-                                                    Text(" V",
-                                                        style: TextStyle(
-                                                            color: Color(
-                                                                0xFF707585))),
+                                                    const Text(
+                                                      "Driver(s)",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color(0xFF707585),
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(
+                                                          (global
+                                                                          .machineObjectModel
+                                                                          .result
+                                                                          ?.sensors
+                                                                          ?.gpIn?[
+                                                                      9] ==
+                                                                  null)
+                                                              ? Icons
+                                                                  .power_off_outlined
+                                                              : (global.machineObjectModel.result?.sensors?.gpIn?[9]?.value ??
+                                                                          0) ==
+                                                                      0
+                                                                  ? Icons
+                                                                      .power_rounded
+                                                                  : Icons
+                                                                      .power_rounded,
+                                                          color: (global
+                                                                          .machineObjectModel
+                                                                          .result
+                                                                          ?.sensors
+                                                                          ?.gpIn?[
+                                                                      9] ==
+                                                                  null)
+                                                              ? Colors.grey
+                                                              : (global.machineObjectModel.result?.sensors?.gpIn?[9]
+                                                                              ?.value ??
+                                                                          0) ==
+                                                                      0
+                                                                  ? Colors.green
+                                                                  : Colors.red,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  width: 12,
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    const Text(
+                                                      "Caisson",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color(0xFF707585),
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(
+                                                          (global.machineObjectModel.result?.sensors?.gpIn
+                                                                              ?.length ??
+                                                                          0) <
+                                                                      11 ||
+                                                                  global.machineObjectModel.result?.sensors
+                                                                              ?.gpIn?[
+                                                                          10] ==
+                                                                      null
+                                                              ? Icons
+                                                                  .key_off_outlined
+                                                              : (global.machineObjectModel.result?.sensors?.gpIn?[10]?.value ??
+                                                                          1) ==
+                                                                      1
+                                                                  ? Icons.lock
+                                                                  : Icons
+                                                                      .lock_open_rounded,
+                                                          color: (global.machineObjectModel.result?.sensors?.gpIn
+                                                                              ?.length ??
+                                                                          0) <
+                                                                      11 ||
+                                                                  global.machineObjectModel.result?.sensors
+                                                                              ?.gpIn?[
+                                                                          10] ==
+                                                                      null
+                                                              ? Colors.grey
+                                                              : (global.machineObjectModel.result?.sensors?.gpIn?[10]
+                                                                              ?.value ??
+                                                                          1) ==
+                                                                      1
+                                                                  ? Colors.green
+                                                                  : Colors.orange,
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ],
                                                 ),
                                               ],
-                                            ),
-                                          )),
-                                    ],
-                                  )),
-                                ),
-                              )),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                              ),
+                            ),
+                          ),
                           Flexible(
                               flex: 70,
                               child: Container(
@@ -456,14 +585,14 @@ class JobScreenState extends State<JobScreen> {
                     Flexible(
                       flex: 2,
                       child: Padding(
-                        padding: EdgeInsets.only(left: 50.0),
+                        padding: const EdgeInsets.only(left: 50.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Flexible(
                               flex: 1,
                               child: Padding(
-                                padding: EdgeInsets.all(5.0),
+                                padding: const EdgeInsets.all(5.0),
                                 child: ElevatedButton(
                                   onPressed: () async {
                                     String tempStatus = global
@@ -475,11 +604,14 @@ class JobScreenState extends State<JobScreen> {
                                         "";
                                     if (tempStatus == "paused") {
                                       API_Manager().sendGcodeCommand("M24");
+                                      global.isJobPausedByUser = false;
                                     } else {
                                       API_Manager()
                                           .sendGcodeCommand("M25")
-                                          .then((value) =>
-                                              API_Manager().sendrr_reply());
+                                          .then((value) => API_Manager()
+                                              .sendrr_reply()
+                                              .then((value) => global
+                                                  .isJobPausedByUser = true));
                                     }
                                     setState(() {});
                                   },
@@ -494,7 +626,7 @@ class JobScreenState extends State<JobScreen> {
                                       Flexible(
                                         flex: 2,
                                         child: Container(
-                                          margin: EdgeInsets.symmetric(
+                                          margin: const EdgeInsets.symmetric(
                                               vertical: 10),
                                           height: double.infinity,
                                           decoration: BoxDecoration(

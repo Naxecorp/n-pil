@@ -62,6 +62,14 @@ class _OffsetState extends State<Offset> {
   }
 
   @override
+  void initState() {
+    global.checkAndShowDialog(context);
+    Future.delayed(const Duration(seconds: 2), () {
+      global.checkCaissonOpen(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       //color: Colors.orange,

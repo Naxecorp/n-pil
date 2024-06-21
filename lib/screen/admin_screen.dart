@@ -138,6 +138,10 @@ class AdminScreenState extends State<AdminScreen>
         AdminModeLogger();
       });
     }
+    global.checkAndShowDialog(context);
+    Future.delayed(const Duration(seconds: 2), () {
+      global.checkCaissonOpen(context);
+    });
     ProgressBarcontroller = AnimationController(
       /// [AnimationController]s can be created with `vsync: this` because of
       /// [TickerProviderStateMixin].
@@ -677,9 +681,12 @@ class AdminScreenState extends State<AdminScreen>
                                 await API_Manager()
                                     .sendGcodeCommand('M98 P"config.g"')
                                     .then((_) {
-                                  Future.delayed(
-                                      const Duration(milliseconds: 500), () {
-                                    API_Manager().sendrr_reply();
+                                  Timer(const Duration(seconds: 3), () {
+                                    Timer.periodic(
+                                        const Duration(milliseconds: 200),
+                                        (timer) {
+                                      API_Manager().sendrr_reply();
+                                    });
                                   });
                                 });
                               }

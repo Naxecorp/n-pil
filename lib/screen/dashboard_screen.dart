@@ -36,6 +36,45 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => DashboardScreenState(notifyParent);
 }
 
+void checkErrorDrive(BuildContext context) {
+  Timer.periodic(const Duration(milliseconds: 600), (timer) {
+    timer.cancel();
+    if (global.isErrorDriver == true) {
+      global.isErrorDriver = false;
+      timer.cancel();
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              "Vous devez réinitialiser les origines, machine et programme",
+              style: TextStyle(color: Colors.black),
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  textStyle: const TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  global.isErrorDriver = false;
+                  timer.cancel();
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  "Fermer",
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+            ],
+          );
+        },
+      );
+    }
+  });
+}
+
 class DashboardScreenState extends State<DashboardScreen> {
   DashboardScreenState(this.notifyParent);
 
@@ -43,14 +82,23 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void initState() {
+    super.initState();
     global.streamMachineObjectModel.listen((value) {
       setState(() {});
     });
+
+    Future.delayed(const Duration(seconds: 2), () {
+      global.checkCaissonOpen(context);
+      print("check");
+    });
+
+    global.checkAndShowDialog(context);
+    checkErrorDrive(context);
   }
 
   // Fonction qui regarde si les 3 axes sont homes et va au dernières coordonées machines
   Future<void> actualiserHomeMachine() async {
-    Timer.periodic(Duration(seconds: 1), (timer) async {
+    Timer.periodic(const Duration(seconds: 2), (timer) async {
       if (global.objectModelMove.result?.axes?.elementAt(0).homed == true &&
           global.objectModelMove.result?.axes?.elementAt(1).homed == true &&
           global.objectModelMove.result?.axes?.elementAt(2).homed == true) {
@@ -70,7 +118,7 @@ class DashboardScreenState extends State<DashboardScreen> {
         posY = posXYZ.split('\n')[1];
         posZ = posXYZ.split('\n')[2];
 
-        await Future.delayed(Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 3));
         // Récupère le resultat du GCode
         await API_Manager()
             .sendGcodeCommand("G53 G0 X${posX}")
@@ -96,7 +144,7 @@ class DashboardScreenState extends State<DashboardScreen> {
     showDialog(
       context: context,
       barrierDismissible:
-          false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
+          true, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
       builder: (BuildContext context) {
         return const AlertDialog(
           title: Text("Redémarrage en cours"),
@@ -127,6 +175,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                   await Future.delayed(Duration(seconds: 1));
                   await actualiserHomeMachine();
                   Navigator.of(context).pop();
+                  global.isRestarting = false;
                   showDialog(
                     context: context,
                     barrierDismissible:
@@ -151,7 +200,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                   backgroundColor: Colors.blue,
                 ),
                 onPressed: () {
+                  global.isRestarting = false;
                   Navigator.of(context).pop();
+                  Navigator.pushNamed(context, '/dashboard');
                 },
                 child: Text(
                   "Non",
@@ -228,8 +279,9 @@ class DashboardScreenState extends State<DashboardScreen> {
                                   ?.toString() ==
                               "halted"
                           ? () {
+                              global.isRestarting = true;
                               API_Manager().pushDataToDb(
-                                  global.MyMachineN02Config.Serie??"NUMSTD",
+                                  global.MyMachineN02Config.Serie ?? "NUMSTD",
                                   "AR Urgence");
                               API_Manager().sendGcodeCommand("M999");
                               loadingPopup(context);
