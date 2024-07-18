@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:nweb/globals_var.dart';
+import 'package:nweb/service/nwc-settings/magasinOutils.dart';
 import 'package:nweb/service/nwc-settings/position.dart';
 import 'package:nweb/service/nwc-settings/offset.dart';
 
@@ -26,9 +27,11 @@ class MachineN02Config {
   int? HasHeatBed;
   int? HasFanOnEnclosure;
   int? HasLedOnEnclosure;
+  int? HasACT;
   int? VitesseBroche;
   int? VitesseDefaut;
   List<Offsets>? Offset;
+  List<MagasinOutils>? MagasinOutil;
 
   bool hasAnyNull() {
     return [
@@ -43,9 +46,11 @@ class MachineN02Config {
       HasHeatBed,
       HasFanOnEnclosure,
       HasLedOnEnclosure,
+      HasACT,
       VitesseBroche,
       VitesseDefaut,
       Offset, // And for Offsets
+      MagasinOutil,
     ].any((element) => element == null);
   }
 
@@ -62,11 +67,11 @@ class MachineN02Config {
       this.HasHeatBed,
       this.HasFanOnEnclosure,
       this.HasLedOnEnclosure,
+      this.HasACT,
       this.VitesseBroche,
       this.VitesseDefaut,
-      this.Offset});
-
-      
+      this.Offset,
+      this.MagasinOutil});
 
   factory MachineN02Config.fromJson(Map<String, dynamic> json) =>
       MachineN02Config(
@@ -90,6 +95,7 @@ class MachineN02Config {
         HasHeatBed: json["HasHeatBed"],
         HasFanOnEnclosure: json["HasFanOnEnclosure"],
         HasLedOnEnclosure: json["HasLedOnEnclosure"],
+        HasACT: json["HasACT"],
         VitesseBroche: json["VitesseBroche"],
         VitesseDefaut: json["VitesseDefaut"],
         Offset: json["Offset"] == null
@@ -97,6 +103,13 @@ class MachineN02Config {
             : List<Offsets>.from(
                 json["Offset"]!.map(
                   (x) => Offsets.fromJson(x),
+                ),
+              ),
+        MagasinOutil: json["MagasinOutil"] == null
+            ? []
+            : List<MagasinOutils>.from(
+                json["MagasinOutil"]!.map(
+                  (x) => MagasinOutils.fromJson(x),
                 ),
               ),
       );
@@ -116,13 +129,14 @@ class MachineN02Config {
         "HasHeatBed": HasHeatBed,
         "HasFanOnEnclosure": HasFanOnEnclosure,
         "HasLedOnEnclosure": HasLedOnEnclosure,
+        "HasACT": HasACT,
         "VitesseBroche": VitesseBroche,
         "VitesseDefaut": VitesseDefaut,
         "Offset": Offset == null
             ? []
             : List<dynamic>.from(Offset!.map((x) => x.toJson())),
+        "MagasinOutil": MagasinOutil == null
+            ? []
+            : List<dynamic>.from(MagasinOutil!.map((x) => x.toJson())),
       };
-
-
-      
 }

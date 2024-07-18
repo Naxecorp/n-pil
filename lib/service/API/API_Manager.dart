@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:nweb/service/outils.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:async/async.dart';
 import '../ObjectModelManager.dart';
 import '../ObjectModelMoveManager.dart';
 import '../ObjectModelJobManager.dart';
@@ -413,7 +417,132 @@ class API_Manager {
       print(e.toString());
       return 'NOK';
     }
+  } // Pour obtenir le répertoire temporaire
+
+  Future<String> downLoadPartOfFile(
+      String path, String fileName, int startLine, int endLine) async {
+    Map<String, String> requestHeaders = {
+      "Access-Control-Allow-Headers": "*",
+      "Content-Type": "application/json",
+      "Accept": "*/*",
+      "Accept-Encoding": "gzip, deflate",
+      "Access-Control-Allow-Origin": "*",
+      "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+      "Connection": "keep-alive",
+    };
+
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_download?name=0:/$path/$fileName');
+
+    try {
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 50));
+
+      global.myEthernet_connection.isConnected = true;
+
+      if (response.statusCode == 200) {
+        // Obtenir le répertoire temporaire
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = '${tempDir.path}/$fileName';
+
+        // Écrire le fichier téléchargé dans le répertoire temporaire
+        File tempFile = File(tempPath);
+
+        // Lire le fichier
+        List<String> lines = await tempFile.readAsLines();
+
+        // Valider les paramètres startLine et endLine
+        if (startLine < 0) startLine = 0;
+        if (endLine > lines.length) endLine = lines.length;
+        if (startLine > endLine) startLine = endLine;
+
+        // Extraire les lignes spécifiques
+        List<String> selectedLines = lines.sublist(startLine, endLine);
+
+        print(selectedLines.join('\n'));
+        return selectedLines.join('\n');
+      } else {
+        print(
+            'Fail to Send command, error : ' + response.statusCode.toString());
+        return 'nok';
+      }
+    } catch (e) {
+      print(e.toString());
+      return 'NOK';
+    }
   }
+
+  Future<bool> dlFileToTempDir(String path, String fileName) async {
+    Map<String, String> requestHeaders = {
+      "Access-Control-Allow-Headers": "*",
+      "Content-Type": "application/json",
+      "Accept": "*/*",
+      "Accept-Encoding": "gzip, deflate",
+      "Access-Control-Allow-Origin": "*",
+      "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+      "Connection": "keep-alive",
+    };
+
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_download?name=0:/$path/$fileName');
+
+    try {
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 50));
+
+      global.myEthernet_connection.isConnected = true;
+
+      if (response.statusCode == 200) {
+        // Obtenir le répertoire temporaire
+        Directory tempDir = await getTemporaryDirectory();
+        fileName = "job.g";
+        String tempPath = '${tempDir.path}/$fileName';
+
+        // Écrire le fichier téléchargé dans le répertoire temporaire
+        File tempFile = File(tempPath);
+        await tempFile.writeAsBytes(response.bodyBytes);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
+  // Future<int> getCurrentLine(String path, String fileName, int currentByte) async {
+
+  //   try {
+  //       // Obtenir le répertoire temporaire
+  //       Directory tempDir = await getTemporaryDirectory();
+  //       String tempPath = '${tempDir.path}/$fileName';
+
+  //       // Lire le fichier
+  //       List<String> lines = await tempFile.readAsLines();
+
+  //       // Obtenir le nombre total de lignes
+  //       int totalLines = lines.length;
+
+  //       // Obtenir la taille totale du fichier en octets
+  //       int totalBytes = response.contentLength ?? await tempFile.length();
+
+  //       // Calculer le pourcentage de progression
+  //       double percentage = currentByte / totalBytes;
+
+  //       // Calculer la ligne actuelle basée sur le pourcentage
+  //       int currentLine = (percentage * totalLines).round();
+
+  //       print(currentLine);
+  //       return currentLine;
+
+  //   } catch (e) {
+  //     print(e.toString());
+  //     return 0;
+  //   }
+  // }
 
   Future<MachineN02Config> downLoadNwcSettings() async {
     Map<String, String> requestHeaders = {
@@ -448,6 +577,38 @@ class API_Manager {
     }
   }
 
+  Future<PlacementOutil> downLoadToolSettings() async {
+    Map<String, String> requestHeaders = {
+      "Access-Control-Allow-Headers": "*",
+      "Content-Type": "application/json",
+      "Accept": "*/*",
+      "Accept-Encoding": "gzip, deflate",
+      "Access-Control-Allow-Origin": "*",
+      "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+      "Connection": "keep-alive",
+    };
+    var uri = Uri.parse(
+        'http://${global.MyMachineN02Config.IP}/rr_download?name=0:/sys/outil-settings.json');
+    try {
+      var response = await http
+          .get(uri, headers: requestHeaders)
+          .timeout(Duration(seconds: 1));
+      global.myEthernet_connection.isConnected = true;
+      if (response.statusCode == 200) {
+        final PlacementOutil Myconfig = returnedOutilFromJson(response.body);
+        //print(response.body);
+        return Myconfig;
+      } else {
+        print(
+            'Fail to Send commnand, error : ' + response.statusCode.toString());
+        return global.magasinOutil;
+      }
+    } catch (e) {
+      print(e.toString());
+      return global.magasinOutil;
+    }
+  }
+
   //Recupération données en BDD
   // Future getDataFromDB() async {
   //   try {
@@ -456,6 +617,35 @@ class API_Manager {
   //     var data = jsonDecode(response.body);
   //   } catch (e) {
   //     print(e.toString());
+  //   }
+  // }
+
+  // Future<void> writeToFile(String message) async {
+  //   try {
+  //     // Obtenir le répertoire local où le fichier sera stocké
+  //     final directory = await getApplicationDocumentsDirectory();
+  //     final path = '${directory.path}/logfile.txt';
+  //     final file = File(path);
+
+  //     // Vérifier si le fichier existe
+  //     if (!await file.exists()) {
+  //       await file.create();
+  //     }
+
+  //     // Obtenir la date et l'heure actuelles
+  //     final now = DateTime.now();
+  //     final formattedDate =
+  //         '${now.day}-${now.month}-${now.year} ${now.hour}:${now.minute}:${now.second}';
+
+  //     // Préparer le contenu à écrire
+  //     final content = '$formattedDate: $message\n';
+
+  //     // Écrire le contenu dans le fichier
+  //     await file.writeAsString(content, mode: FileMode.append);
+
+  //     print('Message écrit dans le fichier avec succès\n ${directory.path}');
+  //   } catch (e) {
+  //     print('Erreur lors de l\'écriture dans le fichier: $e');
   //   }
   // }
 
@@ -481,8 +671,6 @@ class API_Manager {
       if (response.statusCode == 200) {
         return 'ok';
       } else {
-        print(
-            'Fail to Send commnand, error : ' + response.statusCode.toString());
         return 'nok';
       }
     } catch (e) {

@@ -5,8 +5,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nweb/service/API/API_Manager.dart';
+import 'package:nweb/service/nwc-settings/magasinOutils.dart';
 import 'package:nweb/service/nwc-settings/position.dart';
 import 'package:nweb/service/nwc-settings/offset.dart';
+import 'package:nweb/service/outils.dart';
 
 import 'service/API/Ethernet_connection.dart';
 import 'service/ObjectModelManager.dart';
@@ -21,7 +23,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.8.3";
+String version = "Version 1.8.10";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -32,13 +34,16 @@ String globalTimeValue = "00:00:00";
 double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
 bool isJobStartedByUser = false; // Si le programme a bien été lancé par le User
 bool popupEstAffiche = false;
-bool popupCaisson = false;
+bool popUpCaissonIsShown = false;
 bool isRestarting = false;
 double compensation = 0; // BabyStep Z
 double sliderValueSpeedFactor = 0;
 bool isJobPausedByUser =
     false; // Si le programme a bien été mis en pause par le User
 bool isErrorDriver = false;
+List<String> commandHistory = []; // Historique cmd gcode
+int maxLineOfProg = 0;
+var selectedGcodeFileIndex = 0;
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
 ObjectModelMove objectModelMove = ObjectModelMove();
@@ -47,6 +52,49 @@ ObjectModelJob objectModelJob = ObjectModelJob();
 enum MachineMode { cnc, fff, laser, unknow }
 
 MachineMode machineMode = MachineMode.unknow;
+
+PlacementOutil magasinOutil = PlacementOutil(outil: [
+  Outil(
+    coordX: 122.0,
+    coordY: 144.0,
+    coordZ: 180.0,
+    name: "Outil1",
+    diametre: 2,
+    hauteur: 2,
+  ),
+  Outil(
+    coordX: 122.0,
+    coordY: 144.0,
+    coordZ: 180.0,
+    name: "Outil2",
+    diametre: 2,
+    hauteur: 2,
+  ),
+  Outil(
+    coordX: 122.0,
+    coordY: 144.0,
+    coordZ: 180.0,
+    name: "Outil3",
+    diametre: 2,
+    hauteur: 2,
+  ),
+  Outil(
+    coordX: 122.0,
+    coordY: 144.0,
+    coordZ: 180.0,
+    name: "Outil4",
+    diametre: 2,
+    hauteur: 2,
+  ),
+  Outil(
+    coordX: 122.0,
+    coordY: 144.0,
+    coordZ: 180.0,
+    name: "Outil5",
+    diametre: 2,
+    hauteur: 2,
+  ),
+]);
 
 MachineN02Config MyMachineN02Config = MachineN02Config(
     Palpeur: PalpeurOutil(PosX: 0, PosY: 630, Height: 33),
@@ -65,11 +113,15 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
     HasHeatBed: 0,
     HasFanOnEnclosure: 0,
     HasLedOnEnclosure: 0,
+    HasACT: 0,
     VitesseBroche: 24000,
     VitesseDefaut: 6400,
     Offset: [
       Offsets(Name: "Offset 3D", DecalX: 1, DecalY: 2, DecalZ: 3),
       Offsets(Name: "Offset Laser", DecalX: 4, DecalY: 5, DecalZ: 6),
+    ],
+    MagasinOutil: [
+      MagasinOutils(CoordX: 125, CoordY: 125, CoordZ: 189, Ecartement: 60),
     ]);
 
 MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
@@ -89,11 +141,15 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     HasHeatBed: 1,
     HasFanOnEnclosure: 1,
     HasLedOnEnclosure: 1,
+    HasACT: 1,
     VitesseBroche: 24000,
     VitesseDefaut: 6400,
     Offset: [
       Offsets(Name: "Offset 3D", DecalX: 1, DecalY: 2, DecalZ: 3),
       Offsets(Name: "Offset Laser", DecalX: 4, DecalY: 5, DecalZ: 6),
+    ],
+    MagasinOutil: [
+      MagasinOutils(CoordX: 125, CoordY: 125, CoordZ: 189, Ecartement: 60),
     ]);
 
 Ethernet_Connection myEthernet_connection = Ethernet_Connection();
@@ -125,6 +181,8 @@ StreamController<List<String>> controllerContentGcodeToDisplay =
     StreamController<List<String>>.broadcast();
 Stream streamcontrollerContentGcodeToDisplay =
     controllerContentGcodeToDisplay.stream;
+
+ValueNotifier<int> cursorPosition = ValueNotifier<int>(0);
 
 Timer? timer;
 bool timerStarted = false;
@@ -192,58 +250,71 @@ void checkAndShowDialog(context) async {
 }
 
 void checkCaissonOpen(BuildContext context) {
-  popupCaisson = false;
+  popUpCaissonIsShown = false;
   Timer.periodic(const Duration(milliseconds: 600), (timer) {
-    print("2check");
-    if ((machineObjectModel.result?.sensors?.gpIn?[10]?.value ?? 1) == 0) {
-      print('InCondition');
-      if (popupCaisson == false) {
-        print("PoPUp");
-        popupCaisson = true;
-        if ((machineObjectModel.result?.state?.status
-                    ?.toString()
-                    .contains("idle") ??
-                false) ||
-            (machineObjectModel.result?.state?.status
-                    ?.toString()
-                    .contains("processing") ??
-                false) ||
-            (machineObjectModel.result?.state?.status
-                    ?.toString()
-                    .contains("pausing") ??
-                false) ||
-            (machineObjectModel.result?.state?.status
-                    ?.toString()
-                    .contains("paused") ??
-                false)) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text(
-                  "La porte du caisson s'est ouverte !",
-                  style: TextStyle(color: Colors.black),
-                ),
-                actions: <Widget>[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      textStyle: const TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () {
-                      popupCaisson = false;
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      "Fermer",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                ],
-              );
-            },
-          );
+    if (AdminLogged == false) {
+      if ((machineObjectModel.result?.sensors?.gpIn?[10]?.value ?? 1) == 0) {
+        if (popUpCaissonIsShown == false) {
+          popUpCaissonIsShown = true;
+          if ((machineObjectModel.result?.state?.status
+                      ?.toString()
+                      .contains("idle") ??
+                  false) ||
+              (machineObjectModel.result?.state?.status
+                      ?.toString()
+                      .contains("processing") ??
+                  false) ||
+              (machineObjectModel.result?.state?.status
+                      ?.toString()
+                      .contains("pausing") ??
+                  false) ||
+              (machineObjectModel.result?.state?.status
+                      ?.toString()
+                      .contains("paused") ??
+                  false) ||
+              (machineObjectModel.result?.state?.status
+                      ?.toString()
+                      .contains("busy") ??
+                  false)) {
+            ((machineObjectModel.result?.state?.status
+                            ?.toString()
+                            .contains("idle") ??
+                        false) ||
+                    (machineObjectModel.result?.state?.status
+                            ?.toString()
+                            .contains("busy") ??
+                        false))
+                ? API_Manager().sendGcodeCommand("M5 PO")
+                : null;
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text(
+                    "La porte du caisson s'est ouverte !",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  actions: <Widget>[
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        textStyle: const TextStyle(color: Colors.white),
+                      ),
+                      onPressed: () {
+                        popUpCaissonIsShown = false;
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        "Fermer",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                  ],
+                );
+              },
+            );
+          }
         }
       }
     }

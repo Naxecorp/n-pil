@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Naxe Pilotage"
-#define MyAppVersion "1.8.3"
+#define MyAppVersion "1.8.10"
 #define MyAppPublisher "Naxe"
 #define MyAppURL "https://www.naxe.fr/"
 #define MyAppExeName "nweb.exe"
@@ -38,6 +38,7 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "acceptcgu"; Description: "J'accepte les Conditions Générales d'Utilisation"; Flags: unchecked
 
 [Files]
 Source: "C:\Users\Eleve\Documents\Naxe\Flutter\nweb\build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
@@ -62,3 +63,21 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
+[Code]
+var
+  CGUAccepted: Boolean;
+
+procedure InitializeWizard();
+begin
+  CGUAccepted := False;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  Result := True;
+  if (CurPageID = wpSelectTasks) and (not IsTaskSelected('acceptcgu')) then
+  begin
+    MsgBox('Vous devez accepter les Conditions Générales d''Utilisation pour continuer.', mbError, mb_OK);
+    Result := False;
+  end;
+end;

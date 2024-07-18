@@ -114,7 +114,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Icon(
-                                        Icons.home_filled,
+                                        Icons.home_rounded,
                                         color: global
                                                     .machineObjectModel
                                                     .result
@@ -176,7 +176,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Icon(
-                                        Icons.home_filled,
+                                        Icons.home_rounded,
                                         color: global
                                                     .machineObjectModel
                                                     .result
@@ -239,7 +239,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Icon(
-                                        Icons.home_filled,
+                                        Icons.home_rounded,
                                         color: global
                                                     .machineObjectModel
                                                     .result

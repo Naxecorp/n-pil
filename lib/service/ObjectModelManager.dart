@@ -644,7 +644,7 @@ class StateClass {
   });
 
   num? currentTool;
-  List<dynamic>? gpOut;
+  List<GpOut?>? gpOut;
   dynamic laserPwm;
   num? msUpTime;
   String? status;
@@ -652,25 +652,48 @@ class StateClass {
   num? upTime;
 
   factory StateClass.fromJson(Map<String, dynamic> json) => StateClass(
-        currentTool: json["currentTool"],
+        currentTool: (json["currentTool"] as num?)?.toDouble(),
         gpOut: json["gpOut"] == null
             ? []
-            : List<dynamic>.from(json["gpOut"]!.map((x) => x)),
+            : List<GpOut?>.from(
+                json["gpOut"]!.map((x) => x == null ? null : GpOut.fromMap(x))),
         laserPwm: json["laserPwm"],
-        msUpTime: json["msUpTime"],
+        msUpTime: (json["msUpTime"] as num?)?.toDouble(),
         status: json["status"],
         time: json["time"] == null ? null : DateTime.parse(json["time"]),
-        upTime: json["upTime"],
+        upTime: (json["upTime"] as num?)?.toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
         "currentTool": currentTool,
-        "gpOut": gpOut == null ? [] : List<dynamic>.from(gpOut!.map((x) => x)),
+        "gpOut": gpOut == null
+            ? []
+            : List<dynamic>.from(gpOut!.map((x) => x?.toMap())),
         "laserPwm": laserPwm,
         "msUpTime": msUpTime,
         "status": status,
         "time": time?.toIso8601String(),
         "upTime": upTime,
+      };
+}
+
+class GpOut {
+  double? pwm;
+
+  GpOut({
+    this.pwm,
+  });
+
+  factory GpOut.fromJson(String str) => GpOut.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
+  factory GpOut.fromMap(Map<String, dynamic> json) => GpOut(
+        pwm: (json["pwm"] as num?)?.toDouble(),
+      );
+
+  Map<String, dynamic> toMap() => {
+        "pwm": pwm,
       };
 }
 

@@ -11,6 +11,7 @@ import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:nweb/service/outils.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -214,34 +215,57 @@ class AdminScreenState extends State<AdminScreen>
                 child: Container(
                     child: Image(image: AssetImage("assets/iconnaxe.png")))),
             Flexible(
-                flex: 10,
-                child: Container(
-                    child: Row(
+              flex: 10,
+              child: Container(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Spacer(),
                     SizedBox(
                       width: 300,
-                      //margin: EdgeInsets.all(40),
-                      child: TextField(
-                        controller: ManualGcodeComand,
-                        decoration: InputDecoration(
-                          hintText: "Gcode",
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(),
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                            gapPadding: 5.0,
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TextField(
+                            controller: ManualGcodeComand,
+                            decoration: InputDecoration(
+                              hintText: "Gcode",
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                                gapPadding: 5.0,
+                              ),
+                            ),
+                            onSubmitted: (Commande) {
+                              setState(() {
+                                global.commandHistory.add(Commande);
+                                ManualGcodeComand.clear();
+                                API_Manager().sendGcodeCommand(Commande).then(
+                                    (value) => API_Manager().sendrr_reply());
+                              });
+                              print(Commande);
+                            },
                           ),
-                        ),
-                        onSubmitted: (Commande) {
-                          setState(() {
-                            ManualGcodeComand.clear();
-                            API_Manager()
-                                .sendGcodeCommand(Commande)
-                                .then((value) => API_Manager().sendrr_reply());
-                          });
-                          print(Commande);
-                        },
+                          PopupMenuButton<String>(
+                            tooltip: "Historique",
+                            icon: Icon(Icons.arrow_drop_down),
+                            onSelected: (String value) {
+                              setState(() {
+                                ManualGcodeComand.text = value;
+                              });
+                            },
+                            itemBuilder: (BuildContext context) {
+                              return global.commandHistory
+                                  .map<PopupMenuItem<String>>((String value) {
+                                return PopupMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList();
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     Spacer(),
@@ -250,7 +274,9 @@ class AdminScreenState extends State<AdminScreen>
                       style: TextStyle(color: Color(0xFF707585)),
                     ),
                   ],
-                ))),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -482,6 +508,9 @@ class AdminScreenState extends State<AdminScreen>
                         child: ListView.builder(
                           itemCount: ListofSysFile?.length,
                           itemBuilder: (BuildContext context, int index) {
+                            ListofSysFile?.sort(
+                                (a, b) => a!.name!.compareTo(b!.name!));
+
                             return Card(
                               elevation: 4,
                               child: ListTile(
@@ -532,242 +561,389 @@ class AdminScreenState extends State<AdminScreen>
                 ),
               )),
           Flexible(
-              flex: 40,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Flexible(
-                    flex: 80,
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 5),
-                      height: double.infinity,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black26, width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: ListView.builder(
-                        itemCount: global.ReplyListFiFo.items.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Card(
-                            elevation: 4,
-                            child: ListTile(
-                              tileColor: global.ReplyListFiFo.items
-                                      .elementAt(index)
-                                      .contains("Error")
-                                  ? Colors.redAccent
-                                  : global.ReplyListFiFo.items
-                                          .elementAt(index)
-                                          .contains("Warning")
-                                      ? Colors.yellowAccent
-                                      : Colors.white,
-                              leading: Icon(
-                                Icons.arrow_right,
-                                color: Colors.blue,
-                              ),
-                              title: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+            flex: 40,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Flexible(
+                  flex: 80,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    height: double.infinity,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.black26, width: 1),
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ListView.builder(
+                      itemCount: global.ReplyListFiFo.items.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+                          elevation: 4,
+                          child: ListTile(
+                            tileColor: global.ReplyListFiFo.items
+                                    .elementAt(index)
+                                    .contains("Error")
+                                ? Colors.redAccent
+                                : global.ReplyListFiFo.items
+                                        .elementAt(index)
+                                        .contains("Warning")
+                                    ? Colors.yellowAccent
+                                    : Colors.white,
+                            leading: Icon(
+                              Icons.arrow_right,
+                              color: Colors.blue,
+                            ),
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: Container(
+                                    width: 400,
+                                    child: Text(
+                                      overflow: TextOverflow.visible,
+                                      global.ReplyListFiFo.items
+                                          .elementAt(index),
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 7,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (global.AdminLogged) {
+                            setState(() {
+                              global.ReplyListFiFo.items.clear();
+                            });
+                          } else
+                            null;
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: const Text(
+                          "clear",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (global.AdminLogged) {
+                            setState(() {
+                              global.AdminLogged = false;
+                              global.Title = global.DefaultTitle;
+                              Navigator.pushNamed(context, '/admin');
+                            });
+                          } else
+                            null;
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: const Text(
+                          "Logout",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (global.AdminLogged) {
+                            await API_Manager()
+                                .downLoadAFile(
+                                    'sys',
+                                    ListofSysFile!
+                                        .elementAt(selectedFileIndex)!
+                                        .name
+                                        .toString())
+                                .then((value) =>
+                                    global.ContentofFileToEdit = value);
+                            Navigator.pushNamed(context, '/editor');
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: Text(
+                          "Visualiser",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (global.AdminLogged) {
+                            await API_Manager()
+                                .sendGcodeCommand('M98 P"config.g"')
+                                .then((_) {
+                              Timer(const Duration(seconds: 3), () {
+                                Timer.periodic(
+                                    const Duration(milliseconds: 200), (timer) {
+                                  API_Manager().sendrr_reply();
+                                });
+                              });
+                            });
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: const Text(
+                          "Run config.g",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (global.AdminLogged) {
+                            API_Manager().upLoadAFile(
+                                "0:/sys/nwc-settings.json",
+                                global.MyMachineN02ConfigDeflaut.toJson()
+                                    .length
+                                    .toString(),
+                                Uint8List.fromList(machineN02ConfigToJson(
+                                        global.MyMachineN02ConfigDeflaut)
+                                    .codeUnits));
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: const Text(
+                          "Load Default Config",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (global.AdminLogged) {
+                            API_Manager().upLoadAFile(
+                              "0:/sys/outil-settings.json",
+                              global.magasinOutil.toJson().length.toString(),
+                              Uint8List.fromList(
+                                  outilToJson(global.magasinOutil).codeUnits),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: Text(
+                          "Load Tool",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      ElevatedButton(
+                        // Boutton qui execute les fichiers macro GCode
+                        onPressed: () async {
+                          if (global.AdminLogged) {
+                            await API_Manager().sendGcodeCommand(
+                                "M905 P${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} S${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}");
+                            API_Manager()
+                                .sendGcodeCommand(
+                                    'M98 P"${global.ListofSysFile?.elementAt(global.selectedFileSysIndex)?.name}"')
+                                .then((value) => API_Manager().sendrr_reply());
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: Text(
+                          "Execute macro",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Flexible(
+                  flex: 7,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Status Pin In :',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                        ),
+                      ),
+                      const SizedBox(
+                          width: 8.0), // Espace entre le texte et les cercles
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: (global.machineObjectModel.result?.sensors
+                                  ?.gpIn?.length ??
+                              0),
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            var value = global.machineObjectModel.result
+                                ?.sensors?.gpIn?[index];
+
+                            Color color;
+                            if (value == null) {
+                              color = Colors.grey;
+                            } else if (value.value == 1) {
+                              color = Colors.green;
+                            } else if (value.value == 0) {
+                              color = Colors.blue;
+                            } else {
+                              color = Colors.grey;
+                            }
+
+                            return Container(
+                              margin: const EdgeInsets.all(4.0),
+                              child: Stack(
+                                alignment: Alignment.center,
                                 children: [
-                                  FittedBox(
-                                    fit: BoxFit.contain,
-                                    child: Container(
-                                      width: 400,
-                                      child: Text(
-                                        overflow: TextOverflow.visible,
-                                        global.ReplyListFiFo.items
-                                            .elementAt(index),
-                                        style: TextStyle(color: Colors.black),
-                                      ),
+                                  Icon(
+                                    Icons.circle,
+                                    color: color,
+                                    size: 24.0,
+                                  ),
+                                  Text(
+                                    '${index}', // Pour afficher 1 au lieu de 0
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  Flexible(
-                      flex: 7,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              if (global.AdminLogged) {
-                                setState(() {
-                                  global.ReplyListFiFo.items.clear();
-                                });
-                              } else
-                                null;
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
+                ),
+                Flexible(
+                  flex: 7,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Status Pin Out :',
+                        style: TextStyle(
+                          fontSize: 13.0,
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: (global.machineObjectModel.result?.state
+                                  ?.gpOut?.length ??
+                              0),
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            var value = global.machineObjectModel.result?.state
+                                ?.gpOut?[index];
+
+                            Color color;
+                            if (value == null) {
+                              color = Colors.grey;
+                            } else if (value.pwm == 1) {
+                              color = Colors.green;
+                            } else if (value.pwm == 0) {
+                              color = Colors.blue;
+                            } else {
+                              color = Colors.grey;
+                            }
+
+                            return Container(
+                              margin: const EdgeInsets.all(4.0),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.circle,
+                                    color: color,
+                                    size: 24.0,
+                                  ),
+                                  Text(
+                                    '${index}', // Pour afficher 1 au lieu de 0
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            child: Text(
-                              "clear",
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (global.AdminLogged) {
-                                setState(() {
-                                  global.AdminLogged = false;
-                                  global.Title = global.DefaultTitle;
-                                  Navigator.pushNamed(context, '/admin');
-                                });
-                              } else
-                                null;
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                            ),
-                            child: Text(
-                              "Logout",
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (global.AdminLogged) {
-                                await API_Manager()
-                                    .downLoadAFile(
-                                        'sys',
-                                        ListofSysFile!
-                                            .elementAt(selectedFileIndex)!
-                                            .name
-                                            .toString())
-                                    .then((value) =>
-                                        global.ContentofFileToEdit = value);
-                                Navigator.pushNamed(context, '/editor');
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                            ),
-                            child: Text(
-                              "Visualiser",
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (global.AdminLogged) {
-                                await API_Manager()
-                                    .sendGcodeCommand('M98 P"config.g"')
-                                    .then((_) {
-                                  Timer(const Duration(seconds: 3), () {
-                                    Timer.periodic(
-                                        const Duration(milliseconds: 200),
-                                        (timer) {
-                                      API_Manager().sendrr_reply();
-                                    });
-                                  });
-                                });
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                            ),
-                            child: Text(
-                              "Run config.g",
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (global.AdminLogged) {
-                                API_Manager().upLoadAFile(
-                                    "0:/sys/nwc-settings.json",
-                                    global.MyMachineN02ConfigDeflaut.toJson()
-                                        .length
-                                        .toString(),
-                                    Uint8List.fromList(machineN02ConfigToJson(
-                                            global.MyMachineN02ConfigDeflaut)
-                                        .codeUnits));
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                            ),
-                            child: Text(
-                              "Load Default Config",
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          ElevatedButton(
-                            // Boutton qui execute les fichiers macro GCode
-                            onPressed: () async {
-                              if (global.AdminLogged) {
-                                await API_Manager().sendGcodeCommand(
-                                    "M905 P${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} S${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}");
-                                API_Manager()
-                                    .sendGcodeCommand(
-                                        'M98 P"${global.ListofSysFile?.elementAt(global.selectedFileSysIndex)?.name}"')
-                                    .then((value) =>
-                                        API_Manager().sendrr_reply());
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                            ),
-                            child: Text(
-                              "Execute macro",
-                              style: TextStyle(color: Colors.white),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      )),
-                  Flexible(
-                      flex: 2,
-                      child: SizedBox(
-                        height: 10,
-                      ))
-                ],
-              )),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Flexible(
+                  flex: 2,
+                  child: SizedBox(
+                    height: 10,
+                  ),
+                )
+              ],
+            ),
+          ),
           Flexible(flex: 5, child: Container()),
         ],
       ),

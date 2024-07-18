@@ -28,6 +28,7 @@ class ParametreScreenState extends State<ParametreScreen> {
   bool _hasHeatbed = global.MyMachineN02Config.HasHeatBed == 1;
   bool _hasFanOnEnclosure = global.MyMachineN02Config.HasFanOnEnclosure == 1;
   bool _hasLedOnEnclosure = global.MyMachineN02Config.HasLedOnEnclosure == 1;
+  bool _hasACT = global.MyMachineN02Config.HasACT == 1;
 
   // Fonction pour noter la date
   static String formatDuration(Duration d) {
@@ -67,13 +68,18 @@ class ParametreScreenState extends State<ParametreScreen> {
     });
   }
 
-  void saveConfig() {
+  void saveConfig() async {
     global.MyMachineN02Config.Lastmodifition = DateTime.now().toString();
-    API_Manager().upLoadAFile(
+    await API_Manager().upLoadAFile(
         "0:/sys/nwc-settings.json",
         global.MyMachineN02Config.toJson().length.toString(),
         Uint8List.fromList(
             machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
+    String content =
+        '; coordToolShop\nset global.CoordToolShopX = ${global.MyMachineN02Config.MagasinOutil?[0].CoordX ?? 0}\nset global.CoordToolShopY = ${global.MyMachineN02Config.MagasinOutil?[0].CoordY ?? 0}\nset global.CoordToolShopZ = ${global.MyMachineN02Config.MagasinOutil?[0].CoordZ ?? 188.66}\nset global.EcartementToolShop = ${global.MyMachineN02Config.MagasinOutil?[0].Ecartement ?? 60}\necho "CoordToolShop is modified"';
+    await API_Manager().upLoadAFile("0:/sys/coordToolShop.g",
+        content.length.toString(), Uint8List.fromList(utf8.encode(content)));
+    await API_Manager().sendGcodeCommand('M98 P"CoordToolShop.g"');
     print(machineN02ConfigToJson(global.MyMachineN02Config));
   }
 
@@ -115,34 +121,55 @@ class ParametreScreenState extends State<ParametreScreen> {
                     Spacer(),
                     SizedBox(
                       width: 300,
-                      //margin: EdgeInsets.all(40),
-                      child: TextField(
-                        controller: ManualGcodeComand,
-                        decoration: InputDecoration(
-                          hintText: "Gcode",
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(),
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                            gapPadding: 5.0,
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TextField(
+                            controller: ManualGcodeComand,
+                            decoration: InputDecoration(
+                              hintText: "Gcode",
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                                gapPadding: 5.0,
+                              ),
+                            ),
+                            onSubmitted: (Commande) {
+                              setState(() {
+                                global.commandHistory.add(Commande);
+                                ManualGcodeComand.clear();
+                                API_Manager().sendGcodeCommand(Commande).then(
+                                    (value) => API_Manager().sendrr_reply());
+                              });
+                              print(Commande);
+                            },
                           ),
-                        ),
-                        onSubmitted: (Commande) {
-                          setState(() {
-                            ManualGcodeComand.clear();
-                            API_Manager()
-                                .sendGcodeCommand(Commande)
-                                .then((value) => API_Manager().sendrr_reply());
-                          });
-                          print(Commande);
-                        },
+                          PopupMenuButton<String>(
+                            tooltip: "Historique",
+                            icon: Icon(Icons.arrow_drop_down),
+                            onSelected: (String value) {
+                              setState(() {
+                                ManualGcodeComand.text = value;
+                              });
+                            },
+                            itemBuilder: (BuildContext context) {
+                              return global.commandHistory
+                                  .map<PopupMenuItem<String>>((String value) {
+                                return PopupMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList();
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     Spacer(),
                     Text(
                       global.Title,
-                      style: TextStyle(
-                        color: Color(0xFF707585),
-                      ),
+                      style: TextStyle(color: Color(0xFF707585)),
                     ),
                   ],
                 ),
@@ -596,19 +623,248 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       }))
                                 ],
                               ),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
+                                    width: 200,
+                                    child: const Text(
+                                      'Changeur d\'outil automatique (ACT) ',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Switch(
+                                      value: _hasACT,
+                                      thumbIcon: thumbIcon,
+                                      activeColor: Color(0xFF20917F),
+                                      inactiveThumbColor:
+                                          Color.fromARGB(255, 15, 19, 18),
+                                      inactiveTrackColor:
+                                          Color.fromARGB(255, 237, 237, 237),
+                                      onChanged: ((value) {
+                                        setState(() {
+                                          _hasACT = value;
+                                          if (_hasACT)
+                                            global.MyMachineN02Config.HasACT =
+                                                1;
+                                          else
+                                            global.MyMachineN02Config.HasACT =
+                                                0;
+                                        });
+                                      }))
+                                ],
+                              ),
                             ],
                           ),
                         ),
                       )),
                   Flexible(
-                      flex: 1,
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Window(
-                          title1: "Paramêtres",
-                          title2: " avancés",
+                    flex: 1,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Window(
+                        title1: "Paramêtres",
+                        title2: " avancés",
+                        child: ListView(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 200,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 10),
+                                  margin: const EdgeInsets.only(right: 15.0),
+                                  child: const Text(
+                                    'Coordonnées X du magasin :',
+                                    style: TextStyle(
+                                      color: Colors.black26,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.05,
+                                  child: TextFormField(
+                                    textAlign: TextAlign.end,
+                                    enabled: global.AdminLogged == true
+                                        ? true
+                                        : false,
+                                    initialValue: global.MyMachineN02Config
+                                            .MagasinOutil![0].CoordX
+                                            ?.toString() ??
+                                        "0",
+                                    onChanged: (text) {
+                                      global.MyMachineN02Config.MagasinOutil?[0]
+                                          .CoordX = double.tryParse(text)!;
+                                    },
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
+                                        gapPadding: 5.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 200,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 10),
+                                  margin: const EdgeInsets.only(right: 15.0),
+                                  child: const Text(
+                                    'Coordonnées Y du magasin :',
+                                    style: TextStyle(
+                                      color: Colors.black26,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.05,
+                                  child: TextFormField(
+                                    textAlign: TextAlign.end,
+                                    enabled: global.AdminLogged == true
+                                        ? true
+                                        : false,
+                                    initialValue: global.MyMachineN02Config
+                                            .MagasinOutil![0].CoordY
+                                            ?.toString() ??
+                                        "0",
+                                    onChanged: (text) {
+                                      global.MyMachineN02Config.MagasinOutil?[0]
+                                          .CoordY = double.tryParse(text)!;
+                                    },
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
+                                        gapPadding: 5.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 200,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 10),
+                                  margin: const EdgeInsets.only(right: 15.0),
+                                  child: const Text(
+                                    'Coordonnées Z du magasin :',
+                                    style: TextStyle(
+                                      color: Colors.black26,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.05,
+                                  child: TextFormField(
+                                    textAlign: TextAlign.end,
+                                    enabled: global.AdminLogged == true
+                                        ? true
+                                        : false,
+                                    initialValue: global.MyMachineN02Config
+                                            .MagasinOutil![0].CoordZ
+                                            ?.toString() ??
+                                        "0",
+                                    onChanged: (text) {
+                                      global.MyMachineN02Config.MagasinOutil?[0]
+                                          .CoordZ = double.tryParse(text)!;
+                                    },
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
+                                        gapPadding: 5.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 200,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 10),
+                                  margin: const EdgeInsets.only(right: 15.0),
+                                  child: const Text(
+                                    'Espace entre chaque outil :',
+                                    style: TextStyle(
+                                      color: Colors.black26,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.05,
+                                  child: TextFormField(
+                                    textAlign: TextAlign.end,
+                                    enabled: global.AdminLogged == true
+                                        ? true
+                                        : false,
+                                    initialValue: global.MyMachineN02Config
+                                            .MagasinOutil![0].Ecartement
+                                            ?.toString() ??
+                                        "0",
+                                    onChanged: (text) {
+                                      global.MyMachineN02Config.MagasinOutil?[0]
+                                          .Ecartement = double.tryParse(text)!;
+                                    },
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
+                                        gapPadding: 5.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.05,
+                                  child: const Text(
+                                    " mm",
+                                    style: TextStyle(
+                                      color: Colors.black26,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      )),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

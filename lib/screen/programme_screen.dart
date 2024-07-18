@@ -85,7 +85,6 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     super.dispose();
   }
 
-  var selectedGcodeFileIndex = 0;
   String filename = "";
 
   bool containsSpecialCharacters(String text) {
@@ -102,12 +101,61 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
       isLoading = false;
       return;
     }
-    //Uint8List? fileBytes = result.files.first.bytes;
+
     setState(() {
       isLoading = true;
     });
 
     filename = result.files.first.name.toString();
+    Uint8List? fileBytes = result.files.first.bytes;
+
+    if (fileBytes != null && utf8.decode(fileBytes).contains('G92')) {
+      // Afficher le PopUp si "G92" est trouvé
+      isLoading = false;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Fichier corrompu'),
+            content: RichText(
+              text: TextSpan(
+                style: const TextStyle(fontSize: 14, color: Colors.black),
+                children: [
+                  const TextSpan(text: 'Votre fichier contient la commande '),
+                  const TextSpan(
+                    text: 'G92',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const TextSpan(
+                      text:
+                          '\nCette commande n\'est pas acceptée par la machine !'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  icon: const Icon(Icons.check),
+                  label: const Text(
+                    "Ok",
+                    style: TextStyle(color: Colors.white),
+                  ))
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     if (!containsSpecialCharacters(filename)) {
       print(result.files.first.bytes);
       API_Manager()
@@ -129,8 +177,8 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
         builder: (context) {
           return AlertDialog(
             title: Text('Erreur'),
-            content:
-                Text('Le nom de fichier contient des caractères spéciaux.'),
+            content: const Text(
+                'Le nom de fichier contient des caractères spéciaux.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -152,7 +200,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
         return AlertDialog(
           title: const Text("Êtes vous sûr ?"),
           content: Text(
-              "Programme sélectionné : ${(ListofGcodeFile!.elementAt(selectedGcodeFileIndex)!.name.toString())}"),
+              "Programme sélectionné : ${(ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString())}"),
           actions: <Widget>[
             ElevatedButton(
               child: Text("Non"),
@@ -171,13 +219,13 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                   await API_Manager().sendGcodeCommand("G10 L20 P1");
                   await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
                       ListofGcodeFile!
-                          .elementAt(selectedGcodeFileIndex)!
+                          .elementAt(global.selectedGcodeFileIndex)!
                           .name
                           .toString() +
                       '"');
                   await API_Manager().sendGcodeCommand('M106 P3 S255');
                   progName = ListofGcodeFile!
-                      .elementAt(selectedGcodeFileIndex)!
+                      .elementAt(global.selectedGcodeFileIndex)!
                       .name
                       .toString();
                   await API_Manager()
@@ -195,15 +243,21 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                 global.isJobStartedByUser = true;
                 await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
                     ListofGcodeFile!
-                        .elementAt(selectedGcodeFileIndex)!
+                        .elementAt(global.selectedGcodeFileIndex)!
                         .name
                         .toString() +
                     '"');
                 await API_Manager().sendGcodeCommand('M106 P3 S255');
                 progName = ListofGcodeFile!
-                    .elementAt(selectedGcodeFileIndex)!
+                    .elementAt(global.selectedGcodeFileIndex)!
                     .name
                     .toString();
+                await API_Manager().dlFileToTempDir(
+                    "gcodes",
+                    ListofGcodeFile!
+                        .elementAt(global.selectedGcodeFileIndex)!
+                        .name
+                        .toString());
                 await API_Manager()
                     .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD",
                         "Start prog ${progName}")
@@ -250,29 +304,52 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                     Spacer(),
                     SizedBox(
                       width: 300,
-                      //margin: EdgeInsets.all(40),
-                      child: TextField(
-                        controller: ManualGcodeComand,
-                        decoration: InputDecoration(
-                          hintText: "Gcode",
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(),
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                            gapPadding: 5.0,
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TextField(
+                            controller: ManualGcodeComand,
+                            decoration: InputDecoration(
+                              hintText: "Gcode",
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                                gapPadding: 5.0,
+                              ),
+                            ),
+                            onSubmitted: (Commande) {
+                              setState(() {
+                                global.commandHistory.add(Commande);
+                                ManualGcodeComand.clear();
+                                API_Manager().sendGcodeCommand(Commande).then(
+                                    (value) => API_Manager().sendrr_reply());
+                              });
+                              print(Commande);
+                            },
                           ),
-                        ),
-                        onSubmitted: (Commande) {
-                          setState(() {
-                            ManualGcodeComand.clear();
-                            API_Manager()
-                                .sendGcodeCommand(Commande)
-                                .then((value) => API_Manager().sendrr_reply());
-                          });
-                          print(Commande);
-                        },
+                          PopupMenuButton<String>(
+                            tooltip: "Historique",
+                            icon: Icon(Icons.arrow_drop_down),
+                            onSelected: (String value) {
+                              setState(() {
+                                ManualGcodeComand.text = value;
+                              });
+                            },
+                            itemBuilder: (BuildContext context) {
+                              return global.commandHistory
+                                  .map<PopupMenuItem<String>>((String value) {
+                                return PopupMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList();
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                    const Spacer(),
+                    Spacer(),
                     Text(
                       global.Title,
                       style: TextStyle(color: Color(0xFF707585)),
@@ -378,7 +455,8 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                 .downLoadAFile(
                                     "gcodes",
                                     ListofGcodeFile!
-                                        .elementAt(selectedGcodeFileIndex)!
+                                        .elementAt(
+                                            global.selectedGcodeFileIndex)!
                                         .name
                                         .toString());
                             //print(FileContent);
@@ -409,13 +487,14 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                           ),
                           onPressed: () {
                             print(ListofGcodeFile?.elementAt(
-                                    selectedGcodeFileIndex)
+                                    global.selectedGcodeFileIndex)
                                 ?.name
                                 .toString());
                             API_Manager()
                                 .deleteAFile(
                                     ListofGcodeFile!
-                                        .elementAt(selectedGcodeFileIndex)!
+                                        .elementAt(
+                                            global.selectedGcodeFileIndex)!
                                         .name
                                         .toString(),
                                     "gcodes")
@@ -470,16 +549,19 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                         child: ListView.builder(
                           itemCount: ListofGcodeFile?.length,
                           itemBuilder: (BuildContext context, int index) {
+                            ListofGcodeFile?.sort(
+                                (a, b) => a!.name!.compareTo(b!.name!));
                             return Card(
                               elevation: 4,
                               child: ListTile(
                                 tileColor: Colors.white,
                                 selectedColor: Colors.orange,
                                 selectedTileColor: Colors.black26,
-                                selected: index == selectedGcodeFileIndex,
+                                selected:
+                                    index == global.selectedGcodeFileIndex,
                                 onTap: () {
                                   setState(() {
-                                    selectedGcodeFileIndex = index;
+                                    global.selectedGcodeFileIndex = index;
                                   });
                                   //return _onAnyTap!();
                                 },
@@ -560,15 +642,19 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                               ),
                             ),
                             onPressed: () async {
+                              // print(ListofGcodeFile!
+                              //     .elementAt(global.selectedGcodeFileIndex)!
+                              //     .size!);
                               if (ListofGcodeFile!
-                                      .elementAt(selectedGcodeFileIndex)!
+                                      .elementAt(global.selectedGcodeFileIndex)!
                                       .size! <
                                   3000000) {
                                 LoadedFileContentString = await API_Manager()
                                     .downLoadAFile(
                                         "gcodes",
                                         ListofGcodeFile!
-                                            .elementAt(selectedGcodeFileIndex)!
+                                            .elementAt(
+                                                global.selectedGcodeFileIndex)!
                                             .name
                                             .toString());
                                 List<String> _LoadedFileContent =
@@ -589,6 +675,316 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                           const Spacer(),
                           ElevatedButton.icon(
                             label: const Text(
+                              "Simulation",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            icon: const Icon(
+                              Icons.visibility_outlined,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            onPressed: global.machineObjectModel.result?.state
+                                        ?.status ==
+                                    "idle"
+                                ? () async {
+                                    API_Manager()
+                                        .sendGcodeCommand(
+                                            'M98 P"simulation.g" F"${ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString()}"')
+                                        .then((value2) {
+                                      Timer.periodic(Duration(seconds: 2),
+                                          (timer) {
+                                        API_Manager()
+                                            .sendrr_reply()
+                                            .then((value) {
+                                          if (value.length > 1) {
+                                            global.ReplyListFiFo.addItem(value);
+                                          }
+                                          if (value.contains("empty")) {
+                                            timer.cancel();
+                                          }
+
+                                          if (global.machineObjectModel.result
+                                                  ?.state?.status
+                                                  .toString() ==
+                                              "simulating") {
+                                            showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (context) {
+                                                return StatefulBuilder(
+                                                  builder: (context, setState) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Chargement en cours'),
+                                                      content: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: const [
+                                                          CircularProgressIndicator(),
+                                                          SizedBox(height: 20),
+                                                          Text(
+                                                              'La simulation est en cours, veuillez patienter...')
+                                                        ],
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            );
+
+                                            // Périodiquement vérifier la valeur de `value`
+                                            Timer.periodic(
+                                                Duration(milliseconds: 800),
+                                                (timer) {
+                                              if (value.contains("Error") ||
+                                                  (value.contains(
+                                                      "Simulation failed or no simulation time available"))) {
+                                                timer.cancel();
+                                                Navigator.of(context)
+                                                    .pop(); // Fermer le pop-up de chargement
+                                                showDialog(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Simulation impossible'),
+                                                      content: RichText(
+                                                        text: TextSpan(
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Colors
+                                                                      .black),
+                                                          children: [
+                                                            TextSpan(
+                                                                text: value),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      actions: <Widget>[
+                                                        ElevatedButton.icon(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                            backgroundColor:
+                                                                Colors.green,
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          5.0),
+                                                            ),
+                                                          ),
+                                                          icon: const Icon(
+                                                              Icons.check,
+                                                              color:
+                                                                  Colors.white),
+                                                          label: const Text(
+                                                            "Ok",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              } else if (value.contains(
+                                                      "Simulation time:") ||
+                                                  value.contains(
+                                                      "Simulation mode: off")) {
+                                                timer.cancel();
+                                                Navigator.of(context)
+                                                    .pop(); // Fermer le pop-up de chargement
+                                                showDialog(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Simulation réussie !'),
+                                                      content: RichText(
+                                                        text: TextSpan(
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Colors
+                                                                      .black),
+                                                          children: [
+                                                            TextSpan(
+                                                                text: value),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      actions: <Widget>[
+                                                        ElevatedButton.icon(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                            backgroundColor:
+                                                                Colors.green,
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          5.0),
+                                                            ),
+                                                          ),
+                                                          icon: const Icon(
+                                                              Icons.check,
+                                                              color:
+                                                                  Colors.white),
+                                                          label: const Text(
+                                                            "Ok",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            });
+                                          } else {
+                                            if (value.contains("Error")) {
+                                              timer.cancel();
+                                              showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        'Simulation impossible'),
+                                                    content: RichText(
+                                                      text: TextSpan(
+                                                        style: const TextStyle(
+                                                            fontSize: 14,
+                                                            color:
+                                                                Colors.black),
+                                                        children: [
+                                                          TextSpan(text: value),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      ElevatedButton.icon(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              Colors.green,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5.0),
+                                                          ),
+                                                        ),
+                                                        icon: const Icon(
+                                                            Icons.check,
+                                                            color:
+                                                                Colors.white),
+                                                        label: const Text(
+                                                          "Ok",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            } else if (value.contains(
+                                                    "Simulation time:") ||
+                                                value.contains(
+                                                    "Simulation mode: off")) {
+                                              timer.cancel();
+                                              showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        'Simulation réussie !'),
+                                                    content: RichText(
+                                                      text: TextSpan(
+                                                        style: const TextStyle(
+                                                            fontSize: 14,
+                                                            color:
+                                                                Colors.black),
+                                                        children: [
+                                                          TextSpan(text: value),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      ElevatedButton.icon(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              Colors.green,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5.0),
+                                                          ),
+                                                        ),
+                                                        icon: const Icon(
+                                                            Icons.check,
+                                                            color:
+                                                                Colors.white),
+                                                        label: const Text(
+                                                          "Ok",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            }
+                                          }
+                                        });
+                                      });
+                                    });
+                                  }
+                                : null,
+                          ),
+                          const Spacer(),
+                          ElevatedButton.icon(
+                            label: const Text(
                               "Editer",
                               style: TextStyle(color: Colors.white),
                             ),
@@ -604,7 +1000,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                             ),
                             onPressed: () async {
                               if (ListofGcodeFile!
-                                      .elementAt(selectedGcodeFileIndex)!
+                                      .elementAt(global.selectedGcodeFileIndex)!
                                       .size! <
                                   100000) {
                                 showDialog(
@@ -618,7 +1014,8 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                     .downLoadAFile(
                                         'gcodes',
                                         ListofGcodeFile!
-                                            .elementAt(selectedGcodeFileIndex)!
+                                            .elementAt(
+                                                global.selectedGcodeFileIndex)!
                                             .name
                                             .toString())
                                     .then((value) =>

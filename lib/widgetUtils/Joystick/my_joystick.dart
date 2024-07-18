@@ -67,7 +67,7 @@ class _JoystickState extends State<Joystick> {
               child: FittedBox(
                 fit: BoxFit.contain,
                 child: Icon(
-                  Icons.arrow_drop_up,
+                  Icons.arrow_drop_up_rounded,
                   size: (widget.size)! / 1.5,
                   color: widget.iconColor,
                 ),
@@ -93,7 +93,7 @@ class _JoystickState extends State<Joystick> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Icon(
-                        Icons.arrow_left,
+                        Icons.arrow_left_rounded,
                         size: (widget.size)! / 1.5,
                         color: widget.iconColor,
                       ),
@@ -114,7 +114,7 @@ class _JoystickState extends State<Joystick> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Icon(
-                        Icons.arrow_right,
+                        Icons.arrow_right_rounded,
                         size: (widget.size)! / 1.5,
                         color: widget.iconColor,
                       ),
@@ -138,7 +138,7 @@ class _JoystickState extends State<Joystick> {
               child: FittedBox(
                 fit: BoxFit.contain,
                 child: Icon(
-                  Icons.arrow_drop_down,
+                  Icons.arrow_drop_down_rounded,
                   size: (widget.size)! / 1.5,
                   color: widget.iconColor,
                 ),

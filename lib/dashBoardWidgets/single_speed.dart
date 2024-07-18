@@ -25,274 +25,393 @@ class SpindleSpeedState extends State<SpindleSpeed> {
   TextEditingController SpindleValueController = TextEditingController();
   bool SpindleFanIsOn = false;
   bool SpindleIsOn = false;
+  final TextEditingController spindleValueController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    //global.machineObjectModel.result?.move?.axes?.elementAt(0)!.machinePosition?.toStringAsFixed(2) ?? "...",
     return Container(
       color: const Color(0xFFF0F0F3),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Flexible(
-            flex: 2,
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              margin: const EdgeInsets.all(5),
-              padding: const EdgeInsets.all(10),
-              child: Center(
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: Column(
-                    children: [
-                      Text(
-                        global.machineObjectModel.result?.spindles?[0].current
-                                .toString() ??
-                            "???",
-                        style: const TextStyle(
-                            fontSize: 2000, color: Color(0xFF707585)),
-                      ),
-                      const Text(
-                        " tr/min",
-                        style:
-                            TextStyle(fontSize: 800, color: Color(0xFF707585)),
-                      ),
-                    ],
-                  ),
+          _buildSpindleSpeedDisplay(),
+          _buildSpindleControl(),
+          _buildActionButtons(),
+          if (global.MyMachineN02Config.HasACT == 1) _buildToolStatus(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpindleSpeedDisplay() {
+    return Flexible(
+      flex: 20,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        margin: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(13),
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: Column(
+              children: [
+                Text(
+                  global.machineObjectModel.result?.spindles?[0].current
+                          .toString() ??
+                      "???",
+                  style:
+                      const TextStyle(fontSize: 2000, color: Color(0xFF707585)),
+                ),
+                const Text(
+                  " tr/min",
+                  style: TextStyle(fontSize: 800, color: Color(0xFF707585)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSpindleControl() {
+    return Flexible(
+      flex: 15,
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        margin: const EdgeInsets.all(10),
+        height: double.infinity,
+        width: double.infinity,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              flex: 7,
+              child: Neumorphic(
+                style:
+                    const NeumorphicStyle(color: Color(0xFFF0F0F3), depth: -5),
+                child: TextField(
+                  controller: spindleValueController,
+                  keyboardType: TextInputType.number,
                 ),
               ),
             ),
-          ),
-          Flexible(
+            const SizedBox(width: 10),
+            Flexible(
               flex: 2,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.all(5),
-                height: double.infinity,
-                width: double.infinity,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      flex: 7,
-                      child: Neumorphic(
-                        style: const NeumorphicStyle(
-                            color: Color(0xFFF0F0F3), depth: -5),
-                        //color: Colors.green,
-                        child: Container(
-                            child: TextField(
-                          controller: SpindleValueController,
-                          keyboardType: TextInputType.number,
-                        )),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: NeumorphicButton(
-                        style: const NeumorphicStyle(color: Color(0xFFF0F0F3)),
-                        onPressed: () {
-                          if (int.parse(SpindleValueController.text) >
-                              int.parse(global.MyMachineN02Config.VitesseBroche
-                                  .toString())) {
-                            showDialog(
-                              context: context,
-                              barrierDismissible:
-                                  false, // Empêche la fermeture de la boîte de dialogue en cliquant en dehors d'elle
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text(
-                                      "La vitesse saisie est trop élevée !"),
-                                  actions: <Widget>[
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.blue,
-                                      ),
-                                      onPressed: () async {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text(
-                                        "Ok",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          } else {
-                            setState(() {
-                              API_Manager()
-                                  .sendGcodeCommand("M5 P0")
-                                  .then((value) {
-                                API_Manager()
-                                    .sendGcodeCommand(
-                                        "M3 P0 S${SpindleValueController.text}") // Demarrage broche
-                                    .then((value) {
-                                  SpindleValueController.clear();
-                                });
-                              });
-                            });
-                          }
-                        },
-                        child: const Icon(
-                          Icons.send,
-                          color: Color(0xFF707585),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              )),
-          Flexible(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.all(5),
-              height: double.infinity,
-              width: double.infinity,
-              //color: Colors.blue,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  AspectRatio(
-                    aspectRatio: 1,
-                    child: NeumorphicButton(
-                      margin: const EdgeInsets.all(15),
-                      style: NeumorphicStyle(
-                        depth: (global.machineObjectModel.result?.fans?[3]!
-                                        .actualValue ??
-                                    0) >
-                                0
-                            ? -5
-                            : 5, //SpindleFanIsOn?-10:10,
-                        color: const Color(0xFFF0F0F3),
-                      ),
-                      onPressed: () {
-                        if ((global.machineObjectModel.result?.fans?[3]!
-                                    .actualValue ??
-                                0) >
-                            0)
-                          API_Manager()
-                              .sendGcodeCommand("M106 P3 S0")
-                              .then((value) {
-                            setState(() {});
-                          });
-                        else
-                          API_Manager()
-                              .sendGcodeCommand("M106 P3 S255")
-                              .then((value) {
-                            setState(() {});
-                          });
-                      },
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Icon(
-                              Icons.thermostat_outlined,
-                              color: Color(0xFF707585),
-                            ),
-                            const FittedBox(
-                                fit: BoxFit.fitHeight,
-                                child: Text(
-                                  'Vent. Broche',
-                                  style: TextStyle(color: Color(0xFF707585)),
-                                ))
-                          ]),
-                    ),
-                  ),
-                  AspectRatio(
-                    aspectRatio: 1,
-                    child: NeumorphicButton(
-                      margin: const EdgeInsets.all(15),
-                      style: NeumorphicStyle(
-                        depth: ((global.machineObjectModel.result?.spindles?[0]
-                                        .current) ??
-                                    0.0) >
-                                0
-                            ? -5
-                            : 5, //SpindleFanIsOn?-10:10,
-                        color: const Color(0xFFF0F0F3),
-                      ),
-                      onPressed: () {
-                        if (((global.machineObjectModel.result?.spindles?[0]
-                                    .current) ??
-                                0.0) ==
-                            0)
-                          API_Manager().sendGcodeCommand("M5 P0").then((value) {
-                            API_Manager().sendGcodeCommand(
-                                "M3 P0 S${global.MyMachineN02Config.VitesseDefaut ?? 6000}"); // Demarrage broche à 6.000 trs/min
-                            setState(() {});
-                          });
-                        else
-                          API_Manager().sendGcodeCommand("M5 P0").then((value) {
-                            setState(() {});
-                          });
-                      },
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Icon(
-                              Icons.rotate_left,
-                              color: Color(0xFF707585),
-                            ),
-                            const FittedBox(
-                                fit: BoxFit.fitHeight,
-                                child: Text(
-                                  '10% Broche',
-                                  style: TextStyle(color: Color(0xFF707585)),
-                                ))
-                          ]),
-                    ),
-                  ),
-                  AspectRatio(
-                    aspectRatio: 1,
-                    child: NeumorphicButton(
-                      margin: const EdgeInsets.all(15),
-                      style: NeumorphicStyle(
-                        depth: ((global.machineObjectModel.result?.spindles?[0]
-                                        .current) ??
-                                    0.0) >
-                                0
-                            ? 5
-                            : -5, //SpindleFanIsOn?-10:10,
-                        color: const Color(0xFFF0F0F3),
-                      ),
-                      onPressed: () {
-                        if (((global.machineObjectModel.result?.spindles?[0]
-                                    .current) ??
-                                0.0) >
-                            0)
-                          API_Manager().sendGcodeCommand("M5 P0").then((value) {
-                            setState(() {});
-                          });
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          const Icon(
-                            Icons.do_disturb_alt_outlined,
-                            color: Color(0xFF707585),
-                          ),
-                          const FittedBox(
-                            fit: BoxFit.fitHeight,
-                            child: Text(
-                              'Stop Broche',
-                              style: TextStyle(color: Color(0xFF707585)),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-                ],
+              child: NeumorphicButton(
+                style: const NeumorphicStyle(color: Color(0xFFF0F0F3)),
+                onPressed: _onSpindleSubmit,
+                child: const Icon(Icons.send, color: Color(0xFF707585)),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onSpindleSubmit() {
+    if (int.parse(spindleValueController.text) >
+        int.parse(global.MyMachineN02Config.VitesseBroche.toString())) {
+      _showAlertDialog("La vitesse saisie est trop élevée !");
+      spindleValueController.clear();
+    } else if (int.parse(spindleValueController.text) <
+        int.parse(global.MyMachineN02Config.VitesseDefaut.toString())) {
+      _showAlertDialog("La vitesse saisie est trop faible !");
+      spindleValueController.clear();
+    } else {
+      API_Manager().sendGcodeCommand("M5 P0").then((value) {
+        API_Manager()
+            .sendGcodeCommand("M3 P0 S${spindleValueController.text}")
+            .then((value) {
+          spindleValueController.clear();
+        });
+      });
+    }
+  }
+
+  void _showAlertDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(message),
+          actions: <Widget>[
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Ok", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Flexible(
+      flex: 20,
+      child: Container(
+        padding: global.MyMachineN02Config.HasACT == 1
+            ? const EdgeInsets.all(15)
+            : const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(5),
+        height: double.infinity,
+        width: double.infinity,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: _buildActionButtonList(),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildActionButtonList() {
+    List<Widget> buttons = [];
+
+    if (global.MyMachineN02Config.HasACT == 1) {
+      buttons.addAll([
+        _buildActionButton(
+          icon: Icons.air_rounded,
+          label: 'Souffler',
+          onPressed: _onAirButtonPressed,
+          depthCondition:
+              (global.machineObjectModel.result?.state?.gpOut?[1]!.pwm ?? 0) >
+                  0,
+        ),
+        _buildActionButton(
+          icon: Icons.unfold_more_rounded,
+          label: 'Piston',
+          onPressed: _onPistonButtonPressed,
+          depthCondition:
+              (global.machineObjectModel.result?.state?.gpOut?[2]!.pwm ?? 0) >
+                  0,
+        ),
+      ]);
+    }
+
+    buttons.addAll([
+      _buildActionButton(
+        icon: Icons.thermostat_outlined,
+        label: 'Vent. Broche',
+        onPressed: _onSpindleFanButtonPressed,
+        depthCondition:
+            (global.machineObjectModel.result?.fans?[3]!.actualValue ?? 0) > 0,
+      ),
+      _buildActionButton(
+        icon: Icons.rotate_left,
+        label: '10% Broche',
+        onPressed: _onSpindleStartButtonPressed,
+        depthCondition:
+            ((global.machineObjectModel.result?.spindles?[0].current) ?? 0.0) >
+                0,
+      ),
+      _buildActionButton(
+        icon: Icons.do_disturb_alt_outlined,
+        label: 'Stop Broche',
+        onPressed: _onSpindleStopButtonPressed,
+        depthCondition:
+            ((global.machineObjectModel.result?.spindles?[0].current) ?? 0.0) >
+                0,
+      ),
+    ]);
+
+    return buttons;
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+    required bool depthCondition,
+  }) {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: NeumorphicButton(
+        margin: const EdgeInsets.all(5),
+        style: NeumorphicStyle(
+          depth: depthCondition ? -5 : 5,
+          color: const Color(0xFFF0F0F3),
+        ),
+        onPressed: onPressed,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Icon(icon, color: Color(0xFF707585)),
+            FittedBox(
+              fit: BoxFit.fitHeight,
+              child: Text(label, style: TextStyle(color: Color(0xFF707585))),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onAirButtonPressed() {
+    if ((global.machineObjectModel.result?.sensors?.gpIn?[0]?.value ?? 0) ==
+        1) {
+      if ((global.machineObjectModel.result?.state?.gpOut?[1]!.pwm ?? 0) > 0) {
+        API_Manager()
+            .sendGcodeCommand("M42 P1 S0")
+            .then((value) => setState(() {}));
+      } else {
+        API_Manager()
+            .sendGcodeCommand("M42 P1 S1")
+            .then((value) => setState(() {}));
+      }
+    }
+  }
+
+  void _onPistonButtonPressed() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: ((global.machineObjectModel.result?.state?.gpOut?[2]!.pwm ??
+                      0) >
+                  0)
+              ? const Text(
+                  "Attention !\nPrésenter un outil dans la broche avant de valider.")
+              : const Text(
+                  "Attention !\nRisque de chute. Êtes-vous sûr de vouloir libérer l'outil ?"),
+          actions: <Widget>[
+            ElevatedButton.icon(
+              label:
+                  const Text("Executer", style: TextStyle(color: Colors.white)),
+              icon: const Icon(Icons.check_outlined, color: Colors.white),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              onPressed: () {
+                if ((global.machineObjectModel.result?.sensors?.gpIn?[0]
+                            ?.value ??
+                        0) ==
+                    1) {
+                  if ((global.machineObjectModel.result?.state?.gpOut?[2]!
+                              .pwm ??
+                          0) >
+                      0) {
+                    API_Manager().sendGcodeCommand("M42 P2 S0").then((value) {
+                      setState(() {});
+                      Navigator.of(context).pop();
+                    });
+                  } else {
+                    API_Manager().sendGcodeCommand("M42 P2 S1").then((value) {
+                      setState(() {});
+                      Navigator.of(context).pop();
+                    });
+                  }
+                }
+              },
+            ),
+            ElevatedButton.icon(
+              label:
+                  const Text("Annuler", style: TextStyle(color: Colors.white)),
+              icon: const Icon(Icons.close_rounded, color: Colors.white),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _onSpindleFanButtonPressed() {
+    if ((global.machineObjectModel.result?.fans?[3]!.actualValue ?? 0) > 0) {
+      API_Manager()
+          .sendGcodeCommand("M106 P3 S0")
+          .then((value) => setState(() {}));
+    } else {
+      API_Manager()
+          .sendGcodeCommand("M106 P3 S255")
+          .then((value) => setState(() {}));
+    }
+  }
+
+  void _onSpindleStartButtonPressed() {
+    if (((global.machineObjectModel.result?.spindles?[0].current) ?? 0.0) ==
+        0) {
+      API_Manager().sendGcodeCommand("M5 P0").then((value) {
+        API_Manager()
+            .sendGcodeCommand(
+                "M3 P0 S${global.MyMachineN02Config.VitesseDefaut ?? 6000}")
+            .then((value) {
+          setState(() {});
+        });
+      });
+    } else {
+      API_Manager().sendGcodeCommand("M5 P0").then((value) {
+        setState(() {});
+      });
+    }
+  }
+
+  void _onSpindleStopButtonPressed() {
+    if (((global.machineObjectModel.result?.spindles?[0].current) ?? 0.0) > 0) {
+      API_Manager().sendGcodeCommand("M5 P0").then((value) {
+        setState(() {});
+      });
+    }
+  }
+
+  Widget _buildToolStatus() {
+    return Flexible(
+      flex: 20,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text(
+            'Status Tool :',
+            style: TextStyle(fontSize: 12.0),
+          ),
+          const SizedBox(width: 8.0),
+          Expanded(
+            child: ListView.builder(
+              itemCount: (global.machineObjectModel.result?.tools?.length ?? 3),
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                var value =
+                    global.machineObjectModel.result?.tools?[index].state;
+
+                Color color;
+                if (value == null || value == "off") {
+                  color = Colors.grey;
+                } else if (value == "active") {
+                  color = Colors.green;
+                } else if (value == "standby") {
+                  color = Colors.blue;
+                } else {
+                  color = Colors.grey;
+                }
+
+                return Container(
+                  margin: const EdgeInsets.all(4.0),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(Icons.circle, color: color, size: 24.0),
+                      Text(
+                        '$index',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],
       ),
     );
-    throw UnimplementedError();
   }
 }

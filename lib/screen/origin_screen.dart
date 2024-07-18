@@ -61,6 +61,8 @@ class _OffsetState extends State<Offset> {
     super.dispose();
   }
 
+  int? valueOfDataTable = 5;
+
   @override
   void initState() {
     global.checkAndShowDialog(context);
@@ -334,26 +336,49 @@ class OriginScreenState extends State<OriginScreen> {
                     Spacer(),
                     SizedBox(
                       width: 300,
-                      //margin: EdgeInsets.all(40),
-                      child: TextField(
-                        controller: ManualGcodeComand,
-                        decoration: InputDecoration(
-                          hintText: "Gcode",
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(),
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                            gapPadding: 5.0,
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TextField(
+                            controller: ManualGcodeComand,
+                            decoration: InputDecoration(
+                              hintText: "Gcode",
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                                gapPadding: 5.0,
+                              ),
+                            ),
+                            onSubmitted: (Commande) {
+                              setState(() {
+                                global.commandHistory.add(Commande);
+                                ManualGcodeComand.clear();
+                                API_Manager().sendGcodeCommand(Commande).then(
+                                    (value) => API_Manager().sendrr_reply());
+                              });
+                              print(Commande);
+                            },
                           ),
-                        ),
-                        onSubmitted: (Commande) {
-                          setState(() {
-                            ManualGcodeComand.clear();
-                            API_Manager()
-                                .sendGcodeCommand(Commande)
-                                .then((value) => API_Manager().sendrr_reply());
-                          });
-                          print(Commande);
-                        },
+                          PopupMenuButton<String>(
+                            tooltip: "Historique",
+                            icon: Icon(Icons.arrow_drop_down),
+                            onSelected: (String value) {
+                              setState(() {
+                                ManualGcodeComand.text = value;
+                              });
+                            },
+                            itemBuilder: (BuildContext context) {
+                              return global.commandHistory
+                                  .map<PopupMenuItem<String>>((String value) {
+                                return PopupMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList();
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     Spacer(),
@@ -511,7 +536,7 @@ class OriginScreenState extends State<OriginScreen> {
                                     FittedBox(
                                       fit: BoxFit.fitHeight,
                                       child: Text(
-                                        'Palper outil 1',
+                                        'Palper outil actuel',
                                         style:
                                             TextStyle(color: Color(0xFF707585)),
                                       ),
@@ -743,7 +768,7 @@ class OriginScreenState extends State<OriginScreen> {
                                     FittedBox(
                                       fit: BoxFit.fitHeight,
                                       child: Text(
-                                        "Palper outil 2",
+                                        "Palper nouvel outil",
                                         style:
                                             TextStyle(color: Color(0xFF707585)),
                                       ),
@@ -951,6 +976,126 @@ class OriginScreenState extends State<OriginScreen> {
                             },
                           );
                         },
+                      ),
+                    ),
+                    Flexible(
+                      flex: 4,
+                      child: Container(
+                        height: double.infinity,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Flexible(
+              flex: 1,
+              child: Window(
+                title1: "Changement",
+                title2: " outils",
+                child: Column(
+                  children: [
+                    Flexible(
+                      flex: 4,
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ),
+                    Flexible(
+                      flex: 5,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              RichText(
+                                text: const TextSpan(
+                                  text: "Outil actuel : ",
+                                  style: TextStyle(color: Colors.black),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: "1",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10.0),
+                          const Divider(
+                            height: 20,
+                            thickness: 0.8,
+                            color: Colors.grey,
+                            indent: 20,
+                            endIndent: 20,
+                          ),
+                          const SizedBox(height: 10.0),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: const [
+                                  DataColumn(label: Text('N°')),
+                                  DataColumn(label: Text('Nom de l\'outil')),
+                                  DataColumn(label: Text('Longueur')),
+                                  DataColumn(label: Text('Diamètre')),
+                                  DataColumn(label: Text('Actions')),
+                                ],
+                                rows: List<DataRow>.generate(
+                                    global.magasinOutil.outil?.length ?? 0,
+                                    (index) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text("${index + 1}")),
+                                      DataCell(Text(global.magasinOutil
+                                              .outil?[index].name ??
+                                          "0")),
+                                      DataCell(Text(
+                                          '${global.magasinOutil.outil?[index].diametre ?? 0} mm')),
+                                      DataCell(Text(
+                                          '${global.magasinOutil.outil?[index].hauteur ?? 0} mm')),
+                                      DataCell(
+                                        Row(
+                                          children: [
+                                            IconButton(
+                                              onPressed: () {
+                                                print("T${index + 1}");
+                                                API_Manager().sendGcodeCommand(
+                                                    "T${index + 1}");
+                                              },
+                                              icon: const Icon(
+                                                  Icons.swap_vert_rounded),
+                                              iconSize: 24.0,
+                                              color: Colors.blue,
+                                            ),
+                                            const Padding(
+                                              padding: EdgeInsets.all(2.0),
+                                            ),
+                                            IconButton(
+                                              onPressed: () {
+                                                print("press");
+                                              },
+                                              icon: const Icon(Icons.edit),
+                                              iconSize: 24.0,
+                                              color: Colors.orange,
+                                            ),
+                                            const Padding(
+                                              padding: EdgeInsets.all(2.0),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                     Flexible(

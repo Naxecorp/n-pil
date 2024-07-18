@@ -243,26 +243,49 @@ class DashboardScreenState extends State<DashboardScreen> {
                     Spacer(),
                     SizedBox(
                       width: 300,
-                      //margin: EdgeInsets.all(40),
-                      child: TextField(
-                        controller: ManualGcodeComand,
-                        decoration: InputDecoration(
-                          hintText: "Gcode",
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(),
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                            gapPadding: 5.0,
+                      child: Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TextField(
+                            controller: ManualGcodeComand,
+                            decoration: InputDecoration(
+                              hintText: "Gcode",
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                                gapPadding: 5.0,
+                              ),
+                            ),
+                            onSubmitted: (Commande) {
+                              setState(() {
+                                global.commandHistory.add(Commande);
+                                ManualGcodeComand.clear();
+                                API_Manager().sendGcodeCommand(Commande).then(
+                                    (value) => API_Manager().sendrr_reply());
+                              });
+                              print(Commande);
+                            },
                           ),
-                        ),
-                        onSubmitted: (Commande) {
-                          setState(() {
-                            ManualGcodeComand.clear();
-                            API_Manager()
-                                .sendGcodeCommand(Commande)
-                                .then((value) => API_Manager().sendrr_reply());
-                          });
-                          print(Commande);
-                        },
+                          PopupMenuButton<String>(
+                            tooltip: "Historique",
+                            icon: Icon(Icons.arrow_drop_down),
+                            onSelected: (String value) {
+                              setState(() {
+                                ManualGcodeComand.text = value;
+                              });
+                            },
+                            itemBuilder: (BuildContext context) {
+                              return global.commandHistory
+                                  .map<PopupMenuItem<String>>((String value) {
+                                return PopupMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList();
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     Spacer(),
@@ -358,8 +381,8 @@ class DashboardScreenState extends State<DashboardScreen> {
                                 Flexible(
                                   flex: 2,
                                   child: Window(
-                                    title1: "Info. ",
-                                    title2: " Outil",
+                                      title1: "Info. ",
+                                      title2: " Outil",
                                     child: global.machineMode == MachineMode.cnc
                                         ? SpindleSpeed()
                                         : global.machineMode == MachineMode.fff

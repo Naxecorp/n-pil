@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/screen/conversationel_screen.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
+import 'package:nweb/service/outils.dart';
 import 'screen/admin_screen.dart';
 import 'screen/dashboard_screen.dart';
 import 'screen/editor_screen.dart';
@@ -39,6 +40,7 @@ Future<void> actualiserMachineUsedTime() async {
       "M905 P${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} S${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}");
   Timer.periodic(Duration(minutes: 2), (timer) async {
     await API_Manager().downLoadNwcSettings();
+    await API_Manager().downLoadToolSettings();
     global.MyMachineN02Config.GlobalMachineUsedTime =
         global.MyMachineN02Config.GlobalMachineUsedTime! + 2;
     API_Manager().upLoadAFile(
@@ -46,6 +48,10 @@ Future<void> actualiserMachineUsedTime() async {
         global.MyMachineN02Config.toJson().length.toString(),
         Uint8List.fromList(
             machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
+    API_Manager().upLoadAFile(
+        "0:/sys/outil-settings.json",
+        global.magasinOutil.toJson().length.toString(),
+        Uint8List.fromList(outilToJson(global.magasinOutil).codeUnits));
   });
 }
 
@@ -102,7 +108,6 @@ void main() async {
         .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "isAlive")
         .timeout(Duration(seconds: 5));
   });
-
   runApp(const MyApp());
 }
 
