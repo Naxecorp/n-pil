@@ -67,7 +67,7 @@ class _OffsetState extends State<Offset> {
   void initState() {
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      global.checkCaissonOpen(context);
+      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
     });
   }
 

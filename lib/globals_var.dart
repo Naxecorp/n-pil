@@ -182,7 +182,8 @@ StreamController<List<String>> controllerContentGcodeToDisplay =
 Stream streamcontrollerContentGcodeToDisplay =
     controllerContentGcodeToDisplay.stream;
 
-ValueNotifier<int> cursorPosition = ValueNotifier<int>(0);
+
+ValueNotifier<int> cursorNotifier = ValueNotifier<int>(0);
 
 Timer? timer;
 bool timerStarted = false;

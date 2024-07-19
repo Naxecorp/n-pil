@@ -132,8 +132,8 @@ class API_Manager {
           .timeout(Duration(seconds: 10));
       if (response.statusCode == 200) {
         print(response.body);
-        if (response.body.length < 2) return "response is empty";
-        global.ReplyListFiFo.addItem(response.body);
+        //if (response.body.length < 2) return "response is empty";
+        if (response.body.length > 2)global.ReplyListFiFo.addItem(response.body);
         return response.body;
       } else {
         print(

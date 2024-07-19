@@ -141,7 +141,7 @@ class AdminScreenState extends State<AdminScreen>
     }
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      global.checkCaissonOpen(context);
+      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
     });
     ProgressBarcontroller = AnimationController(
       /// [AnimationController]s can be created with `vsync: this` because of

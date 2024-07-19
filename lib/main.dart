@@ -30,6 +30,8 @@ Future<void> actualiserMachineObjectModel() async {
     API_Manager().getdataMachineObjectModel().then((machine) {
       global.machineObjectModel = machine;
       global.controllerMachineObjectModel.add(machine);
+      if(global.machineObjectModel.result?.job?.filePosition?.toInt()!=null)global.cursorNotifier.value=global.machineObjectModel.result?.job?.filePosition?.toInt()??0;
+      print(global.cursorNotifier.value);
     });
   });
 }
@@ -108,6 +110,7 @@ void main() async {
         .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "isAlive")
         .timeout(Duration(seconds: 5));
   });
+  
   runApp(const MyApp());
 }
 

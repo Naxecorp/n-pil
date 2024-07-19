@@ -13,6 +13,7 @@ import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:nweb/widgetUtils/FileReadScreen.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -51,7 +52,7 @@ class JobScreenState extends State<JobScreen> {
     });
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      global.checkCaissonOpen(context);
+      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
     });
 
     sliderValue =
@@ -157,7 +158,7 @@ class JobScreenState extends State<JobScreen> {
                   child: Column(
                     children: [
                       Flexible(
-                          flex: 1,
+                          flex: 2,
                           child: Container(
                             margin: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
@@ -166,7 +167,7 @@ class JobScreenState extends State<JobScreen> {
                                     Border.all(width: 1, color: Colors.black38),
                                 borderRadius: BorderRadius.circular(10)),
                             child: Center(
-                              child: Text("Visualisation bientôt disponible"),
+                              child: Text("${global.machineObjectModel.result?.job?.timesLeft?.file}"),
                             ),
                           )),
                       Flexible(

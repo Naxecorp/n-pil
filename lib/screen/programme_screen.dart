@@ -61,6 +61,37 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     return "Done";
   }
 
+
+String extractDuration(String consoleResponse) {
+  // Expression régulière pour trouver le modèle "0h12min"
+  print(consoleResponse);
+  final regex = RegExp(r'(\d+)h (\d+)m');
+  final match = regex.firstMatch(consoleResponse);
+
+  if (match != null) {
+    // Si un match est trouvé, extrayez les heures et les minutes
+    final hours = match.group(1);
+    final minutes = match.group(2);
+    return '$hours heures et $minutes minutes';
+  } else {
+    // Si aucun match n'est trouvé, retournez une chaîne vide ou un message approprié
+    return 'Durée non trouvée';
+  }
+}
+
+String extractErrorMessage(String consoleResponse) {
+  // Chercher l'index de "Error:" dans la chaîne
+  final errorIndex = consoleResponse.indexOf("Error:");
+
+  if (errorIndex != -1) {
+    // Extraire tout ce qui suit "Error:"
+    return consoleResponse.substring(errorIndex);
+  } else {
+    // Si "Error:" n'est pas trouvé, retourner une chaîne vide ou un message approprié
+    return 'Aucune erreur trouvée';
+  }
+}
+
   @override
   void initState() {
     ProgressBarcontroller = AnimationController(
@@ -74,7 +105,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     ProgressBarcontroller.repeat(reverse: false);
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      global.checkCaissonOpen(context);
+      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
     });
     super.initState();
   }
@@ -675,316 +706,6 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                           const Spacer(),
                           ElevatedButton.icon(
                             label: const Text(
-                              "Simulation",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            icon: const Icon(
-                              Icons.visibility_outlined,
-                              color: Colors.white,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2B879B),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                            ),
-                            onPressed: global.machineObjectModel.result?.state
-                                        ?.status ==
-                                    "idle"
-                                ? () async {
-                                    API_Manager()
-                                        .sendGcodeCommand(
-                                            'M98 P"simulation.g" F"${ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString()}"')
-                                        .then((value2) {
-                                      Timer.periodic(Duration(seconds: 2),
-                                          (timer) {
-                                        API_Manager()
-                                            .sendrr_reply()
-                                            .then((value) {
-                                          if (value.length > 1) {
-                                            global.ReplyListFiFo.addItem(value);
-                                          }
-                                          if (value.contains("empty")) {
-                                            timer.cancel();
-                                          }
-
-                                          if (global.machineObjectModel.result
-                                                  ?.state?.status
-                                                  .toString() ==
-                                              "simulating") {
-                                            showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              builder: (context) {
-                                                return StatefulBuilder(
-                                                  builder: (context, setState) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          'Chargement en cours'),
-                                                      content: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: const [
-                                                          CircularProgressIndicator(),
-                                                          SizedBox(height: 20),
-                                                          Text(
-                                                              'La simulation est en cours, veuillez patienter...')
-                                                        ],
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                            );
-
-                                            // Périodiquement vérifier la valeur de `value`
-                                            Timer.periodic(
-                                                Duration(milliseconds: 800),
-                                                (timer) {
-                                              if (value.contains("Error") ||
-                                                  (value.contains(
-                                                      "Simulation failed or no simulation time available"))) {
-                                                timer.cancel();
-                                                Navigator.of(context)
-                                                    .pop(); // Fermer le pop-up de chargement
-                                                showDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          'Simulation impossible'),
-                                                      content: RichText(
-                                                        text: TextSpan(
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 14,
-                                                                  color: Colors
-                                                                      .black),
-                                                          children: [
-                                                            TextSpan(
-                                                                text: value),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      actions: <Widget>[
-                                                        ElevatedButton.icon(
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                            backgroundColor:
-                                                                Colors.green,
-                                                            shape:
-                                                                RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5.0),
-                                                            ),
-                                                          ),
-                                                          icon: const Icon(
-                                                              Icons.check,
-                                                              color:
-                                                                  Colors.white),
-                                                          label: const Text(
-                                                            "Ok",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              } else if (value.contains(
-                                                      "Simulation time:") ||
-                                                  value.contains(
-                                                      "Simulation mode: off")) {
-                                                timer.cancel();
-                                                Navigator.of(context)
-                                                    .pop(); // Fermer le pop-up de chargement
-                                                showDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          'Simulation réussie !'),
-                                                      content: RichText(
-                                                        text: TextSpan(
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 14,
-                                                                  color: Colors
-                                                                      .black),
-                                                          children: [
-                                                            TextSpan(
-                                                                text: value),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      actions: <Widget>[
-                                                        ElevatedButton.icon(
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                            backgroundColor:
-                                                                Colors.green,
-                                                            shape:
-                                                                RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5.0),
-                                                            ),
-                                                          ),
-                                                          icon: const Icon(
-                                                              Icons.check,
-                                                              color:
-                                                                  Colors.white),
-                                                          label: const Text(
-                                                            "Ok",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              }
-                                            });
-                                          } else {
-                                            if (value.contains("Error")) {
-                                              timer.cancel();
-                                              showDialog(
-                                                context: context,
-                                                barrierDismissible: false,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: const Text(
-                                                        'Simulation impossible'),
-                                                    content: RichText(
-                                                      text: TextSpan(
-                                                        style: const TextStyle(
-                                                            fontSize: 14,
-                                                            color:
-                                                                Colors.black),
-                                                        children: [
-                                                          TextSpan(text: value),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    actions: <Widget>[
-                                                      ElevatedButton.icon(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        style: ElevatedButton
-                                                            .styleFrom(
-                                                          backgroundColor:
-                                                              Colors.green,
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5.0),
-                                                          ),
-                                                        ),
-                                                        icon: const Icon(
-                                                            Icons.check,
-                                                            color:
-                                                                Colors.white),
-                                                        label: const Text(
-                                                          "Ok",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        ),
-                                                      )
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            } else if (value.contains(
-                                                    "Simulation time:") ||
-                                                value.contains(
-                                                    "Simulation mode: off")) {
-                                              timer.cancel();
-                                              showDialog(
-                                                context: context,
-                                                barrierDismissible: false,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: const Text(
-                                                        'Simulation réussie !'),
-                                                    content: RichText(
-                                                      text: TextSpan(
-                                                        style: const TextStyle(
-                                                            fontSize: 14,
-                                                            color:
-                                                                Colors.black),
-                                                        children: [
-                                                          TextSpan(text: value),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    actions: <Widget>[
-                                                      ElevatedButton.icon(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        style: ElevatedButton
-                                                            .styleFrom(
-                                                          backgroundColor:
-                                                              Colors.green,
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5.0),
-                                                          ),
-                                                        ),
-                                                        icon: const Icon(
-                                                            Icons.check,
-                                                            color:
-                                                                Colors.white),
-                                                        label: const Text(
-                                                          "Ok",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        ),
-                                                      )
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            }
-                                          }
-                                        });
-                                      });
-                                    });
-                                  }
-                                : null,
-                          ),
-                          const Spacer(),
-                          ElevatedButton.icon(
-                            label: const Text(
                               "Editer",
                               style: TextStyle(color: Colors.white),
                             ),
@@ -1031,6 +752,120 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                 ));
                               }
                             },
+                          ),
+                          const Spacer(),
+                          ElevatedButton.icon(
+                            label: const Text(
+                              "Simulation",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            icon: const Icon(
+                              Icons.computer,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color.fromARGB(255, 36, 174, 73),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            onPressed: global.machineObjectModel.result?.state
+                                        ?.status ==
+                                    "idle"
+                                ? () async {
+                                    API_Manager()
+                                        .sendGcodeCommand(
+                                            'M37 P"${ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString()}"')
+                                        .then((value2) {
+                                          showDialog(context: context, builder: (context){
+                                            return AlertDialog(
+                                              title: const Text(
+                                                        'Simulation en cours'),
+                                                    content: RichText(
+                                                      text: TextSpan(
+                                                        style: const TextStyle(
+                                                            fontSize: 14,
+                                                            color:
+                                                                Colors.black),
+                                                        children: [
+                                                          TextSpan(text: "Merci de patienter. \nCela peut prendre plusieur minutes"),
+                                                        ],
+                                                      ),
+                                                    ),
+                                            );
+                                          });
+                                      Timer.periodic(Duration(seconds: 1),
+                                          (timer) {
+                                        API_Manager()
+                                            .sendrr_reply()
+                                            .then((value) {
+                                          //if(value.contains("empty"))timer.cancel();
+                                          if (value.contains("will print in")) {
+                                            timer.cancel();
+                                            Navigator.of(context).pop();
+                                            showDialog(context: context, builder: (context){
+                                            return AlertDialog(
+                                              title: RichText(
+                                                      text: TextSpan(
+                                                        style: const TextStyle(
+                                                            fontSize: 28,
+                                                            color:
+                                                                Color.fromARGB(255, 14, 125, 31)),
+                                                        children: [
+                                                          TextSpan(text: "Simulation sucess"),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    content: RichText(
+                                                      text: TextSpan(
+                                                        style: const TextStyle(
+                                                            fontSize: 14,
+                                                            color:
+                                                                Color.fromARGB(255, 10, 28, 13)),
+                                                        children: [
+                                                          TextSpan(text: "Durée du programme: ${extractDuration(value)}"),
+                                                        ],
+                                                      ),
+                                                    ),
+                                            );
+                                          });
+                                          }
+                                          else if(value.contains("Error")){
+                                            timer.cancel();
+                                            Navigator.of(context).pop();
+                                            showDialog(context: context, builder: (context){
+                                            return AlertDialog(
+                                              title: RichText(
+                                                      text: TextSpan(
+                                                        style: const TextStyle(
+                                                            fontSize: 28,
+                                                            color:
+                                                                Color.fromARGB(255, 176, 8, 8)),
+                                                        children: [
+                                                          TextSpan(text: "Simulation erreur"),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    content: RichText(
+                                                      text: TextSpan(
+                                                        style: const TextStyle(
+                                                            fontSize: 14,
+                                                            color:
+                                                                Color.fromARGB(255, 63, 9, 9)),
+                                                        children: [
+                                                          TextSpan(text: extractErrorMessage(value)),
+                                                        ],
+                                                      ),
+                                                    ),
+                                            );
+                                          });
+                                          
+                                          }
+                                        });
+                                      });
+                                    });
+                                  }
+                                : null,
                           ),
                           const Spacer(),
                           ElevatedButton.icon(
