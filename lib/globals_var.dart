@@ -23,13 +23,12 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.8.11";
+String version = "Version 1.8.12";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
 int positions = 4;
-int secondsElapsedSinceBeginning =
-    0; // Temps écoulé depuis le début en secondes
+int secondsElapsedSinceBeginning =0; // Temps écoulé depuis le début en secondes
 String globalTimeValue = "00:00:00";
 double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
 bool isJobStartedByUser = false; // Si le programme a bien été lancé par le User
@@ -38,12 +37,12 @@ bool popUpCaissonIsShown = false;
 bool isRestarting = false;
 double compensation = 0; // BabyStep Z
 double sliderValueSpeedFactor = 0;
-bool isJobPausedByUser =
-    false; // Si le programme a bien été mis en pause par le User
+bool isJobPausedByUser =false; // Si le programme a bien été mis en pause par le User
 bool isErrorDriver = false;
 List<String> commandHistory = []; // Historique cmd gcode
 int maxLineOfProg = 0;
 var selectedGcodeFileIndex = 0;
+bool DefaultConfigWasLoaded = false;
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
 ObjectModelMove objectModelMove = ObjectModelMove();
