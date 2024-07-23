@@ -38,7 +38,7 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "acceptcgu"; Description: "J'accepte les Conditions Générales d'Utilisation"; Flags: unchecked
+Name: "acceptcgu"; Description: "J'accepte les Conditions Générales d'Utilisation. Visible sur www.naxe.fr/cgu-logiciel.pdf"; Flags: unchecked
 
 [Files]
 Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
