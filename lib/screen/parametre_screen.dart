@@ -631,7 +631,7 @@ class ParametreScreenState extends State<ParametreScreen> {
                                     margin: const EdgeInsets.only(right: 15.0),
                                     width: 200,
                                     child: const Text(
-                                      'Changeur d\'outil automatique (ACT) ',
+                                      'Changeur d\'outil automatique (ATC) ',
                                       style: TextStyle(
                                         color: Colors.black26,
                                         fontWeight: FontWeight.bold,
@@ -860,6 +860,19 @@ class ParametreScreenState extends State<ParametreScreen> {
                                 ),
                               ],
                             ),
+                            //SizedBox(height: 20,),
+                            Padding(
+                              padding: const EdgeInsets.all(18.0),
+                              
+                              child: global.AdminLogged? ElevatedButton(onPressed: (){
+                                global.MyMachineN02Config.MagasinOutil?[0].CoordX = global.machineObjectModel.result?.move?.axes?[0].machinePosition?.toDouble()??0;
+                                global.MyMachineN02Config.MagasinOutil?[0].CoordY = global.machineObjectModel.result?.move?.axes?[1].machinePosition?.toDouble()??0;
+                                global.MyMachineN02Config.MagasinOutil?[0].CoordZ = global.machineObjectModel.result?.move?.axes?[2].machinePosition?.toDouble()??0;
+                                setState(() {
+                                  
+                                });
+                              },child: Text("Charger position actuelle")):Container(),
+                            ), 
                           ],
                         ),
                       ),
