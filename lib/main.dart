@@ -66,14 +66,14 @@ Future<void> actualiserMoveObjectModel() async {
 }
 
 void main() async {
-  await API_Manager().downLoadNwcSettings().then((value) async {
+  await API_Manager().downLoadNwcSettings().then((value)  {
     if (value.hasAnyNull()){
       var prov = value.Serie;
       global.MyMachineN02Config = global.MyMachineN02ConfigDeflaut;
       global.MyMachineN02Config.Serie = prov;
       global.DefaultConfigWasLoaded = true;
 
-      await API_Manager().upLoadAFile(
+      API_Manager().upLoadAFile(
         "0:/sys/nwc-settings.json",
         global.MyMachineN02Config.toJson().length.toString(),
         Uint8List.fromList(

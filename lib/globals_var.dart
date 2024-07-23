@@ -23,7 +23,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.8.13";
+String version = "Version 1.8.14.RC1";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -128,6 +128,7 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     Serie: "DEFAULT",
     IP: "192.168.1.78",
     GlobalMachineUsedTime: 0,
+    Lastmodifition: "Now",
     email: "defaultconfig",
     DefaultMode: "CNC",
     Positions: [
@@ -137,10 +138,10 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
       Position(Name: "Prog4", PosX: 23, PosY: 44, PosZ: 135)
     ],
     SetPosAffichage: 4,
-    HasHeatBed: 1,
-    HasFanOnEnclosure: 1,
-    HasLedOnEnclosure: 1,
-    HasACT: 1,
+    HasHeatBed: 0,
+    HasFanOnEnclosure: 0,
+    HasLedOnEnclosure: 0,
+    HasACT: 0,
     VitesseBroche: 24000,
     VitesseDefaut: 6400,
     Offset: [
@@ -148,7 +149,7 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
       Offsets(Name: "Offset Laser", DecalX: 4, DecalY: 5, DecalZ: 6),
     ],
     MagasinOutil: [
-      MagasinOutils(CoordX: 125, CoordY: 125, CoordZ: 189, Ecartement: 60),
+      MagasinOutils(CoordX: 457, CoordY: 1206, CoordZ: 189, Ecartement: 60),
     ]);
 
 Ethernet_Connection myEthernet_connection = Ethernet_Connection();
