@@ -45,12 +45,12 @@ Future<void> actualiserMachineUsedTime() async {
     await API_Manager().downLoadToolSettings();
     global.MyMachineN02Config.GlobalMachineUsedTime =
         global.MyMachineN02Config.GlobalMachineUsedTime! + 2;
-    API_Manager().upLoadAFile(
+    await API_Manager().upLoadAFile(
         "0:/sys/nwc-settings.json",
         global.MyMachineN02Config.toJson().length.toString(),
         Uint8List.fromList(
             machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
-    API_Manager().upLoadAFile(
+    await API_Manager().upLoadAFile(
         "0:/sys/outil-settings.json",
         global.magasinOutil.toJson().length.toString(),
         Uint8List.fromList(outilToJson(global.magasinOutil).codeUnits));
@@ -66,9 +66,19 @@ Future<void> actualiserMoveObjectModel() async {
 }
 
 void main() async {
-  await API_Manager().downLoadNwcSettings().then((value) {
-    if (value.hasAnyNull())
+  await API_Manager().downLoadNwcSettings().then((value) async {
+    if (value.hasAnyNull()){
+      var prov = value.Serie;
       global.MyMachineN02Config = global.MyMachineN02ConfigDeflaut;
+      global.MyMachineN02Config.Serie = prov;
+      global.DefaultConfigWasLoaded = true;
+
+      await API_Manager().upLoadAFile(
+        "0:/sys/nwc-settings.json",
+        global.MyMachineN02Config.toJson().length.toString(),
+        Uint8List.fromList(
+            machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
+    }
     else
       global.MyMachineN02Config = value;
   }).timeout(Duration(seconds: 5));

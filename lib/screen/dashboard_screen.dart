@@ -94,6 +94,9 @@ class DashboardScreenState extends State<DashboardScreen> {
 
     global.checkAndShowDialog(context);
     checkErrorDrive(context);
+    if(global.DefaultConfigWasLoaded){
+      global.DefaultConfigWasLoaded=false;
+      showDialog(context: context, builder:((context) => AlertDialog(title: const Text("Default config was loaded") ,)));}
   }
 
   // Fonction qui regarde si les 3 axes sont homes et va au dernières coordonées machines
