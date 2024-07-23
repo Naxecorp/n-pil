@@ -773,6 +773,9 @@ String extractErrorMessage(String consoleResponse) {
                                         ?.status ==
                                     "idle"
                                 ? () async {
+                                  var _savedPosX = global.machineObjectModel.result!.move!.axes![0].machinePosition;
+                                  var _savedPosY = global.machineObjectModel.result!.move!.axes![1].machinePosition;
+                                  var _savedPosZ = global.machineObjectModel.result!.move!.axes![2].machinePosition;
                                     API_Manager()
                                         .sendGcodeCommand(
                                             'M37 P"${ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString()}"')
@@ -803,6 +806,7 @@ String extractErrorMessage(String consoleResponse) {
                                           if (value.contains("will print in")) {
                                             timer.cancel();
                                             Navigator.of(context).pop();
+                                            API_Manager().sendGcodeCommand("G92 X$_savedPosX Y$_savedPosY Z$_savedPosZ");
                                             showDialog(context: context, builder: (context){
                                             return AlertDialog(
                                               title: RichText(
@@ -831,6 +835,7 @@ String extractErrorMessage(String consoleResponse) {
                                           });
                                           }
                                           else if(value.contains("Error")){
+                                            API_Manager().sendGcodeCommand("G92 X$_savedPosX Y$_savedPosY Z$_savedPosZ");
                                             timer.cancel();
                                             Navigator.of(context).pop();
                                             showDialog(context: context, builder: (context){
