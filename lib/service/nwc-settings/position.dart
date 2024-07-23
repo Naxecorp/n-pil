@@ -6,6 +6,10 @@ class Position {
 
   Position({this.Name, this.PosX, this.PosY, this.PosZ});
 
+  bool hasAnyNull() {
+    return [Name, PosX, PosY, PosZ].any((element) => element == null);
+  }
+
   Position.fromJson(Map<String, dynamic> json)
       : Name = json["Name"],
         PosX = json['PosX'],

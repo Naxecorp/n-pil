@@ -5,6 +5,10 @@ class PalpeurOutil {
 
   PalpeurOutil({this.PosX, this.PosY, this.Height});
 
+  bool hasAnyNull() {
+    return [PosX, PosY, Height].any((element) => element == null);
+  }
+
   PalpeurOutil.fromJson(Map<String, dynamic> json)
       : PosX = json['PosX'],
         PosY = json['PosY'],

@@ -6,6 +6,10 @@ class Offsets {
 
   Offsets({this.Name, this.DecalX, this.DecalY, this.DecalZ});
 
+  bool hasAnyNull() {
+    return [Name, DecalX, DecalY, DecalZ].any((element) => element == null);
+  }
+
   Offsets.fromJson(Map<String, dynamic> json)
       : Name = json["Name"],
         DecalX = json['DecalX'],

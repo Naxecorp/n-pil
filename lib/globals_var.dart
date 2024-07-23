@@ -23,7 +23,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.8.12";
+String version = "Version 1.8.13";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;

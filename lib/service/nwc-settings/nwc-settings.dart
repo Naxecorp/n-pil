@@ -35,13 +35,14 @@ class MachineN02Config {
 
   bool hasAnyNull() {
     return [
-      Palpeur, // You might need a separate check for each property of PalpeurOutil if they can be null individually
       Serie,
       IP,
-      GlobalMachineUsedTime,
       email,
+      Lastmodifition,
+      GlobalMachineUsedTime,
       DefaultMode,
-      Positions, // Same note as PalpeurOutil for items in the list
+      Palpeur,
+      Positions,
       SetPosAffichage,
       HasHeatBed,
       HasFanOnEnclosure,
@@ -49,9 +50,13 @@ class MachineN02Config {
       HasACT,
       VitesseBroche,
       VitesseDefaut,
-      Offset, // And for Offsets
-      MagasinOutil,
-    ].any((element) => element == null);
+      Offset,
+      magasinOutil,
+    ].any((element) => element == null) ||
+    Positions?.any((pos) =>  pos.hasAnyNull()) == true ||
+    Offset?.any((off) =>  off.hasAnyNull()) == true ||
+    MagasinOutil?.any((outil) =>  outil.hasAnyNull()) == true ||
+    (Palpeur != null && Palpeur!.hasAnyNull());
   }
 
   MachineN02Config(

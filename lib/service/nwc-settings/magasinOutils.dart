@@ -6,6 +6,10 @@ class MagasinOutils {
 
   MagasinOutils({this.CoordX, this.CoordY, this.CoordZ, this.Ecartement});
 
+  bool hasAnyNull() {
+    return [CoordX, CoordY, CoordZ, Ecartement].any((element) => element == null);
+  }
+
   MagasinOutils.fromJson(Map<String, dynamic> json)
       : CoordX = json['CoordX'],
         CoordY = json['CoordY'],
