@@ -701,7 +701,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                               onPressed: () {
                                 setState(() {
                                   API_Manager().sendGcodeCommand(
-                                      "M120\nG91\nG1 Y500 F${global.SpeedValue}\nM121\n");
+                                      "G53 G1 Y${global.objectModelMove.result!.axes![1].max} F${global.SpeedValue}");
                                 });
                               },
                               child: Column(
@@ -733,7 +733,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                               onPressed: () {
                                 setState(() {
                                   API_Manager().sendGcodeCommand(
-                                      "M120\nG91\nG1 Y-500 F${global.SpeedValue}\nM121\n");
+                                      "G53 G1 Y0 F${global.SpeedValue}");
                                 });
                               },
                               child: Column(
@@ -760,7 +760,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text("Accel: ${global.Accel}"),
+                                Text("Accel: ${global.objectModelMove.result?.axes?[1].acceleration}"),
                                 NeumorphicButton(
                                   margin: const EdgeInsets.all(5),
                                   style: NeumorphicStyle(
@@ -768,9 +768,10 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      global.Accel = global.Accel + 10;
+                                      var accel = global.objectModelMove.result?.axes?[1].acceleration;
+                                      accel = accel! + 10;
                                       API_Manager().sendGcodeCommand(
-                                          "M201 Y${global.Accel} \n");
+                                          "M201 Y${accel} \n");
                                     });
                                   },
                                   child: Column(
