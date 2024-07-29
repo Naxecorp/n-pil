@@ -119,7 +119,7 @@ class _JoystickState2 extends State<Joystick2> {
                   flex: 1,
                   child: NeumorphicButton(
                     margin: EdgeInsets.all(10),
-                    onPressed: onRotateARPressed,
+                    onPressed: onRotateALPressed,
                     style: NeumorphicStyle(
                       color: Color(0xFFF0F0F3),
                       shape: NeumorphicShape.convex,
@@ -141,7 +141,7 @@ class _JoystickState2 extends State<Joystick2> {
                   flex: 1,
                   child: NeumorphicButton(
                     margin: EdgeInsets.all(10),
-                    onPressed: onRotateALPressed,
+                    onPressed: onRotateARPressed,
                     style: NeumorphicStyle(
                       color: Color(0xFFF0F0F3),
                       shape: NeumorphicShape.convex,
