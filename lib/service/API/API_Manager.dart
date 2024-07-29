@@ -138,13 +138,24 @@ class API_Manager {
       } else {
         print(
             'Fail to Send commnand, error : ' + response.statusCode.toString());
-        return 'nok';
+        return 'Error : ${response.statusCode}';
       }
     } catch (e) {
       print(e.toString());
-      return 'nok';
+      return 'Error : ${e.toString()}';
     }
   }
+
+
+  // Function to execute sendrr_reply at a specified interval for a specified duration
+Future<void> sendrr_replyEveryIforD(int durationMillis, int intervalMillis) async {
+  final int repetitions = durationMillis ~/ intervalMillis;
+
+  for (int i = 0; i < repetitions; i++) {
+    await sendrr_reply();
+    await Future.delayed(Duration(milliseconds: intervalMillis));
+  }
+}
 
   Future<global.MachineMode> getMachineMode() async {
     Map<String, String> requestHeaders = {

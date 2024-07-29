@@ -53,6 +53,7 @@ class LaserToolPowerState extends State<LaserToolPower> {
                           ),
                           onPressed: () async {
                             await API_Manager().sendGcodeCommand('M98 P"laserOn.g"');
+                            await API_Manager().sendrr_replyEveryIforD(800,3000);
                           },
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -83,6 +84,7 @@ class LaserToolPowerState extends State<LaserToolPower> {
                           ),
                           onPressed: () async {
                             await API_Manager().sendGcodeCommand('M98 P"laserOff.g"');
+                            await API_Manager().sendrr_replyEveryIforD(800,3000);
                           },
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
