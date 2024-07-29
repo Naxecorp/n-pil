@@ -129,14 +129,14 @@ class _JoystickState2 extends State<Joystick2> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Icon(
-                        Icons.rotate_90_degrees_cw_outlined,
+                        Icons.arrow_circle_up,
                         size: (widget.size)! / 1.5,
                         color: widget.iconColor,
                       ),
                     ),
                   ),
                 ),
-                Flexible(flex: 1, child: Text("A")),
+                Flexible(flex: 1, child: Text("U")),
                 Flexible(
                   flex: 1,
                   child: NeumorphicButton(
@@ -151,7 +151,7 @@ class _JoystickState2 extends State<Joystick2> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Icon(
-                        Icons.rotate_90_degrees_ccw_outlined,
+                        Icons.arrow_circle_down,
                         size: (widget.size)! / 1.5,
                         color: widget.iconColor,
                       ),

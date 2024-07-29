@@ -464,19 +464,19 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                       onRotateALPressed: () async {
                         if (MovesWithoutEndstop)
                           await API_Manager().sendGcodeCommand(
-                              "M120\nG91\nG1 A$stepValue H2 F${global.SpeedValue}\nM121\n");
+                              "M120\nG91\nG1 U$stepValue H2 F${global.SpeedValue}\nM121\n");
                         else
                           await API_Manager().sendGcodeCommand(
-                              "M120\nG91\nG1 A$stepValue F${global.SpeedValue}\nM121\n");
+                              "M120\nG91\nG1 U$stepValue F${global.SpeedValue}\nM121\n");
                         API_Manager().sendrr_reply();
                       },
                       onRotateARPressed: () async {
                         if (MovesWithoutEndstop)
                           await API_Manager().sendGcodeCommand(
-                              "M120\nG91\nG1 A-$stepValue H2 F${global.SpeedValue}\nM121\n");
+                              "M120\nG91\nG1 U-$stepValue H2 F${global.SpeedValue}\nM121\n");
                         else
                           await API_Manager().sendGcodeCommand(
-                              "M120\nG91\nG1 A-$stepValue F${global.SpeedValue}\nM121\n");
+                              "M120\nG91\nG1 U-$stepValue F${global.SpeedValue}\nM121\n");
                         API_Manager().sendrr_reply();
                       },
                       onRotateCRPressed: () async {
