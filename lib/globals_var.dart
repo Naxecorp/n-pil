@@ -23,7 +23,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.8.16 RC2";
+String version = "Version 1.8.17";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -43,6 +43,7 @@ List<String> commandHistory = []; // Historique cmd gcode
 int maxLineOfProg = 0;
 var selectedGcodeFileIndex = 0;
 bool DefaultConfigWasLoaded = false;
+bool isModeDegrade=false;
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
 ObjectModelMove objectModelMove = ObjectModelMove();

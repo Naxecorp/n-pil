@@ -88,8 +88,7 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
 
     Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
-      print("check");
+      if(global.MyMachineN02Config.HasFanOnEnclosure==1 && global.isModeDegrade==true)global.checkCaissonOpen(context);
     });
 
     global.checkAndShowDialog(context);
@@ -317,7 +316,21 @@ class DashboardScreenState extends State<DashboardScreen> {
                         "Aquiter AU",
                         style: TextStyle(color: Colors.white),
                       ),
-                    )
+                    ),
+                    SizedBox(width: 15,),
+                    global.MyMachineN02Config.HasFanOnEnclosure == 1 ? Switch(value: global.isModeDegrade, onChanged: (value){
+                      if (!global.isModeDegrade) {
+                        showDialog(context: context, builder:((context) => AlertDialog(title: const Text("Mode Dégradé \nMDP: "),content:TextField(onSubmitted: (TextValue) {
+                        if (TextValue=="prudence"){
+                          global.isModeDegrade = value;  
+                        Navigator.of(context).pop();
+                        }
+                      },) ,))
+                      );}
+                      else {
+                        global.isModeDegrade = value;
+                      }
+                    }): Container(),
                   ],
                 ))),
           ],
