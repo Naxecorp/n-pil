@@ -95,7 +95,8 @@ class DashboardScreenState extends State<DashboardScreen> {
     checkErrorDrive(context);
     if(global.DefaultConfigWasLoaded){
       global.DefaultConfigWasLoaded=false;
-      showDialog(context: context, builder:((context) => AlertDialog(title: const Text("Default config was loaded") ,)));}
+      //showDialog(context: context, builder:((context) => AlertDialog(title: const Text("Default config was loaded") ,)));
+    }
   }
 
   // Fonction qui regarde si les 3 axes sont homes et va au dernières coordonées machines
@@ -137,6 +138,7 @@ class DashboardScreenState extends State<DashboardScreen> {
             .then((value) => API_Manager().sendrr_reply());
 
         Navigator.of(context).pop();
+        
       }
     });
   }

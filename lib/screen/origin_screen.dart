@@ -429,7 +429,7 @@ class OriginScreenState extends State<OriginScreen> {
                                 onPressed: () {
                                   showDialog(
                                     context: context,
-                                    barrierDismissible: false,
+                                    barrierDismissible: true,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
                                         title: const Text("Mesure en cours..."),
@@ -897,6 +897,102 @@ class OriginScreenState extends State<OriginScreen> {
                         height: double.infinity,
                       ),
                     ),
+                  Flexible(
+                      flex: 2,
+                      child: Container(
+                        //height: double.infinity,
+                        width: double.infinity,
+                        //color: Colors.blue,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: NeumorphicButton(
+                                margin: EdgeInsets.all(15),
+                                style: NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text("Mesure en cours..."),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: const [
+                                            CircularProgressIndicator(
+                                              color: Colors.blue,
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              API_Manager()
+                                                  .sendGcodeCommand("M112");
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red,
+                                              textStyle: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            child: const Text(
+                                              'Arrêt immédiat',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                  API_Manager()
+                                      .sendGcodeCommand('M98 P"PalperBille.g"').then((value) {
+                                    Timer.periodic(
+                                      const Duration(milliseconds: 500),
+                                      (timer) {
+                                        API_Manager()
+                                            .sendrr_reply()
+                                            .then((response) {
+                                          if (response
+                                              .contains("end of ")) {
+                                            timer.cancel();
+                                            Navigator.of(context).pop();
+                                          }
+                                        });
+                                      },
+                                    );
+                                  });
+                                },
+                                child: const Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Icon(
+                                      Icons.pages_outlined,
+                                      color: Color(0xFF707585),
+                                    ),
+                                    FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Text(
+                                        'Palper angle',
+                                        style:
+                                            TextStyle(color: Color(0xFF707585)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            ],
+                        ),
+                      ),
+                    ),
+                    
                   ],
                 ),
               ),
