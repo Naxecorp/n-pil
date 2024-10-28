@@ -951,7 +951,7 @@ class OriginScreenState extends State<OriginScreen> {
                                   );
 
                                   API_Manager()
-                                      .sendGcodeCommand('M98 P"PalperBille.g"').then((value) {
+                                      .sendGcodeCommand('M98 P"palperBille.g"').then((value) {
                                     Timer.periodic(
                                       const Duration(milliseconds: 500),
                                       (timer) {
