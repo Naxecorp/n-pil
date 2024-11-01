@@ -88,7 +88,7 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
 
     Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1 && global.isModeDegrade==true)global.checkCaissonOpen(context);
+      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
     });
 
     global.checkAndShowDialog(context);
@@ -324,15 +324,26 @@ class DashboardScreenState extends State<DashboardScreen> {
                       if (!global.isModeDegrade) {
                         showDialog(context: context, builder:((context) => AlertDialog(title: const Text("Mode Dégradé \nMDP: "),content:TextField(onSubmitted: (TextValue) {
                         if (TextValue=="prudence"){
-                          global.isModeDegrade = value;  
-                        Navigator.of(context).pop();
+                          global.isModeDegrade = true; 
+                          setState(() {
+                            
+                          }); 
+                          Navigator.of(context).pop();
+                          Navigator.pushNamed(context, '/dashboard');
                         }
                       },) ,))
                       );}
                       else {
-                        global.isModeDegrade = value;
+                        global.isModeDegrade = false;
+                        setState(() {
+                          
+                        });
+                        Navigator.pushNamed(context, '/dashboard');
                       }
                     }): Container(),
+                    SizedBox(width: 15,),
+                    global.MyMachineN02Config.HasFanOnEnclosure == 1 ?
+                    Container(width:10,height:10, color: global.isModeDegrade==true ? Colors.green:Colors.red): Container(),
                   ],
                 ))),
           ],

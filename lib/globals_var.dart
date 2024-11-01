@@ -23,7 +23,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.8.19";
+String version = "Version 1.8.21 RC1";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -254,7 +254,7 @@ void checkAndShowDialog(context) async {
 void checkCaissonOpen(BuildContext context) {
   popUpCaissonIsShown = false;
   Timer.periodic(const Duration(milliseconds: 600), (timer) {
-    if (AdminLogged == false) {
+    if (AdminLogged == false && isModeDegrade==false) {
       if ((machineObjectModel.result?.sensors?.gpIn?[10]?.value ?? 1) == 0) {
         if (popUpCaissonIsShown == false) {
           popUpCaissonIsShown = true;
@@ -286,7 +286,7 @@ void checkCaissonOpen(BuildContext context) {
                             ?.toString()
                             .contains("busy") ??
                         false))
-                ? API_Manager().sendGcodeCommand("M5 PO")
+                ? API_Manager().sendGcodeCommand("M5 P0")
                 : null;
             showDialog(
               context: context,
