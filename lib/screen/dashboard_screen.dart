@@ -95,7 +95,8 @@ class DashboardScreenState extends State<DashboardScreen> {
     checkErrorDrive(context);
     if(global.DefaultConfigWasLoaded){
       global.DefaultConfigWasLoaded=false;
-      showDialog(context: context, builder:((context) => AlertDialog(title: const Text("Default config was loaded") ,)));
+      showDialog(context: context, builder:((context) => AlertDialog(title: const Text("config standard") ,)));
+      
     }
   }
 

@@ -67,7 +67,8 @@ class _OffsetState extends State<Offset> {
   void initState() {
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
+      if (global.MyMachineN02Config.HasFanOnEnclosure == 1)
+        global.checkCaissonOpen(context);
     });
   }
 
@@ -399,602 +400,304 @@ class OriginScreenState extends State<OriginScreen> {
           children: [
             Flexible(
               flex: 1,
-              child: Window(
-                title1: "Mesure Hauteur",
-                title2: " fraise",
-                child: Column(
-                  children: [
-                    Flexible(
-                      flex: 3,
-                      child: Container(
-                        height: double.infinity,
-                      ),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: Container(
-                        //height: double.infinity,
-                        width: double.infinity,
-                        //color: Colors.blue,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: EdgeInsets.all(15),
-                                style: NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: true,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text("Mesure en cours..."),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: const [
-                                            CircularProgressIndicator(
-                                              color: Colors.blue,
+              child: Column(
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: Window(
+                      title1: "Mesure Hauteur",
+                      title2: " fraise",
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: 1,
+                                child: NeumorphicButton(
+                                  margin: EdgeInsets.all(22),
+                                  style: NeumorphicStyle(
+                                    color: Color(0xFFF0F0F3),
+                                  ),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: true,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title:
+                                              const Text("Mesure en cours..."),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: const [
+                                              CircularProgressIndicator(
+                                                color: Colors.blue,
+                                              ),
+                                            ],
+                                          ),
+                                          actions: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                API_Manager()
+                                                    .sendGcodeCommand("M112");
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                                textStyle: const TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              child: const Text(
+                                                'Arrêt immédiat',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
                                             ),
                                           ],
-                                        ),
-                                        actions: [
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              API_Manager()
-                                                  .sendGcodeCommand("M112");
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.red,
-                                              textStyle: const TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            child: const Text(
-                                              'Arrêt immédiat',
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-
-                                  API_Manager()
-                                      .sendGcodeCommand("G53 G1 Z188")
-                                      .then((value) {
-                                    return API_Manager().sendGcodeCommand(
-                                        "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}");
-                                  }).then((value) {
-                                    return API_Manager()
-                                        .sendGcodeCommand('M98 P"palper1.g"');
-                                  }).then((value) {
-                                    Timer.periodic(
-                                      const Duration(milliseconds: 500),
-                                      (timer) {
-                                        API_Manager()
-                                            .sendrr_reply()
-                                            .then((response) {
-                                          if (response
-                                              .contains("end of palper1.g")) {
-                                            timer.cancel();
-                                            Navigator.of(context).pop();
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      'Notification'),
-                                                  content: const Text(
-                                                    'Vous pouvez changer d\'outil',
-                                                    style:
-                                                        TextStyle(fontSize: 16),
-                                                  ),
-                                                  actions: <Widget>[
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        backgroundColor:
-                                                            Colors.blue,
-                                                        textStyle:
-                                                            const TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                      ),
-                                                      child: const Text(
-                                                        'Fermer',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          }
-                                        });
+                                        );
                                       },
                                     );
-                                  });
-                                },
-                                child: const Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Icon(
-                                      Icons.looks_one_outlined,
-                                      color: Color(0xFF707585),
-                                    ),
-                                    FittedBox(
-                                      fit: BoxFit.fitHeight,
-                                      child: Text(
-                                        'Palper outil actuel',
-                                        style:
-                                            TextStyle(color: Color(0xFF707585)),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // AspectRatio(
-                            //   aspectRatio: 1,
-                            //   child: NeumorphicButton(
-                            //     margin: EdgeInsets.all(15),
-                            //     style: NeumorphicStyle(
-                            //       color: Color(0xFFF0F0F3),
-                            //     ),
-                            //     onPressed: () {
-                            //       API_Manager()
-                            //           .sendGcodeCommand("M106 P3 S255")
-                            //           .then((value) => API_Manager()
-                            //               .sendGcodeCommand("G38.2 Z-200")
-                            //               .then((value) => API_Manager()
-                            //                   .sendGcodeCommand("M106 P3 S0")));
-                            //     },
-                            //     child: Column(
-                            //       mainAxisAlignment:
-                            //           MainAxisAlignment.spaceEvenly,
-                            //       children: [
-                            //         Icon(
-                            //           Icons.get_app,
-                            //           color: Color(0xFF707585),
-                            //         ),
-                            //         FittedBox(
-                            //           fit: BoxFit.fitHeight,
-                            //           child: Text(
-                            //             'Palper outil actuel',
-                            //             style:
-                            //                 TextStyle(color: Color(0xFF707585)),
-                            //           ),
-                            //         )
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
-                            // AspectRatio(
-                            //   aspectRatio: 1,
-                            //   child: NeumorphicButton(
-                            //     margin: EdgeInsets.all(15),
-                            //     style: const NeumorphicStyle(
-                            //       color: Color(0xFFF0F0F3),
-                            //     ),
-                            //     onPressed: () {
-                            //       ZSaved = global.machineObjectModel.result!
-                            //           .move!.axes![2].userPosition!
-                            //           .toDouble();
-                            //       ScaffoldMessenger.of(context).showSnackBar(
-                            //         SnackBar(
-                            //           content:
-                            //               const Text('Hauteur Enregistrée'),
-                            //           duration:
-                            //               const Duration(milliseconds: 400),
-                            //         ),
-                            //       );
-                            //     },
-                            //     child: Column(
-                            //       mainAxisAlignment:
-                            //           MainAxisAlignment.spaceEvenly,
-                            //       children: [
-                            //         const Icon(
-                            //           Icons.save_outlined,
-                            //           color: Color(0xFF707585),
-                            //         ),
-                            //         const FittedBox(
-                            //           fit: BoxFit.fitHeight,
-                            //           child: Text(
-                            //             'Enregistrer hauteur',
-                            //             style:
-                            //                 TextStyle(color: Color(0xFF707585)),
-                            //           ),
-                            //         )
-                            //       ],
-                            //     ),
-                            //   ),m
-                            // ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: Container(
-                        height: double.infinity,
-                      ),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: Container(
-                        //color: Colors.orange,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: const EdgeInsets.all(15),
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text("Mesure en cours..."),
-                                        content: const Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            CircularProgressIndicator(
-                                              color: Colors.blue,
-                                            ),
-                                          ],
-                                        ),
-                                        actions: [
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              API_Manager()
-                                                  .sendGcodeCommand("M112");
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.red,
-                                              textStyle: const TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            child: const Text(
-                                              'Arrêt immédiat',
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-
-                                  API_Manager()
-                                      .sendGcodeCommand("G53 G1 Z189")
-                                      .then(
-                                        (value) => API_Manager()
-                                            .sendGcodeCommand(
-                                                "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}")
-                                            .then(
-                                              (value) =>
-                                                  API_Manager()
-                                                      .sendGcodeCommand(
-                                                          'M98 P"palper2.g"')
-                                                      .then(
-                                                        (value) =>
-                                                            Timer.periodic(
-                                                          const Duration(
-                                                              milliseconds:
-                                                                  500),
-                                                          (timer) {
-                                                            API_Manager()
-                                                                .sendrr_reply()
-                                                                .then(
-                                                                    (response) {
-                                                              if (response.contains(
-                                                                  "end of palper2.g")) {
-                                                                timer.cancel();
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                                showDialog(
-                                                                  context:
-                                                                      context,
-                                                                  builder:
-                                                                      (BuildContext
-                                                                          context) {
-                                                                    return AlertDialog(
-                                                                      title: const Text(
-                                                                          'Notification'),
-                                                                      content:
-                                                                          const Text(
-                                                                        'Mesure terminé ! ',
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                16),
-                                                                      ),
-                                                                      actions: <Widget>[
-                                                                        ElevatedButton(
-                                                                          onPressed:
-                                                                              () {
-                                                                            Navigator.of(context).pop();
-                                                                          },
-                                                                          style:
-                                                                              ElevatedButton.styleFrom(
-                                                                            backgroundColor:
-                                                                                Colors.blue,
-                                                                            textStyle:
-                                                                                const TextStyle(color: Colors.white),
-                                                                          ),
-                                                                          child:
-                                                                              const Text(
-                                                                            'Fermer',
-                                                                            style:
-                                                                                TextStyle(color: Colors.white),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    );
-                                                                  },
-                                                                );
-                                                              }
-                                                            });
-                                                          },
+                                    API_Manager()
+                                        .sendGcodeCommand("G53 G1 Z188")
+                                        .then((value) {
+                                      return API_Manager().sendGcodeCommand(
+                                          "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}");
+                                    }).then((value) {
+                                      return API_Manager()
+                                          .sendGcodeCommand('M98 P"palper1.g"');
+                                    }).then((value) {
+                                      Timer.periodic(
+                                        const Duration(milliseconds: 500),
+                                        (timer) {
+                                          API_Manager()
+                                              .sendrr_reply()
+                                              .then((response) {
+                                            if (response
+                                                .contains("end of palper1.g")) {
+                                              timer.cancel();
+                                              Navigator.of(context).pop();
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        'Notification'),
+                                                    content: const Text(
+                                                      'Vous pouvez changer d\'outil',
+                                                      style: TextStyle(
+                                                          fontSize: 16),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              Colors.blue,
+                                                          textStyle:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                        ),
+                                                        child: const Text(
+                                                          'Fermer',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
                                                         ),
                                                       ),
-                                            ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            }
+                                          });
+                                        },
                                       );
-                                },
-                                child: const Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Icon(
-                                      Icons.looks_two_outlined,
-                                      color: Color(0xFF707585),
-                                    ),
-                                    FittedBox(
-                                      fit: BoxFit.fitHeight,
-                                      child: Text(
-                                        "Palper nouvel outil",
-                                        style:
-                                            TextStyle(color: Color(0xFF707585)),
+                                    });
+                                  },
+                                  child: const Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(
+                                        Icons.looks_one_outlined,
+                                        color: Color(0xFF707585),
                                       ),
-                                    )
-                                  ],
+                                      FittedBox(
+                                        fit: BoxFit.fitHeight,
+                                        child: Text(
+                                          'Palper outil actuel',
+                                          style: TextStyle(
+                                              color: Color(0xFF707585)),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            // AspectRatio(
-                            //   aspectRatio: 1,
-                            //   child: NeumorphicButton(
-                            //     margin: const EdgeInsets.all(15),
-                            //     style: const NeumorphicStyle(
-                            //       color: Color(0xFFF0F0F3),
-                            //     ),
-                            //     onPressed: () {
-                            //       API_Manager()
-                            //           .sendGcodeCommand("G53 G1 Z189 F2000");
-                            //     },
-                            //     child: Column(
-                            //       mainAxisAlignment:
-                            //           MainAxisAlignment.spaceEvenly,
-                            //       children: [
-                            //         const Icon(
-                            //           Icons.arrow_drop_up,
-                            //           color: Color(0xFF707585),
-                            //         ),
-                            //         const FittedBox(
-                            //           fit: BoxFit.fitHeight,
-                            //           child: Text(
-                            //             "Changer d'outil",
-                            //             style:
-                            //                 TextStyle(color: Color(0xFF707585)),
-                            //           ),
-                            //         )
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
-                            // AspectRatio(
-                            //   aspectRatio: 1,
-                            //   child: NeumorphicButton(
-                            //     margin: const EdgeInsets.all(15),
-                            //     style: const NeumorphicStyle(
-                            //       color: Color(0xFFF0F0F3),
-                            //     ),
-                            //     onPressed: () {
-                            //       API_Manager()
-                            //           .sendGcodeCommand("M106 P3 S255")
-                            //           .then((value) => API_Manager()
-                            //               .sendGcodeCommand("G38.2 Z-200")
-                            //               .then((value) => API_Manager()
-                            //                   .sendGcodeCommand("M106 P3 S0")));
-                            //     },
-                            //     child: Column(
-                            //       mainAxisAlignment:
-                            //           MainAxisAlignment.spaceEvenly,
-                            //       children: [
-                            //         const Icon(
-                            //           Icons.get_app,
-                            //           color: Color(0xFF707585),
-                            //         ),
-                            //         const FittedBox(
-                            //           fit: BoxFit.fitHeight,
-                            //           child: Text(
-                            //             'Palper outil',
-                            //             style:
-                            //                 TextStyle(color: Color(0xFF707585)),
-                            //           ),
-                            //         )
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
-                            // AspectRatio(
-                            //   aspectRatio: 1,
-                            //   child: NeumorphicButton(
-                            //     margin: const EdgeInsets.all(15),
-                            //     style: const NeumorphicStyle(
-                            //       color: Color(0xFFF0F0F3),
-                            //     ),
-                            //     onPressed: () {
-                            //       API_Manager()
-                            //           .sendGcodeCommand("G10 L20 P1 Z" +
-                            //               ZSaved.toStringAsFixed(2))
-                            //           .then((value) => API_Manager()
-                            //               .sendGcodeCommand("G54"));
-                            //       ScaffoldMessenger.of(context).showSnackBar(
-                            //         SnackBar(
-                            //           content:
-                            //               const Text('Hauteur Enregistrée'),
-                            //           duration:
-                            //               const Duration(milliseconds: 400),
-                            //         ),
-                            //       );
-                            //       API_Manager().sendGcodeCommand(
-                            //           "G91\nG1 Z50 F3700\nG90\n");
-                            //     },
-                            //     child: Column(
-                            //       mainAxisAlignment:
-                            //           MainAxisAlignment.spaceEvenly,
-                            //       children: [
-                            //         const Icon(
-                            //           Icons.height,
-                            //           color: Color(0xFF707585),
-                            //         ),
-                            //         const FittedBox(
-                            //           fit: BoxFit.fitHeight,
-                            //           child: Text(
-                            //             'Restituer hauteur outil',
-                            //             style:
-                            //                 TextStyle(color: Color(0xFF707585)),
-                            //           ),
-                            //         )
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 3,
-                      child: Container(
-                        height: double.infinity,
-                      ),
-                    ),
-                  Flexible(
-                      flex: 2,
-                      child: Container(
-                        //height: double.infinity,
-                        width: double.infinity,
-                        //color: Colors.blue,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: NeumorphicButton(
-                                margin: EdgeInsets.all(15),
-                                style: NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: true,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text("Mesure en cours..."),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: const [
-                                            CircularProgressIndicator(
-                                              color: Colors.blue,
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: 1,
+                                child: NeumorphicButton(
+                                  margin: const EdgeInsets.all(22),
+                                  style: const NeumorphicStyle(
+                                    color: Color(0xFFF0F0F3),
+                                  ),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title:
+                                              const Text("Mesure en cours..."),
+                                          content: const Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              CircularProgressIndicator(
+                                                color: Colors.blue,
+                                              ),
+                                            ],
+                                          ),
+                                          actions: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                API_Manager()
+                                                    .sendGcodeCommand("M112");
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                                textStyle: const TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              child: const Text(
+                                                'Arrêt immédiat',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
                                             ),
                                           ],
-                                        ),
-                                        actions: [
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              API_Manager()
-                                                  .sendGcodeCommand("M112");
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.red,
-                                              textStyle: const TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            child: const Text(
-                                              'Arrêt immédiat',
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-
-                                  API_Manager()
-                                      .sendGcodeCommand('M98 P"palperBille.g"').then((value) {
-                                    Timer.periodic(
-                                      const Duration(milliseconds: 500),
-                                      (timer) {
-                                        API_Manager()
-                                            .sendrr_reply()
-                                            .then((response) {
-                                          if (response
-                                              .contains("end of ")) {
-                                            timer.cancel();
-                                            Navigator.of(context).pop();
-                                          }
-                                        });
+                                        );
                                       },
                                     );
-                                  });
-                                },
-                                child: const Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Icon(
-                                      Icons.pages_outlined,
-                                      color: Color(0xFF707585),
-                                    ),
-                                    FittedBox(
-                                      fit: BoxFit.fitHeight,
-                                      child: Text(
-                                        'Palper angle',
-                                        style:
-                                            TextStyle(color: Color(0xFF707585)),
+
+                                    API_Manager()
+                                        .sendGcodeCommand("G53 G1 Z189")
+                                        .then(
+                                          (value) => API_Manager()
+                                              .sendGcodeCommand(
+                                                  "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}")
+                                              .then(
+                                                (value) =>
+                                                    API_Manager()
+                                                        .sendGcodeCommand(
+                                                            'M98 P"palper2.g"')
+                                                        .then(
+                                                          (value) =>
+                                                              Timer.periodic(
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                            (timer) {
+                                                              API_Manager()
+                                                                  .sendrr_reply()
+                                                                  .then(
+                                                                      (response) {
+                                                                if (response
+                                                                    .contains(
+                                                                        "end of palper2.g")) {
+                                                                  timer
+                                                                      .cancel();
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return AlertDialog(
+                                                                        title: const Text(
+                                                                            'Notification'),
+                                                                        content:
+                                                                            const Text(
+                                                                          'Mesure terminé ! ',
+                                                                          style:
+                                                                              TextStyle(fontSize: 16),
+                                                                        ),
+                                                                        actions: <Widget>[
+                                                                          ElevatedButton(
+                                                                            onPressed:
+                                                                                () {
+                                                                              Navigator.of(context).pop();
+                                                                            },
+                                                                            style:
+                                                                                ElevatedButton.styleFrom(
+                                                                              backgroundColor: Colors.blue,
+                                                                              textStyle: const TextStyle(color: Colors.white),
+                                                                            ),
+                                                                            child:
+                                                                                const Text(
+                                                                              'Fermer',
+                                                                              style: TextStyle(color: Colors.white),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                }
+                                                              });
+                                                            },
+                                                          ),
+                                                        ),
+                                              ),
+                                        );
+                                  },
+                                  child: const Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(
+                                        Icons.looks_two_outlined,
+                                        color: Color(0xFF707585),
                                       ),
-                                    )
-                                  ],
+                                      FittedBox(
+                                        fit: BoxFit.fitHeight,
+                                        child: Text(
+                                          "Palper nouvel outil",
+                                          style: TextStyle(
+                                              color: Color(0xFF707585)),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
                             ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                    
-                  ],
-                ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Window(
+                        title1: "Palpage",
+                        title2: " Pièce",
+                        child: ButtonLayout()),
+                  ),
+                ],
               ),
             ),
             Flexible(
@@ -1206,6 +909,333 @@ class OriginScreenState extends State<OriginScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ButtonLayout extends StatelessWidget {
+  const ButtonLayout({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(100.0),
+      child: Stack(
+        children: [
+          // Bouton en haut à gauche
+          Positioned(
+            top: 20,
+            left: 20,
+            child: NeumorphicButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Mesure en cours..."),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text("Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(height: 10,),
+                          CircularProgressIndicator(
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            API_Manager().sendGcodeCommand("M112");
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            textStyle: const TextStyle(color: Colors.white),
+                          ),
+                          child: const Text(
+                            'Arrêt immédiat',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+                API_Manager()
+                    .sendGcodeCommand('M98 P"palperAHG.g"')
+                    .then((value) {
+                  var times = 0;
+                  Timer.periodic(
+                    const Duration(milliseconds: 100),
+                    (timer) {
+                      times++;
+                      API_Manager().sendrr_reply().then((response) {
+                        if (response.contains("end of ") || times > 300) {
+                          times = 0;
+                          timer.cancel();
+                          Navigator.of(context).pop();
+                        }
+                      });
+                    },
+                  );
+                });
+              },
+              child: const Text('HG'),
+            ),
+          ),
+
+          // Bouton en haut à droite
+          Positioned(
+            top: 20,
+            right: 20,
+            child: NeumorphicButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Mesure en cours..."),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text("Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(height: 10,),
+                          CircularProgressIndicator(
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            API_Manager().sendGcodeCommand("M112");
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            textStyle: const TextStyle(color: Colors.white),
+                          ),
+                          child: const Text(
+                            'Arrêt immédiat',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+                API_Manager()
+                    .sendGcodeCommand('M98 P"palperAHD.g"')
+                    .then((value) {
+                  var times = 0;
+                  Timer.periodic(
+                    const Duration(milliseconds: 100),
+                    (timer) {
+                      times++;
+                      API_Manager().sendrr_reply().then((response) {
+                        if (response.contains("end of ") || times > 300) {
+                          times = 0;
+                          timer.cancel();
+                          Navigator.of(context).pop();
+                        }
+                      });
+                    },
+                  );
+                });
+              },
+              child: const Text('HD'),
+            ),
+          ),
+
+          // Bouton en bas à gauche
+          Positioned(
+            bottom: 20,
+            left: 20,
+            child: NeumorphicButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Mesure en cours..."),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text("Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(height: 10,),
+                          CircularProgressIndicator(
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            API_Manager().sendGcodeCommand("M112");
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            textStyle: const TextStyle(color: Colors.white),
+                          ),
+                          child: const Text(
+                            'Arrêt immédiat',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+                API_Manager()
+                    .sendGcodeCommand('M98 P"palperABG.g"')
+                    .then((value) {
+                  var times = 0;
+                  Timer.periodic(
+                    const Duration(milliseconds: 100),
+                    (timer) {
+                      times++;
+                      API_Manager().sendrr_reply().then((response) {
+                        if (response.contains("end of ") || times > 300) {
+                          times = 0;
+                          timer.cancel();
+                          Navigator.of(context).pop();
+                        }
+                      });
+                    },
+                  );
+                });
+              },
+              child: const Text('BG'),
+            ),
+          ),
+
+          // Bouton en bas à droite
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: NeumorphicButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Mesure en cours..."),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text("Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(height: 10,),
+                          CircularProgressIndicator(
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            API_Manager().sendGcodeCommand("M112");
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            textStyle: const TextStyle(color: Colors.white),
+                          ),
+                          child: const Text(
+                            'Arrêt immédiat',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+                API_Manager()
+                    .sendGcodeCommand('M98 P"palperABD.g"')
+                    .then((value) {
+                  var times = 0;
+                  Timer.periodic(
+                    const Duration(milliseconds: 100),
+                    (timer) {
+                      times++;
+                      API_Manager().sendrr_reply().then((response) {
+                        if (response.contains("end of ") || times > 300) {
+                          times = 0;
+                          timer.cancel();
+                          Navigator.of(context).pop();
+                        }
+                      });
+                    },
+                  );
+                });
+              },
+              child: const Text('BD'),
+            ),
+          ),
+
+          // Bouton central
+          Center(
+            child: NeumorphicButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Mesure en cours..."),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text("Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(height: 10,),
+                          CircularProgressIndicator(
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            API_Manager().sendGcodeCommand("M112");
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            textStyle: const TextStyle(color: Colors.white),
+                          ),
+                          child: const Text(
+                            'Arrêt immédiat',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+                API_Manager()
+                    .sendGcodeCommand('M98 P"palperCentre.g"')
+                    .then((value) {
+                  var times = 0;
+                  Timer.periodic(
+                    const Duration(milliseconds: 100),
+                    (timer) {
+                      times++;
+                      API_Manager().sendrr_reply().then((response) {
+                        if (response.contains("end of ") || times > 300) {
+                          times = 0;
+                          timer.cancel();
+                          Navigator.of(context).pop();
+                        }
+                      });
+                    },
+                  );
+                });
+              },
+              child: const Text('Centre'),
+            ),
+          ),
+        ],
       ),
     );
   }

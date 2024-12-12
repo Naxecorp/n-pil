@@ -106,35 +106,35 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                 ),
                               ),
                             )),
-                        Flexible(
-                            flex: 2,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 5),
-                              width: double.infinity,
-                              height: double.infinity,
-                              //color: Colors.orange,
-                              child: NeumorphicButton(
-                                onPressed: global.machineObjectModel.result
-                                            ?.state?.status ==
-                                        "processing"
-                                    ? null
-                                    : () {
-                                        API_Manager().sendGcodeCommand("G0 X0");
-                                      },
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "GO TO 0",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Color(0xFF707585),
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            )),
+                        // Flexible(
+                        //     flex: 2,
+                        //     child: Container(
+                        //       margin: const EdgeInsets.symmetric(horizontal: 5),
+                        //       width: double.infinity,
+                        //       height: double.infinity,
+                        //       //color: Colors.orange,
+                        //       child: NeumorphicButton(
+                        //         onPressed: global.machineObjectModel.result
+                        //                     ?.state?.status ==
+                        //                 "processing"
+                        //             ? null
+                        //             : () {
+                        //                 API_Manager().sendGcodeCommand("G0 X0");
+                        //               },
+                        //         style: const NeumorphicStyle(
+                        //           color: Color(0xFFF0F0F3),
+                        //         ),
+                        //         child: const Center(
+                        //           child: Text(
+                        //             "GO TO 0",
+                        //             textAlign: TextAlign.center,
+                        //             style: TextStyle(
+                        //                 color: Color(0xFF707585),
+                        //                 fontWeight: FontWeight.bold),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     )),
                       ],
                     ),
                   )),
@@ -203,35 +203,35 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                 ),
                               ),
                             )),
-                        Flexible(
-                            flex: 2,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 5),
-                              width: double.infinity,
-                              height: double.infinity,
-                              //color: Colors.orange,
-                              child: NeumorphicButton(
-                                onPressed: global.machineObjectModel.result
-                                            ?.state?.status ==
-                                        "processing"
-                                    ? null
-                                    : () {
-                                        API_Manager().sendGcodeCommand("G0 Y0");
-                                      },
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "GO TO 0",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Color(0xFF707585),
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            )),
+                        // Flexible(
+                        //     flex: 2,
+                        //     child: Container(
+                        //       margin: const EdgeInsets.symmetric(horizontal: 5),
+                        //       width: double.infinity,
+                        //       height: double.infinity,
+                        //       //color: Colors.orange,
+                        //       child: NeumorphicButton(
+                        //         onPressed: global.machineObjectModel.result
+                        //                     ?.state?.status ==
+                        //                 "processing"
+                        //             ? null
+                        //             : () {
+                        //                 API_Manager().sendGcodeCommand("G0 Y0");
+                        //               },
+                        //         style: const NeumorphicStyle(
+                        //           color: Color(0xFFF0F0F3),
+                        //         ),
+                        //         child: const Center(
+                        //           child: Text(
+                        //             "GO TO 0",
+                        //             textAlign: TextAlign.center,
+                        //             style: TextStyle(
+                        //                 color: Color(0xFF707585),
+                        //                 fontWeight: FontWeight.bold),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     )),
                       ],
                     ),
                   )),
@@ -300,35 +300,35 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                 ),
                               ),
                             )),
-                        Flexible(
-                            flex: 2,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 5),
-                              width: double.infinity,
-                              height: double.infinity,
-                              //color: Colors.orange,
-                              child: NeumorphicButton(
-                                onPressed: global.machineObjectModel.result
-                                            ?.state?.status ==
-                                        "processing"
-                                    ? null
-                                    : () {
-                                        API_Manager().sendGcodeCommand("G0 Z0");
-                                      },
-                                style: const NeumorphicStyle(
-                                  color: Color(0xFFF0F0F3),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "GO TO 0",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Color(0xFF707585),
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            )),
+                        // Flexible(
+                        //     flex: 2,
+                        //     child: Container(
+                        //       margin: const EdgeInsets.symmetric(horizontal: 5),
+                        //       width: double.infinity,
+                        //       height: double.infinity,
+                        //       //color: Colors.orange,
+                        //       child: NeumorphicButton(
+                        //         onPressed: global.machineObjectModel.result
+                        //                     ?.state?.status ==
+                        //                 "processing"
+                        //             ? null
+                        //             : () {
+                        //                 API_Manager().sendGcodeCommand("G0 Z0");
+                        //               },
+                        //         style: const NeumorphicStyle(
+                        //           color: Color(0xFFF0F0F3),
+                        //         ),
+                        //         child: const Center(
+                        //           child: Text(
+                        //             "GO TO 0",
+                        //             textAlign: TextAlign.center,
+                        //             style: TextStyle(
+                        //                 color: Color(0xFF707585),
+                        //                 fontWeight: FontWeight.bold),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     )),
                       ],
                     ),
                   )),
@@ -376,38 +376,38 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                           ),
                         ),
                       ),
-                      Flexible(
-                        flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: NeumorphicButton(
-                            onPressed: global.machineObjectModel.result?.state
-                                        ?.status ==
-                                    "processing"
-                                ? null
-                                : () async {
-                                    await API_Manager()
-                                        .sendGcodeCommand("G53 G0 Z189");
-                                    await API_Manager()
-                                        .sendGcodeCommand("G0 X0 Y0");
-                                    await API_Manager()
-                                        .sendGcodeCommand("G0 Z0");
-                                  },
-                            style: const NeumorphicStyle(
-                              color: Color(0xFFF0F0F3),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "GO TO 0 XYZ",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Color(0xFF707585),
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Flexible(
+                      //   flex: 1,
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(8.0),
+                      //     child: NeumorphicButton(
+                      //       onPressed: global.machineObjectModel.result?.state
+                      //                   ?.status ==
+                      //               "processing"
+                      //           ? null
+                      //           : () async {
+                      //               await API_Manager()
+                      //                   .sendGcodeCommand("G53 G0 Z189");
+                      //               await API_Manager()
+                      //                   .sendGcodeCommand("G0 X0 Y0");
+                      //               await API_Manager()
+                      //                   .sendGcodeCommand("G0 Z0");
+                      //             },
+                      //       style: const NeumorphicStyle(
+                      //         color: Color(0xFFF0F0F3),
+                      //       ),
+                      //       child: const Center(
+                      //         child: Text(
+                      //           "GO TO 0 XYZ",
+                      //           textAlign: TextAlign.center,
+                      //           style: TextStyle(
+                      //               color: Color(0xFF707585),
+                      //               fontWeight: FontWeight.bold),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   )),
             ],

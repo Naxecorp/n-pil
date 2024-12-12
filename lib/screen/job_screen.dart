@@ -42,7 +42,6 @@ class JobScreenState extends State<JobScreen> {
   double sliderValueSpeedFactor = 0;
   double? SpindleSpeedBeforePause = 0;
 
-  void actualiser() {}
 
   @override
   void initState() {
@@ -704,6 +703,7 @@ class JobScreenState extends State<JobScreen> {
                                           API_Manager().sendGcodeCommand("M0");
                                           API_Manager()
                                               .sendGcodeCommand("M106 P3 S0");
+                                          API_Manager().pushDataToDb(global.MyMachineN02Config.Serie.toString(), "END PROGRAM");
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(

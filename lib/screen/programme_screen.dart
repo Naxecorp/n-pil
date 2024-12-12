@@ -148,7 +148,7 @@ String extractErrorMessage(String consoleResponse) {
         barrierDismissible: false,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Fichier corrompu'),
+            title: const Text('Fichier invalide'),
             content: RichText(
               text: TextSpan(
                 style: const TextStyle(fontSize: 14, color: Colors.black),
@@ -229,9 +229,26 @@ String extractErrorMessage(String consoleResponse) {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Êtes vous sûr ?"),
-          content: Text(
-              "Programme sélectionné : ${(ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString())}"),
+          title: Center(child: const Text("Êtes vous sûr ?")),
+          content: Container(
+            height: 200,
+            width: 800,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Avez vous : "),
+                Text("1 - Défini les origines machines"),
+                Text("2 - Visualisé le programe"),
+                Text("3 - Effectué une simulation"),
+                Text("4 - Vérifié que la broche démarre"),
+                Text("5 - Sélectionné le bon outil (fraise)\n"),
+                
+                
+                
+                Center(child: Text("Programme sélectionné : ${(ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString())}")),
+              ],
+            ),
+          ),
           actions: <Widget>[
             ElevatedButton(
               child: Text("Non"),
@@ -239,33 +256,6 @@ String extractErrorMessage(String consoleResponse) {
                 Navigator.of(context).pop();
               },
             ),
-            ElevatedButton(
-                child: const Text(
-                    "Set la position actuel a '0' puis démarre le programme"),
-                onPressed: () async {
-                  global.secondsElapsedSinceBeginning = 0;
-                  global.globalTimeValue = "00:00:00";
-                  global.isJobStartedByUser = true;
-                  await API_Manager().sendGcodeCommand("G10 L20 P1 X0 Y0 Z0");
-                  await API_Manager().sendGcodeCommand("G10 L20 P1");
-                  await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
-                      ListofGcodeFile!
-                          .elementAt(global.selectedGcodeFileIndex)!
-                          .name
-                          .toString() +
-                      '"');
-                  await API_Manager().sendGcodeCommand('M106 P3 S255');
-                  progName = ListofGcodeFile!
-                      .elementAt(global.selectedGcodeFileIndex)!
-                      .name
-                      .toString();
-                  await API_Manager()
-                      .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD",
-                          "Start prog ${progName}")
-                      .timeout(Duration(seconds: 5));
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, '/jobStatus');
-                }),
             ElevatedButton(
               child: const Text("Démarrer"),
               onPressed: () async {
@@ -432,30 +422,12 @@ String extractErrorMessage(String consoleResponse) {
                       ),
                     ),
                     Flexible(
-                      flex: 5,
-                      child: Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: ElevatedButton.icon(
-                          label: const Text(
-                            "Charger depuis Liste Conversationel",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          icon: const Icon(
-                            Icons.file_download_off_outlined,
-                            color: Colors.white,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2B879B),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                          ),
-                          onPressed: null,
-                        ),
-                      ),
-                    ),
+                        flex: 5,
+                        child: Container(
+                          child: ElevatedButton(onPressed: () {
+                            StartProgPopup(context);
+                          }, child: Icon(Icons.abc),),
+                        )),
                     Flexible(
                         flex: 19,
                         child: Container(
