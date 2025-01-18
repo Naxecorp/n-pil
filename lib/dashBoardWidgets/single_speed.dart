@@ -175,6 +175,13 @@ class SpindleSpeedState extends State<SpindleSpeed> {
   List<Widget> _buildActionButtonList() {
     List<Widget> buttons = [];
 
+    T getValueOrDefault<T>(List<T?>? list, int index, T defaultValue) {
+      if (list != null && index >= 0 && index < list.length) {
+        return list[index] ?? defaultValue;
+      }
+      return defaultValue;
+    }
+
     if (global.MyMachineN02Config.HasACT == 1) {
       buttons.addAll([
         _buildActionButton(
@@ -182,7 +189,7 @@ class SpindleSpeedState extends State<SpindleSpeed> {
           label: 'Souffler',
           onPressed: _onAirButtonPressed,
           depthCondition:
-              (global.machineObjectModel.result?.state?.gpOut?[1]!.pwm ?? 0) >
+              (global.machineObjectModel.result?.state?.gpOut?[1]?.pwm ?? 0) >
                   0,
         ),
         _buildActionButton(
@@ -190,7 +197,7 @@ class SpindleSpeedState extends State<SpindleSpeed> {
           label: 'Piston',
           onPressed: _onPistonButtonPressed,
           depthCondition:
-              (global.machineObjectModel.result?.state?.gpOut?[2]!.pwm ?? 0) >
+              (global.machineObjectModel.result?.state?.gpOut?[2]?.pwm ?? 0) >
                   0,
         ),
       ]);
@@ -201,21 +208,19 @@ class SpindleSpeedState extends State<SpindleSpeed> {
         icon: Icons.thermostat_outlined,
         label: 'Vent. Broche',
         onPressed: _onSpindleFanButtonPressed,
-        depthCondition:
-            (global.machineObjectModel.result?.fans?[3]!.actualValue ?? 0) > 0,
+        depthCondition: getValueOrDefault(
+              global.machineObjectModel.result?.fans
+                  ?.map((fan) => fan?.actualValue)
+                  .toList(),
+              3,
+              0,
+            ) >
+            0,
       ),
       _buildActionButton(
         icon: Icons.rotate_left,
         label: '10% Broche',
         onPressed: _onSpindleStartButtonPressed,
-        depthCondition:
-            ((global.machineObjectModel.result?.spindles?[0].current) ?? 0.0) >
-                0,
-      ),
-      _buildActionButton(
-        icon: Icons.do_disturb_alt_outlined,
-        label: 'Stop Broche',
-        onPressed: _onSpindleStopButtonPressed,
         depthCondition:
             ((global.machineObjectModel.result?.spindles?[0].current) ?? 0.0) >
                 0,
@@ -324,7 +329,7 @@ class SpindleSpeedState extends State<SpindleSpeed> {
   }
 
   void _onSpindleFanButtonPressed() {
-    if ((global.machineObjectModel.result?.fans?[3]!.actualValue ?? 0) > 0) {
+    if ((global.machineObjectModel.result?.fans?[3]?.actualValue ?? 0) > 0) {
       API_Manager()
           .sendGcodeCommand("M106 P3 S0")
           .then((value) => setState(() {}));

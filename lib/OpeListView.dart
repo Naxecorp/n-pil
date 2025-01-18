@@ -128,7 +128,6 @@ class _OpeListSide extends State<OpeListSide> {
                     onTap: () {
                       setState(() {
                         selectedIndex = index;
-                        print(index);
                       });
                       return _onAnyTap!();
                     },

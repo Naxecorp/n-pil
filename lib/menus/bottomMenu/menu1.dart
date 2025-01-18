@@ -56,7 +56,6 @@ class _Menu1 extends State<Menu1> {
                 ),
                 onPressed: () {
                   global.viewListOfOperation = !global.viewListOfOperation;
-                  print(global.viewListOfOperation);
                   setState(() {
                     OpeSelected = 0;
                   });

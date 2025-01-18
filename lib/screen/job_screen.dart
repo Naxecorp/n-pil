@@ -111,7 +111,6 @@ class JobScreenState extends State<JobScreen> {
                                 API_Manager().sendGcodeCommand(Commande).then(
                                     (value) => API_Manager().sendrr_reply());
                               });
-                              print(Commande);
                             },
                           ),
                           PopupMenuButton<String>(
@@ -166,7 +165,7 @@ class JobScreenState extends State<JobScreen> {
                                     Border.all(width: 1, color: Colors.black38),
                                 borderRadius: BorderRadius.circular(10)),
                             child: Center(
-                              child: Text("${global.machineObjectModel.result?.job?.timesLeft?.file}"),
+                              child: Text("${global.machineObjectModel.result?.job?.filePosition}"),
                             ),
                           )),
                       Flexible(
@@ -699,9 +698,9 @@ class JobScreenState extends State<JobScreen> {
                                               ?.state?.status
                                               .toString() ==
                                           "paused"
-                                      ? () {
-                                          API_Manager().sendGcodeCommand("M0");
-                                          API_Manager()
+                                      ? ()async {
+                                          await API_Manager().sendGcodeCommand("M0");
+                                          await API_Manager()
                                               .sendGcodeCommand("M106 P3 S0");
                                           API_Manager().pushDataToDb(global.MyMachineN02Config.Serie.toString(), "END PROGRAM");
                                         }

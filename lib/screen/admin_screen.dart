@@ -25,6 +25,7 @@ import '../dashBoardWidgets/coef_vitesse.dart';
 import '../menus/side_menu.dart';
 import '../widgetUtils/window.dart';
 import '../widgetUtils/ArretUrgence.dart';
+import '../main.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
@@ -117,6 +118,7 @@ class AdminScreenState extends State<AdminScreen>
                               foregroundColor: Colors.black),
                           onPressed: () {
                             Navigator.pushNamed(context, '/dashboard');
+                            pageToShow = 1;
                           },
                         ),
                       )
@@ -244,7 +246,6 @@ class AdminScreenState extends State<AdminScreen>
                                 API_Manager().sendGcodeCommand(Commande).then(
                                     (value) => API_Manager().sendrr_reply());
                               });
-                              print(Commande);
                             },
                           ),
                           PopupMenuButton<String>(
@@ -522,7 +523,6 @@ class AdminScreenState extends State<AdminScreen>
                                   setState(() {
                                     selectedFileIndex = index;
                                     global.selectedFileSysIndex = index;
-                                    print(index);
                                   });
                                   //return _onAnyTap!();
                                 },

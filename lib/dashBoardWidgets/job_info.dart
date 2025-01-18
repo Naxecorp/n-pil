@@ -129,8 +129,6 @@ class JobInfoState extends State<JobInfo> {
   void initState() {
     super.initState();
     if (!global.timerStarted && global.isJobStartedByUser == true) {
-      print(global.timerStarted);
-      print(global.isJobStartedByUser);
       actualiserJobObjectModel();
       global.timerStarted = true;
     }

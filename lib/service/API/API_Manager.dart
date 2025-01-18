@@ -45,7 +45,6 @@ class API_Manager {
         return MachineObjectModel();
       }
     } catch (e) {
-      print(e.toString());
       if (e.toString() == "XMLHttpRequest error.")
         global.myEthernet_connection.isConnected = false;
       if (e.toString().startsWith("TimeoutException"))
@@ -76,7 +75,6 @@ class API_Manager {
         print('Fail to get data, error : ' + response.statusCode.toString());
       }
     } catch (e) {
-      print(e.toString());
       //if (e.toString()=="XMLHttpRequest error.")global.myEthernet_connection.isConnected=false;
       //if (e.toString().startsWith("TimeoutException"))global.myEthernet_connection.isConnected=false;
     }
@@ -131,13 +129,12 @@ class API_Manager {
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 10));
       if (response.statusCode == 200) {
-        print(response.body);
-        //if (response.body.length < 2) return "response is empty";
-        if (response.body.length > 2)global.ReplyListFiFo.addItem(response.body);
+        if (response.body.length > 2)
+          global.ReplyListFiFo.addItem(response.body);
         return response.body;
       } else {
-        print(
-            'Fail to Send commnand, error : ' + response.statusCode.toString());
+        print('Send Reply as occured : Fail to Send commnand, error : ' +
+            response.statusCode.toString());
         return 'Error : ${response.statusCode}';
       }
     } catch (e) {
@@ -146,16 +143,16 @@ class API_Manager {
     }
   }
 
-
   // Function to execute sendrr_reply at a specified interval for a specified duration
-Future<void> sendrr_replyEveryIforD(int durationMillis, int intervalMillis) async {
-  final int repetitions = durationMillis ~/ intervalMillis;
+  Future<void> sendrr_replyEveryIforD(
+      int durationMillis, int intervalMillis) async {
+    final int repetitions = durationMillis ~/ intervalMillis;
 
-  for (int i = 0; i < repetitions; i++) {
-    await sendrr_reply();
-    await Future.delayed(Duration(milliseconds: intervalMillis));
+    for (int i = 0; i < repetitions; i++) {
+      await sendrr_reply();
+      await Future.delayed(Duration(milliseconds: intervalMillis));
+    }
   }
-}
 
   Future<global.MachineMode> getMachineMode() async {
     Map<String, String> requestHeaders = {
@@ -176,7 +173,6 @@ Future<void> sendrr_replyEveryIforD(int durationMillis, int intervalMillis) asyn
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 2));
       if (response.statusCode == 200) {
-        print(response.body);
         if (response.body.toString().contains("FFF"))
           return global.MachineMode.fff;
         if (response.body.toString().contains("CNC"))
@@ -280,8 +276,6 @@ Future<void> sendrr_replyEveryIforD(int durationMillis, int intervalMillis) asyn
           .timeout(Duration(seconds: 1));
       global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
-        print("les g codes :");
-        print(response.body);
         final ReturnedListGcodeProgram myReturnedListGcodeProgram =
             returnedListGcodeProgramFromJson(response.body);
         return myReturnedListGcodeProgram.files;
@@ -314,9 +308,7 @@ Future<void> sendrr_replyEveryIforD(int durationMillis, int intervalMillis) asyn
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
       global.myEthernet_connection.isConnected = true;
-      print("system files list:");
       if (response.statusCode == 200) {
-        print(response.body);
         final SystemsFiles myReturnedListofFiles =
             systemsFilesFromJson(response.body);
         return myReturnedListofFiles.files;
@@ -347,7 +339,6 @@ Future<void> sendrr_replyEveryIforD(int durationMillis, int intervalMillis) asyn
 
     var uri = Uri.parse(
         'http://${global.MyMachineN02Config.IP}/rr_upload?name=$path');
-    print("url : $uri");
 
     try {
       var response = await http
@@ -355,7 +346,6 @@ Future<void> sendrr_replyEveryIforD(int durationMillis, int intervalMillis) asyn
           .timeout(Duration(seconds: 30));
       global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
-        print(response.body.toString());
         return 'ok';
       } else {
         print(
@@ -678,7 +668,7 @@ Future<void> sendrr_replyEveryIforD(int durationMillis, int intervalMillis) asyn
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-      print(response.body);
+
       if (response.statusCode == 200) {
         return 'ok';
       } else {

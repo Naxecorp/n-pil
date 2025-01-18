@@ -358,7 +358,6 @@ class OriginScreenState extends State<OriginScreen> {
                                 API_Manager().sendGcodeCommand(Commande).then(
                                     (value) => API_Manager().sendrr_reply());
                               });
-                              print(Commande);
                             },
                           ),
                           PopupMenuButton<String>(
@@ -862,7 +861,6 @@ class OriginScreenState extends State<OriginScreen> {
                                           children: [
                                             IconButton(
                                               onPressed: () {
-                                                print("T${index + 1}");
                                                 API_Manager().sendGcodeCommand(
                                                     "T${index + 1}");
                                               },
@@ -876,7 +874,7 @@ class OriginScreenState extends State<OriginScreen> {
                                             ),
                                             IconButton(
                                               onPressed: () {
-                                                print("press");
+                                                
                                               },
                                               icon: const Icon(Icons.edit),
                                               iconSize: 24.0,

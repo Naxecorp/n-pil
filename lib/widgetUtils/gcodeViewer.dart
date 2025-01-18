@@ -127,7 +127,6 @@ Future<File> get _localFile async {
 
 Future<File> writeANewFile(String FileName, String hello) async {
   final path2 = await _localPath;
-  print(path2);
   final file = File('$path2/nps2filtred.gcode');
   
   var sink = file.openWrite(mode: FileMode.write);

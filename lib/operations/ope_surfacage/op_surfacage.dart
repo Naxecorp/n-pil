@@ -87,8 +87,5 @@ class OperationSurfacage extends Operation {
     trajectoires.add('M5');
     trajectoires.add('G0 X$OriginX Y$OriginY');
     trajectoires.add(';End of $label\n');
-    trajectoires.forEach((element) {
-      print(element);
-    });
   }
 }

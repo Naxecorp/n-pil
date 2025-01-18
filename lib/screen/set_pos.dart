@@ -414,7 +414,6 @@ class SetPosState extends State<SetPos> {
         global.MyMachineN02Config.toJson().length.toString(),
         Uint8List.fromList(
             machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
-    print(machineN02ConfigToJson(global.MyMachineN02Config));
   }
 
   @override
@@ -466,7 +465,6 @@ class SetPosState extends State<SetPos> {
                                 API_Manager().sendGcodeCommand(Commande).then(
                                     (value) => API_Manager().sendrr_reply());
                               });
-                              print(Commande);
                             },
                           ),
                           PopupMenuButton<String>(

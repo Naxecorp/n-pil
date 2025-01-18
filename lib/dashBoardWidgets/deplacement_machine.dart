@@ -105,8 +105,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                           false
                                       ? () async {
                                           await API_Manager()
-                                              .sendGcodeCommand("G28 X")
-                                              .then((value) => print(value));
+                                              .sendGcodeCommand("G28 X");
                                         }
                                       : null,
                                   child: Column(
@@ -167,8 +166,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                           false
                                       ? () async {
                                           await API_Manager()
-                                              .sendGcodeCommand("G28 Y")
-                                              .then((value) => print(value));
+                                              .sendGcodeCommand("G28 Y");
                                         }
                                       : null,
                                   child: Column(
@@ -230,8 +228,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                           false
                                       ? () async {
                                           await API_Manager()
-                                              .sendGcodeCommand("G28 Z")
-                                              .then((value) => print(value));
+                                              .sendGcodeCommand("G28 Z");
                                         }
                                       : null,
                                   child: Column(
@@ -395,8 +392,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                         if (MovesWithoutEndstop)
                           await API_Manager()
                               .sendGcodeCommand(
-                                  "M120\nG91\nG1 Y$stepValue H2 F${global.SpeedValue}\nM121\n")
-                              .then((value) => print(value));
+                                  "M120\nG91\nG1 Y$stepValue H2 F${global.SpeedValue}\nM121\n");
                         else
                           await API_Manager().sendGcodeCommand(
                               "M120\nG91\nG1 Y$stepValue F${global.SpeedValue}\nM121\n");
@@ -596,13 +592,11 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                     onPressed: (() {
                                       API_Manager()
                                           .sendGcodeCommand("M42 P4 S1");
-                                      print("light off");
                                     }),
                                     child: GestureDetector(
                                       onLongPress: () {
                                         API_Manager()
                                             .sendGcodeCommand("M42 P4 S0");
-                                        print("light on");
                                       },
                                       child: Column(
                                         mainAxisAlignment:

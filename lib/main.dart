@@ -31,7 +31,6 @@ Future<void> actualiserMachineObjectModel() async {
       global.machineObjectModel = machine;
       global.controllerMachineObjectModel.add(machine);
       if(global.machineObjectModel.result?.job?.filePosition?.toInt()!=null)global.cursorNotifier.value=global.machineObjectModel.result?.job?.filePosition?.toInt()??0;
-      print(global.cursorNotifier.value);
     });
   });
 }

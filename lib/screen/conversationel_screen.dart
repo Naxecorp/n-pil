@@ -91,7 +91,6 @@ class ConversationelScreenState extends State<ConversationelScreen> {
                                 API_Manager().sendGcodeCommand(Commande).then(
                                     (value) => API_Manager().sendrr_reply());
                               });
-                              print(Commande);
                             },
                           ),
                           PopupMenuButton<String>(
@@ -147,7 +146,6 @@ class ConversationelScreenState extends State<ConversationelScreen> {
                                   setState(() {
                                     opeToShow = 'none';
                                   });
-                                  print('tap');
                                 },
                               ),
                             )),
@@ -190,7 +188,7 @@ class ConversationelScreenState extends State<ConversationelScreen> {
                             child: BottomMenu(
                               onAnyTap: () {
                                 setState(() {
-                                  print(bottomMenuToShow);
+                                  
                                 });
                               },
                             ),

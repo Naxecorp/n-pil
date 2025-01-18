@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/OpeListView.dart';
 import 'package:nweb/globals_var.dart';
+import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -61,36 +62,34 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     return "Done";
   }
 
+  String extractDuration(String consoleResponse) {
+    // Expression régulière pour trouver le modèle "0h12min"
+    final regex = RegExp(r'(\d+)h (\d+)m');
+    final match = regex.firstMatch(consoleResponse);
 
-String extractDuration(String consoleResponse) {
-  // Expression régulière pour trouver le modèle "0h12min"
-  print(consoleResponse);
-  final regex = RegExp(r'(\d+)h (\d+)m');
-  final match = regex.firstMatch(consoleResponse);
-
-  if (match != null) {
-    // Si un match est trouvé, extrayez les heures et les minutes
-    final hours = match.group(1);
-    final minutes = match.group(2);
-    return '$hours heures et $minutes minutes';
-  } else {
-    // Si aucun match n'est trouvé, retournez une chaîne vide ou un message approprié
-    return 'Durée non trouvée';
+    if (match != null) {
+      // Si un match est trouvé, extrayez les heures et les minutes
+      final hours = match.group(1);
+      final minutes = match.group(2);
+      return '$hours heures et $minutes minutes';
+    } else {
+      // Si aucun match n'est trouvé, retournez une chaîne vide ou un message approprié
+      return 'Durée non trouvée';
+    }
   }
-}
 
-String extractErrorMessage(String consoleResponse) {
-  // Chercher l'index de "Error:" dans la chaîne
-  final errorIndex = consoleResponse.indexOf("Error:");
+  String extractErrorMessage(String consoleResponse) {
+    // Chercher l'index de "Error:" dans la chaîne
+    final errorIndex = consoleResponse.indexOf("Error:");
 
-  if (errorIndex != -1) {
-    // Extraire tout ce qui suit "Error:"
-    return consoleResponse.substring(errorIndex);
-  } else {
-    // Si "Error:" n'est pas trouvé, retourner une chaîne vide ou un message approprié
-    return 'Aucune erreur trouvée';
+    if (errorIndex != -1) {
+      // Extraire tout ce qui suit "Error:"
+      return consoleResponse.substring(errorIndex);
+    } else {
+      // Si "Error:" n'est pas trouvé, retourner une chaîne vide ou un message approprié
+      return 'Aucune erreur trouvée';
+    }
   }
-}
 
   @override
   void initState() {
@@ -105,7 +104,8 @@ String extractErrorMessage(String consoleResponse) {
     ProgressBarcontroller.repeat(reverse: false);
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
+      if (global.MyMachineN02Config.HasFanOnEnclosure == 1)
+        global.checkCaissonOpen(context);
     });
     super.initState();
   }
@@ -188,7 +188,6 @@ String extractErrorMessage(String consoleResponse) {
     }
 
     if (!containsSpecialCharacters(filename)) {
-      print(result.files.first.bytes);
       API_Manager()
           .upLoadAFile("0:/gcodes/" + result.files.first.name.toString(),
               result.files.first.size.toString(), result.files.first.bytes!)
@@ -242,10 +241,9 @@ String extractErrorMessage(String consoleResponse) {
                 Text("3 - Effectué une simulation"),
                 Text("4 - Vérifié que la broche démarre"),
                 Text("5 - Sélectionné le bon outil (fraise)\n"),
-                
-                
-                
-                Center(child: Text("Programme sélectionné : ${(ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString())}")),
+                Center(
+                    child: Text(
+                        "Programme sélectionné : ${(ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString())}")),
               ],
             ),
           ),
@@ -284,6 +282,7 @@ String extractErrorMessage(String consoleResponse) {
                         "Start prog ${progName}")
                     .timeout(Duration(seconds: 5));
                 Navigator.of(context).pop();
+                pageToShow = 4;
                 Navigator.pushNamed(context, '/jobStatus');
               },
             ),
@@ -297,6 +296,15 @@ String extractErrorMessage(String consoleResponse) {
     List<String> lines = inputString.split('\n');
     return lines;
   }
+
+  late Timer SimulationTimer;
+
+  int calculatePercentage(int part, int total) {
+  if (total == 0) {
+    throw ArgumentError("Le total ne peut pas être égal à zéro.");
+  }
+  return ((part / total) * 100.0).toInt(); // Conversion implicite en double
+}
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +354,6 @@ String extractErrorMessage(String consoleResponse) {
                                 API_Manager().sendGcodeCommand(Commande).then(
                                     (value) => API_Manager().sendrr_reply());
                               });
-                              print(Commande);
                             },
                           ),
                           PopupMenuButton<String>(
@@ -422,13 +429,6 @@ String extractErrorMessage(String consoleResponse) {
                       ),
                     ),
                     Flexible(
-                        flex: 5,
-                        child: Container(
-                          child: ElevatedButton(onPressed: () {
-                            StartProgPopup(context);
-                          }, child: Icon(Icons.abc),),
-                        )),
-                    Flexible(
                         flex: 19,
                         child: Container(
                           height: double.infinity,
@@ -462,7 +462,6 @@ String extractErrorMessage(String consoleResponse) {
                                             global.selectedGcodeFileIndex)!
                                         .name
                                         .toString());
-                            //print(FileContent);
                             await SaveFileContent(FileContent);
                           },
                         ),
@@ -489,10 +488,6 @@ String extractErrorMessage(String consoleResponse) {
                             ),
                           ),
                           onPressed: () {
-                            print(ListofGcodeFile?.elementAt(
-                                    global.selectedGcodeFileIndex)
-                                ?.name
-                                .toString());
                             API_Manager()
                                 .deleteAFile(
                                     ListofGcodeFile!
@@ -645,9 +640,6 @@ String extractErrorMessage(String consoleResponse) {
                               ),
                             ),
                             onPressed: () async {
-                              // print(ListofGcodeFile!
-                              //     .elementAt(global.selectedGcodeFileIndex)!
-                              //     .size!);
                               if (ListofGcodeFile!
                                       .elementAt(global.selectedGcodeFileIndex)!
                                       .size! <
@@ -745,100 +737,195 @@ String extractErrorMessage(String consoleResponse) {
                                         ?.status ==
                                     "idle"
                                 ? () async {
-                                  var _savedPosX = global.machineObjectModel.result!.move!.axes![0].machinePosition;
-                                  var _savedPosY = global.machineObjectModel.result!.move!.axes![1].machinePosition;
-                                  var _savedPosZ = global.machineObjectModel.result!.move!.axes![2].machinePosition;
+                                    var _savedPosX = global.machineObjectModel
+                                        .result!.move!.axes![0].machinePosition;
+                                    var _savedPosY = global.machineObjectModel
+                                        .result!.move!.axes![1].machinePosition;
+                                    var _savedPosZ = global.machineObjectModel
+                                        .result!.move!.axes![2].machinePosition;
+
+                                    Timer SimulationTimer = Timer.periodic(
+                                        Duration(milliseconds: 500), (timer) {
+                                      API_Manager()
+                                          .sendrr_reply()
+                                          .then((value) {
+                                        if (value.contains("will print in")) {
+                                          timer.cancel();
+                                          Navigator.of(context).pop();
+                                          API_Manager().sendGcodeCommand(
+                                              "G92 X$_savedPosX Y$_savedPosY Z$_savedPosZ");
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: RichText(
+                                                    text: TextSpan(
+                                                      style: const TextStyle(
+                                                          fontSize: 28,
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              14,
+                                                              125,
+                                                              31)),
+                                                      children: [
+                                                        TextSpan(
+                                                            text:
+                                                                "Simulation sucess"),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  content: RichText(
+                                                    text: TextSpan(
+                                                      style: const TextStyle(
+                                                          fontSize: 14,
+                                                          color: Color.fromARGB(
+                                                              255, 10, 28, 13)),
+                                                      children: [
+                                                        TextSpan(
+                                                            text:
+                                                                "Durée du programme: ${extractDuration(value)}"),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              });
+                                        } else if (value.contains("Error")) {
+                                          timer.cancel();
+                                          Navigator.of(context).pop();
+                                          API_Manager().sendGcodeCommand(
+                                              "G92 X$_savedPosX Y$_savedPosY Z$_savedPosZ");
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: RichText(
+                                                    text: TextSpan(
+                                                      style: const TextStyle(
+                                                          fontSize: 28,
+                                                          color: Color.fromARGB(
+                                                              255, 176, 8, 8)),
+                                                      children: [
+                                                        TextSpan(
+                                                            text:
+                                                                "Simulation erreur"),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  content: RichText(
+                                                    text: TextSpan(
+                                                      style: const TextStyle(
+                                                          fontSize: 14,
+                                                          color: Color.fromARGB(
+                                                              255, 63, 9, 9)),
+                                                      children: [
+                                                        TextSpan(
+                                                            text:
+                                                                extractErrorMessage(
+                                                                    value)),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              });
+                                        }
+                                      });
+                                    });
+
                                     API_Manager()
                                         .sendGcodeCommand(
-                                            'M37 P"${ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString()}"')
+                                            'M37 F0 P"${ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString()}"')
                                         .then((value2) {
-                                          showDialog(context: context, builder: (context){
-                                            return AlertDialog(
-                                              title: const Text(
-                                                        'Simulation en cours'),
-                                                    content: RichText(
-                                                      text: TextSpan(
-                                                        style: const TextStyle(
-                                                            fontSize: 14,
-                                                            color:
-                                                                Colors.black),
-                                                        children: [
-                                                          TextSpan(text: "Merci de patienter. \nCela peut prendre plusieur minutes"),
-                                                        ],
+                                      num? filePositionFlitred = 0;
+                                       Timer?
+                                              simulationTimer; // Timer déclaré comme nullable
+                                      showDialog(
+                                        barrierDismissible: false,
+                                        context: context,
+                                        builder: (context) {
+                                          int elapsedSeconds =
+                                              0; // Compteur pour le temps écoulé
+                                         
+
+                                          return StatefulBuilder(
+                                            builder: (context, setState) {
+                                              // Démarrer le timer si ce n'est pas déjà fait
+                                              simulationTimer ??=
+                                                  Timer.periodic(
+                                                      Duration(seconds: 1),
+                                                      (timer) {
+                                                if (Navigator.of(context)
+                                                    .canPop()) {
+                                                  setState(() {
+                                                    global.machineObjectModel.result?.job?.filePosition !=null ? filePositionFlitred = global.machineObjectModel.result?.job?.filePosition : filePositionFlitred = filePositionFlitred;
+                                                  });
+                                                } else {
+                                                  timer.cancel();
+                                                }
+                                              });
+
+                                              return AlertDialog(
+                                                title:
+                                                    Text("Simulation en cours"),
+                                                content: RichText(
+                                                  text: TextSpan(
+                                                    style: const TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.black),
+                                                    children: [
+                                                      TextSpan(
+                                                        text:
+                                                            "Merci de patienter.\nCela peut prendre plusieurs minutes.\n\n",
                                                       ),
-                                                    ),
-                                            );
-                                          });
-                                      Timer.periodic(Duration(seconds: 1),
-                                          (timer) {
-                                        API_Manager()
-                                            .sendrr_reply()
-                                            .then((value) {
-                                          //if(value.contains("empty"))timer.cancel();
-                                          if (value.contains("will print in")) {
-                                            timer.cancel();
-                                            Navigator.of(context).pop();
-                                            API_Manager().sendGcodeCommand("G92 X$_savedPosX Y$_savedPosY Z$_savedPosZ");
-                                            showDialog(context: context, builder: (context){
-                                            return AlertDialog(
-                                              title: RichText(
-                                                      text: TextSpan(
+                                                      TextSpan(
+                                                        text:
+                                                            "Progression  : ${calculatePercentage(filePositionFlitred?.toInt()??1, global.ListofGcodeFile?[global.selectedGcodeFileIndex]?.size??1)} %\n\n",
+                                                            //"Progression  : ${calculatePercentage(600, 1200)}",
+                                                            
                                                         style: const TextStyle(
-                                                            fontSize: 28,
-                                                            color:
-                                                                Color.fromARGB(255, 14, 125, 31)),
-                                                        children: [
-                                                          TextSpan(text: "Simulation sucess"),
-                                                        ],
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
                                                       ),
-                                                    ),
-                                                    content: RichText(
-                                                      text: TextSpan(
-                                                        style: const TextStyle(
-                                                            fontSize: 14,
-                                                            color:
-                                                                Color.fromARGB(255, 10, 28, 13)),
-                                                        children: [
-                                                          TextSpan(text: "Durée du programme: ${extractDuration(value)}"),
-                                                        ],
+                                                      TextSpan(
+                                                        text:
+                                                            "La simulation ne vérifie pas les longueurs d'outils en cas de changement d'outil automatique.",
                                                       ),
-                                                    ),
-                                            );
-                                          });
-                                          }
-                                          else if(value.contains("Error")){
-                                            API_Manager().sendGcodeCommand("G92 X$_savedPosX Y$_savedPosY Z$_savedPosZ");
-                                            timer.cancel();
-                                            Navigator.of(context).pop();
-                                            showDialog(context: context, builder: (context){
-                                            return AlertDialog(
-                                              title: RichText(
-                                                      text: TextSpan(
-                                                        style: const TextStyle(
-                                                            fontSize: 28,
-                                                            color:
-                                                                Color.fromARGB(255, 176, 8, 8)),
-                                                        children: [
-                                                          TextSpan(text: "Simulation erreur"),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    content: RichText(
-                                                      text: TextSpan(
-                                                        style: const TextStyle(
-                                                            fontSize: 14,
-                                                            color:
-                                                                Color.fromARGB(255, 63, 9, 9)),
-                                                        children: [
-                                                          TextSpan(text: extractErrorMessage(value)),
-                                                        ],
-                                                      ),
-                                                    ),
-                                            );
-                                          });
-                                          
-                                          }
-                                        });
+                                                    ],
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    child: const Text("Sortir"),
+                                                    onPressed: () async {
+                                                      // Arrêter le timer
+                                                      simulationTimer?.cancel();
+
+                                                      // Envoyer les commandes API
+                                                      await API_Manager()
+                                                          .sendGcodeCommand(
+                                                              "M25");
+                                                      await API_Manager()
+                                                          .sendGcodeCommand(
+                                                              "M0");
+                                                      await API_Manager()
+                                                          .sendGcodeCommand(
+                                                              "M37 S0");
+                                                      await API_Manager()
+                                                          .sendGcodeCommand(
+                                                              "G92 X$_savedPosX Y$_savedPosY Z$_savedPosZ");
+
+                                                      // Fermer la boîte de dialogue
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ).then((_) {
+                                        simulationTimer?.cancel();
                                       });
                                     });
                                   }

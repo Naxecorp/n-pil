@@ -80,7 +80,6 @@ class ParametreScreenState extends State<ParametreScreen> {
     await API_Manager().upLoadAFile("0:/sys/coordToolShop.g",
         content.length.toString(), Uint8List.fromList(utf8.encode(content)));
     await API_Manager().sendGcodeCommand('M98 P"CoordToolShop.g"');
-    print(machineN02ConfigToJson(global.MyMachineN02Config));
   }
 
   final MaterialStateProperty<Icon?> thumbIcon =
@@ -142,7 +141,6 @@ class ParametreScreenState extends State<ParametreScreen> {
                                 API_Manager().sendGcodeCommand(Commande).then(
                                     (value) => API_Manager().sendrr_reply());
                               });
-                              print(Commande);
                             },
                           ),
                           PopupMenuButton<String>(

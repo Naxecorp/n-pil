@@ -70,7 +70,6 @@ class GlobalAppBarState extends State<GlobalAppBar> {
                               API_Manager().sendGcodeCommand(Commande).then(
                                   (value) => API_Manager().sendrr_reply());
                             });
-                            print(Commande);
                           },
                         ),
                         PopupMenuButton<String>(

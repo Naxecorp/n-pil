@@ -12,7 +12,7 @@ import 'operations/op_ligne_droite/op_ligne_droite.dart';
 import 'operations/op_poche_ronde/op_poche_ronde.dart';
 
 class GeneralOpeViewer extends StatefulWidget {
-  // print(ListOfOperationCurrent.elementAt(selectedIndex).runtimeType.toString());
+
   const GeneralOpeViewer({super.key});
 
   @override
