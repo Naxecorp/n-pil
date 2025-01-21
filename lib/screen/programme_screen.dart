@@ -124,104 +124,131 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     return specialCharacters.hasMatch(text);
   }
 
-  void _pickFile() async {
-    FilePickerResult? result =
-        await FilePicker.platform.pickFiles(withData: true);
 
-    if (result == null) {
-      isLoading = false;
-      return;
+Map<String, dynamic>? findFirstNonAnsiCharacter(Uint8List fileBytes) {
+  try {
+    // Décoder les bytes en UTF-8 pour obtenir les lignes
+    String content = utf8.decode(fileBytes, allowMalformed: true);
+    List<String> lines = content.split('\n');
+
+    // Parcourir chaque ligne pour trouver un caractère non ANSI
+    for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      String line = lines[lineIndex];
+      for (int charIndex = 0; charIndex < line.length; charIndex++) {
+        int codeUnit = line.codeUnitAt(charIndex);
+        if (codeUnit > 127) {
+          return {
+            'line': lineIndex + 1, // Numéro de ligne (1-indexé)
+            'char': charIndex + 1, // Position du caractère dans la ligne (1-indexé)
+            'character': line[charIndex], // Le caractère non conforme
+            'codeUnit': codeUnit, // Code Unicode du caractère
+          };
+        }
+      }
     }
-
-    setState(() {
-      isLoading = true;
-    });
-
-    filename = result.files.first.name.toString();
-    Uint8List? fileBytes = result.files.first.bytes;
-
-    if (fileBytes != null && utf8.decode(fileBytes).contains('G92')) {
-      // Afficher le PopUp si "G92" est trouvé
-      isLoading = false;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Fichier invalide'),
-            content: RichText(
-              text: TextSpan(
-                style: const TextStyle(fontSize: 14, color: Colors.black),
-                children: [
-                  const TextSpan(text: 'Votre fichier contient la commande '),
-                  const TextSpan(
-                    text: 'G92',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const TextSpan(
-                      text:
-                          '\nCette commande n\'est pas acceptée par la machine !'),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  icon: const Icon(Icons.check),
-                  label: const Text(
-                    "Ok",
-                    style: TextStyle(color: Colors.white),
-                  ))
-            ],
-          );
-        },
-      );
-      return;
-    }
-
-    if (!containsSpecialCharacters(filename)) {
-      API_Manager()
-          .upLoadAFile("0:/gcodes/" + result.files.first.name.toString(),
-              result.files.first.size.toString(), result.files.first.bytes!)
-          .then((notused) {
-        API_Manager()
-            .getfileList()
-            .then((value) => global.ListofGcodeFile = value);
-        setState(() {
-          isLoading = false;
-        });
-      });
-    } else {
-      isLoading = false;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Erreur'),
-            content: const Text(
-                'Le nom de fichier contient des caractères spéciaux.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+    return null; // Aucun caractère non conforme trouvé
+  } catch (e) {
+    return null; // Retourner null en cas d'erreur
   }
+}
+
+void _pickFile() async {
+  FilePickerResult? result =
+      await FilePicker.platform.pickFiles(withData: true);
+
+  if (result == null) {
+    isLoading = false;
+    return;
+  }
+
+  setState(() {
+    isLoading = true;
+  });
+
+  filename = result.files.first.name.toString();
+  Uint8List? fileBytes = result.files.first.bytes;
+
+  // Recherche du premier caractère non ANSI
+  Map<String, dynamic>? invalidChar = fileBytes == null
+      ? null
+      : findFirstNonAnsiCharacter(fileBytes);
+
+  if (invalidChar != null) {
+    isLoading = false;
+
+    // Préparer une description lisible du caractère problématique
+    String characterDescription =
+        "Code Unicode : U+${invalidChar['codeUnit'].toRadixString(16).toUpperCase()}";
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Caractères non compatibles'),
+          content: Text(
+              'Le fichier contient un caractère non compatible avec l\'encodage ANSI (ISO-8859-1).\n\n'
+              'Position : Ligne ${invalidChar['line']}, caractère ${invalidChar['char']}\n'
+              '$characterDescription'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    return;
+  }
+
+  // Décoder le fichier en ANSI (latin1)
+  String fileContent = latin1.decode(fileBytes!, allowInvalid: false);
+
+  // Continuez avec la logique existante
+  if (!containsSpecialCharacters(filename)) {
+    API_Manager()
+        .upLoadAFile("0:/gcodes/" + result.files.first.name.toString(),
+            result.files.first.size.toString(), result.files.first.bytes!)
+        .then((notused) {
+      API_Manager()
+          .getfileList()
+          .then((value) => global.ListofGcodeFile = value);
+      setState(() {
+        isLoading = false;
+      });
+    });
+  } else {
+    isLoading = false;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Erreur'),
+          content: const Text(
+              'Le nom de fichier contient des caractères spéciaux.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+
+
+
+
+
 
   void StartProgPopup(BuildContext context) {
     showDialog(
