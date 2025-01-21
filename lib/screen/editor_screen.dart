@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/globals_var.dart';
+import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -72,8 +73,9 @@ class EditorPage extends StatelessWidget {
       body: CodeEditor(
         model: model, // the model created above, not required since 1.0.0
         edit: true, // can edit the files? by default true
-        onSubmit: (String? language, String? value) {
-          API_Manager().upLoadAFile(
+        onSubmit: (String? language, String? value) async{
+          if (pageToShow==7){
+            await API_Manager().upLoadAFile(
               "0:/sys/" +
                   global.ListofSysFile!
                       .elementAt(global.selectedFileSysIndex)!
@@ -81,6 +83,24 @@ class EditorPage extends StatelessWidget {
                       .toString(),
               ContentofFileToEdit!.length.toString(),
               Uint8List.fromList(value!.codeUnits));
+              await API_Manager()
+                      .getfileListSys()
+                      .then((value) => global.ListofSysFile = value);
+          } 
+          if (pageToShow==3){
+            await API_Manager().upLoadAFile(
+              "0:/gcodes/" +
+                  global.ListofGcodeFile!
+                      .elementAt(global.selectedGcodeFileIndex)!
+                      .name
+                      .toString(),
+              ContentofFileToEdit.length.toString(),
+              Uint8List.fromList(value!.codeUnits));
+              await API_Manager()
+                      .getfileList()
+                      .then((value) => global.ListofGcodeFile = value);
+              
+          } 
         },
         disableNavigationbar:
             false, // hide the navigation bar ? by default false
