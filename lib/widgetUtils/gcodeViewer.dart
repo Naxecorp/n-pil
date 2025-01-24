@@ -187,6 +187,26 @@ class GcodeViewerState extends State<GcodeViewer> {
     double x = 0;
     double y = 0;
     double z = 0;
+    result.add(Line3D(
+      vector.Vector3(0, 0, 0),
+      vector.Vector3(10, 0, 0),
+      width: 3,
+      color: Colors.red,
+    ));
+
+    result.add(Line3D(
+      vector.Vector3(0, 0, 0),
+      vector.Vector3(0, 10, 0),
+      width: 3,
+      color: Colors.blue,
+    ));
+
+    result.add(Line3D(
+      vector.Vector3(0, 0, 0),
+      vector.Vector3(0, 0, 20),
+      width: 3,
+      color: Colors.green,
+    ));
 
     for (var ligne in lignes!) {
       List<String> commandes = ligne.split(' ');
@@ -205,7 +225,11 @@ class GcodeViewerState extends State<GcodeViewer> {
 
         var fin = vector.Vector3(x, z, y);
 
-        var couleur = commandes[0] == 'G0' ? Colors.orange : Colors.blue;
+        var couleur = commandes[0] == 'G0' && result.isEmpty
+            ? Colors.purple
+            : (commandes[0] == 'G0'
+                ? Colors.orange[200]
+                : Colors.blueGrey[700]);
 
         var ligne3D = Line3D(debut, fin, width: 2, color: couleur);
         result.add(ligne3D);
@@ -232,12 +256,6 @@ class GcodeViewerState extends State<GcodeViewer> {
           }
         }
 
-        List<Map<String, double>> rotations = [
-          {"X": 0}, // Rotation de 45° autour de X
-          {"Y": 0}, // Rotation de 30° autour de Y
-          {"Z": 0}, // Rotation de 60° autour de Z
-        ];
-
         var arcSegments = generateArcSegments(
           start: debut,
           endX: x,
@@ -261,146 +279,197 @@ class GcodeViewerState extends State<GcodeViewer> {
   );
 
   List<Line3D> generateArcSegments({
-  required vector.Vector3 start,
-  required double endX,
-  required double endY,
-  required double endZ,
-  required double centerOffsetx,
-  required double centerOffsety,
-  required double centerOffsetz,
-  int numberOfSegments = 10,
-  required bool clockwise,
-  String targetPlane = "XZ", // Target plane: "XY", "XZ", or "YZ"
-}) {
-  // Calcule le centre de l'arc
-  final vector.Vector3 center = vector.Vector3(
-    start.x + centerOffsetx,
-    start.y + centerOffsety,
-    start.z + centerOffsetz,
-  );
+    required vector.Vector3 start,
+    required double endX,
+    required double endY,
+    required double endZ,
+    required double centerOffsetx,
+    required double centerOffsety,
+    required double centerOffsetz,
+    int numberOfSegments = 10,
+    required bool clockwise,
+    String targetPlane = "XZ", // Target plane: "XY", "XZ", or "YZ"
+  }) {
+    // Calcule le centre de l'arc
+    final vector.Vector3 center = vector.Vector3(
+      start.x + centerOffsetx,
+      start.y + centerOffsety,
+      start.z + centerOffsetz,
+    );
 
-  vector.Vector3 end = vector.Vector3(endX, endY, endZ);
+    vector.Vector3 end = vector.Vector3(endX, endY, endZ);
 
-  // Fonction pour convertir un point en coordonnées polaires 2D autour du centre
-  double calculateAngle(vector.Vector3 p, vector.Vector3 c) {
-    switch (targetPlane) {
-      case "XY":
-        return atan2(p.y - c.y, p.x - c.x); // Plan XY
-      case "XZ":
-        return atan2(p.z - c.z, p.x - c.x); // Plan XZ
-      case "YZ":
-        return atan2(p.z - c.z, p.y - c.y); // Plan YZ
-      default:
-        throw ArgumentError("Invalid targetPlane: $targetPlane");
+    // Fonction pour convertir un point en coordonnées polaires 2D autour du centre
+    double calculateAngle(vector.Vector3 p, vector.Vector3 c) {
+      switch (targetPlane) {
+        case "XY":
+          return atan2(p.y - c.y, p.x - c.x); // Plan XY
+        case "XZ":
+          return atan2(p.z - c.z, p.x - c.x); // Plan XZ
+        case "YZ":
+          return atan2(p.z - c.z, p.y - c.y); // Plan YZ
+        default:
+          throw ArgumentError("Invalid targetPlane: $targetPlane");
+      }
     }
-  }
 
-  // Calcul dynamique du rayon en fonction du plan
-  double radius;
-  switch (targetPlane) {
-    case "XY":
-      radius = sqrt(pow(start.x - center.x, 2) + pow(start.y - center.y, 2));
-      break;
-    case "XZ":
-      radius = sqrt(pow(start.x - center.x, 2) + pow(start.z - center.z, 2));
-      break;
-    case "YZ":
-      radius = sqrt(pow(start.y - center.y, 2) + pow(start.z - center.z, 2));
-      break;
-    default:
-      throw ArgumentError("Invalid targetPlane: $targetPlane");
-  }
-
-  // Calcul des angles de départ et d'arrivée
-  double startAngle = calculateAngle(start, center);
-  double endAngle = calculateAngle(end, center);
-
-  // Ajuste le sens de rotation
-  if (clockwise && startAngle < endAngle) {
-    startAngle += 2 * pi;
-  } else if (!clockwise && startAngle > endAngle) {
-    endAngle += 2 * pi;
-  }
-
-  // Calcul des segments
-  final double angleStep = (endAngle - startAngle) / numberOfSegments;
-  List<Line3D> lines = [];
-
-  for (int i = 0; i < numberOfSegments; i++) {
-    // Angle de début et de fin pour ce segment
-    double angle1 = startAngle + i * angleStep;
-    double angle2 = startAngle + (i + 1) * angleStep;
-
-    // Points de début et de fin en coordonnées cartésiennes selon le plan
-    vector.Vector3 point1, point2;
+    // Calcul dynamique du rayon en fonction du plan
+    double radius;
     switch (targetPlane) {
       case "XY":
-        point1 = vector.Vector3(
-          center.x + radius * cos(angle1),
-          center.y + radius * sin(angle1),
-          center.z,
-        );
-        point2 = vector.Vector3(
-          center.x + radius * cos(angle2),
-          center.y + radius * sin(angle2),
-          center.z,
-        );
+        radius = sqrt(pow(start.x - center.x, 2) + pow(start.y - center.y, 2));
         break;
       case "XZ":
-        point1 = vector.Vector3(
-          center.x + radius * cos(angle1),
-          center.y,
-          center.z + radius * sin(angle1),
-        );
-        point2 = vector.Vector3(
-          center.x + radius * cos(angle2),
-          center.y,
-          center.z + radius * sin(angle2),
-        );
+        radius = sqrt(pow(start.x - center.x, 2) + pow(start.z - center.z, 2));
         break;
       case "YZ":
-        point1 = vector.Vector3(
-          center.x,
-          center.y + radius * cos(angle1),
-          center.z + radius * sin(angle1),
-        );
-        point2 = vector.Vector3(
-          center.x,
-          center.y + radius * cos(angle2),
-          center.z + radius * sin(angle2),
-        );
+        radius = sqrt(pow(start.y - center.y, 2) + pow(start.z - center.z, 2));
         break;
       default:
         throw ArgumentError("Invalid targetPlane: $targetPlane");
     }
 
-    // Crée une ligne et l'ajoute à la liste
-    lines.add(Line3D(point1, point2, width: 2, color: Colors.green));
+    // Calcul des angles de départ et d'arrivée
+    double startAngle = calculateAngle(start, center);
+    double endAngle = calculateAngle(end, center);
+
+    // Ajuste le sens de rotation
+    if (clockwise && startAngle < endAngle) {
+      startAngle += 2 * pi;
+    } else if (!clockwise && startAngle > endAngle) {
+      endAngle += 2 * pi;
+    }
+
+    // Calcul des segments
+    final double angleStep = (endAngle - startAngle) / numberOfSegments;
+    List<Line3D> lines = [];
+
+    for (int i = 0; i < numberOfSegments; i++) {
+      // Angle de début et de fin pour ce segment
+      double angle1 = startAngle + i * angleStep;
+      double angle2 = startAngle + (i + 1) * angleStep;
+
+      // Points de début et de fin en coordonnées cartésiennes selon le plan
+      vector.Vector3 point1, point2;
+      switch (targetPlane) {
+        case "XY":
+          point1 = vector.Vector3(
+            center.x + radius * cos(angle1),
+            center.y + radius * sin(angle1),
+            center.z,
+          );
+          point2 = vector.Vector3(
+            center.x + radius * cos(angle2),
+            center.y + radius * sin(angle2),
+            center.z,
+          );
+          break;
+        case "XZ":
+          point1 = vector.Vector3(
+            center.x + radius * cos(angle1),
+            center.y,
+            center.z + radius * sin(angle1),
+          );
+          point2 = vector.Vector3(
+            center.x + radius * cos(angle2),
+            center.y,
+            center.z + radius * sin(angle2),
+          );
+          break;
+        case "YZ":
+          point1 = vector.Vector3(
+            center.x,
+            center.y + radius * cos(angle1),
+            center.z + radius * sin(angle1),
+          );
+          point2 = vector.Vector3(
+            center.x,
+            center.y + radius * cos(angle2),
+            center.z + radius * sin(angle2),
+          );
+          break;
+        default:
+          throw ArgumentError("Invalid targetPlane: $targetPlane");
+      }
+
+      // Crée une ligne et l'ajoute à la liste
+      lines.add(Line3D(point1, point2, width: 2, color: Colors.blueGrey[400]));
+    }
+
+    // Forcer le point final pour correspondre exactement à endX, endY, endZ
+    //lines.add(Line3D(lines.last.end, end, width: 2, color: Colors.green));
+
+    return lines;
   }
-
-  // Forcer le point final pour correspondre exactement à endX, endY, endZ
-  //lines.add(Line3D(lines.last.end, end, width: 2, color: Colors.green));
-
-  return lines;
-}
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: DiTreDiDraggable(
-          controller: _controller,
-          child: DiTreDi(
-            figures: listeDeLine3D,
-            controller: _controller,
-            config: DiTreDiConfig(
-              supportZIndex: true,
+        child: Column(
+          children: [
+            Flexible(
+              flex: 15,
+              child: DiTreDiDraggable(
+                controller: _controller,
+                child: DiTreDi(
+                  figures: listeDeLine3D,
+                  controller: _controller,
+                  config: DiTreDiConfig(
+                    supportZIndex: true,
+                  ),
+                ),
+              ),
             ),
-          ),
+            Flexible(
+              flex: 1,
+              child: Container(
+                height: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      child: Text(
+                        "   X ",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        "Y ",
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        "Z                            ",
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        "G0  ",
+                        style: TextStyle(color: Colors.orange[200]),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        "G1  ",
+                        style: TextStyle(color: Colors.blueGrey[700]),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        "G2/G3 ",
+                        style: TextStyle(color: Colors.blueGrey[400]),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

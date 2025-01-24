@@ -124,131 +124,124 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     return specialCharacters.hasMatch(text);
   }
 
+  Map<String, dynamic>? findFirstNonAnsiCharacter(Uint8List fileBytes) {
+    try {
+      // Décoder les bytes en UTF-8 pour obtenir les lignes
+      String content = utf8.decode(fileBytes, allowMalformed: true);
+      List<String> lines = content.split('\n');
 
-Map<String, dynamic>? findFirstNonAnsiCharacter(Uint8List fileBytes) {
-  try {
-    // Décoder les bytes en UTF-8 pour obtenir les lignes
-    String content = utf8.decode(fileBytes, allowMalformed: true);
-    List<String> lines = content.split('\n');
-
-    // Parcourir chaque ligne pour trouver un caractère non ANSI
-    for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      String line = lines[lineIndex];
-      for (int charIndex = 0; charIndex < line.length; charIndex++) {
-        int codeUnit = line.codeUnitAt(charIndex);
-        if (codeUnit > 127) {
-          return {
-            'line': lineIndex + 1, // Numéro de ligne (1-indexé)
-            'char': charIndex + 1, // Position du caractère dans la ligne (1-indexé)
-            'character': line[charIndex], // Le caractère non conforme
-            'codeUnit': codeUnit, // Code Unicode du caractère
-          };
+      // Parcourir chaque ligne pour trouver un caractère non ANSI
+      for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+        String line = lines[lineIndex];
+        for (int charIndex = 0; charIndex < line.length; charIndex++) {
+          int codeUnit = line.codeUnitAt(charIndex);
+          if (codeUnit > 127) {
+            return {
+              'line': lineIndex + 1, // Numéro de ligne (1-indexé)
+              'char': charIndex +
+                  1, // Position du caractère dans la ligne (1-indexé)
+              'character': line[charIndex], // Le caractère non conforme
+              'codeUnit': codeUnit, // Code Unicode du caractère
+            };
+          }
         }
       }
+      return null; // Aucun caractère non conforme trouvé
+    } catch (e) {
+      return null; // Retourner null en cas d'erreur
     }
-    return null; // Aucun caractère non conforme trouvé
-  } catch (e) {
-    return null; // Retourner null en cas d'erreur
-  }
-}
-
-void _pickFile() async {
-  FilePickerResult? result =
-      await FilePicker.platform.pickFiles(withData: true);
-
-  if (result == null) {
-    isLoading = false;
-    return;
   }
 
-  setState(() {
-    isLoading = true;
-  });
+  void _pickFile() async {
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(withData: true);
 
-  filename = result.files.first.name.toString();
-  Uint8List? fileBytes = result.files.first.bytes;
+    if (result == null) {
+      isLoading = false;
+      return;
+    }
 
-  // Recherche du premier caractère non ANSI
-  Map<String, dynamic>? invalidChar = fileBytes == null
-      ? null
-      : findFirstNonAnsiCharacter(fileBytes);
-
-  if (invalidChar != null) {
-    isLoading = false;
-
-    // Préparer une description lisible du caractère problématique
-    String characterDescription =
-        "Code Unicode : U+${invalidChar['codeUnit'].toRadixString(16).toUpperCase()}";
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Caractères non compatibles'),
-          content: Text(
-              'Le fichier contient un caractère non compatible avec l\'encodage ANSI (ISO-8859-1).\n\n'
-              'Position : Ligne ${invalidChar['line']}, caractère ${invalidChar['char']}\n'
-              '$characterDescription'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-    return;
-  }
-
-  // Décoder le fichier en ANSI (latin1)
-  String fileContent = latin1.decode(fileBytes!, allowInvalid: false);
-
-  // Continuez avec la logique existante
-  if (!containsSpecialCharacters(filename)) {
-    API_Manager()
-        .upLoadAFile("0:/gcodes/" + result.files.first.name.toString(),
-            result.files.first.size.toString(), result.files.first.bytes!)
-        .then((notused) {
-      API_Manager()
-          .getfileList()
-          .then((value) => global.ListofGcodeFile = value);
-      setState(() {
-        isLoading = false;
-      });
+    setState(() {
+      isLoading = true;
     });
-  } else {
-    isLoading = false;
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Erreur'),
-          content: const Text(
-              'Le nom de fichier contient des caractères spéciaux.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+
+    filename = result.files.first.name.toString();
+    Uint8List? fileBytes = result.files.first.bytes;
+
+    // Recherche du premier caractère non ANSI
+    Map<String, dynamic>? invalidChar =
+        fileBytes == null ? null : findFirstNonAnsiCharacter(fileBytes);
+
+    if (invalidChar != null) {
+      isLoading = false;
+
+      // Préparer une description lisible du caractère problématique
+      String characterDescription =
+          "Code Unicode : U+${invalidChar['codeUnit'].toRadixString(16).toUpperCase()}";
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Caractères non compatibles'),
+            content: Text(
+                'Le fichier contient un caractère non compatible avec l\'encodage ANSI (ISO-8859-1).\n\n'
+                'Position : Ligne ${invalidChar['line']}, caractère ${invalidChar['char']}\n'
+                '$characterDescription'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    // Décoder le fichier en ANSI (latin1)
+    String fileContent = latin1.decode(fileBytes!, allowInvalid: false);
+
+    // Continuez avec la logique existante
+    if (!containsSpecialCharacters(filename)) {
+      API_Manager()
+          .upLoadAFile("0:/gcodes/" + result.files.first.name.toString(),
+              result.files.first.size.toString(), result.files.first.bytes!)
+          .then((notused) {
+        API_Manager()
+            .getfileList()
+            .then((value) => global.ListofGcodeFile = value);
+        setState(() {
+          isLoading = false;
+        });
+      });
+    } else {
+      isLoading = false;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Erreur'),
+            content: const Text(
+                'Le nom de fichier contient des caractères spéciaux.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
-}
-
-
-
-
-
-
 
   void StartProgPopup(BuildContext context) {
     showDialog(
@@ -327,11 +320,11 @@ void _pickFile() async {
   late Timer SimulationTimer;
 
   int calculatePercentage(int part, int total) {
-  if (total == 0) {
-    throw ArgumentError("Le total ne peut pas être égal à zéro.");
+    if (total == 0) {
+      throw ArgumentError("Le total ne peut pas être égal à zéro.");
+    }
+    return ((part / total) * 100.0).toInt(); // Conversion implicite en double
   }
-  return ((part / total) * 100.0).toInt(); // Conversion implicite en double
-}
 
   @override
   Widget build(BuildContext context) {
@@ -631,9 +624,9 @@ void _pickFile() async {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Flexible(
-                    flex: 4,
+                    flex: 6,
                     child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 5),
+                      margin: EdgeInsets.symmetric(vertical: 10),
                       height: double.infinity,
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 219, 219, 219),
@@ -645,8 +638,9 @@ void _pickFile() async {
                       child: Center(child: GcodeViewer()),
                     ),
                   ),
+                  
                   Flexible(
-                    flex: 2,
+                    flex: 1,
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       child: Row(
@@ -863,15 +857,14 @@ void _pickFile() async {
                                             'M37 F0 P"${ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)!.name.toString()}"')
                                         .then((value2) {
                                       num? filePositionFlitred = 0;
-                                       Timer?
-                                              simulationTimer; // Timer déclaré comme nullable
+                                      Timer?
+                                          simulationTimer; // Timer déclaré comme nullable
                                       showDialog(
                                         barrierDismissible: false,
                                         context: context,
                                         builder: (context) {
                                           int elapsedSeconds =
                                               0; // Compteur pour le temps écoulé
-                                         
 
                                           return StatefulBuilder(
                                             builder: (context, setState) {
@@ -883,7 +876,20 @@ void _pickFile() async {
                                                 if (Navigator.of(context)
                                                     .canPop()) {
                                                   setState(() {
-                                                    global.machineObjectModel.result?.job?.filePosition !=null ? filePositionFlitred = global.machineObjectModel.result?.job?.filePosition : filePositionFlitred = filePositionFlitred;
+                                                    global
+                                                                .machineObjectModel
+                                                                .result
+                                                                ?.job
+                                                                ?.filePosition !=
+                                                            null
+                                                        ? filePositionFlitred =
+                                                            global
+                                                                .machineObjectModel
+                                                                .result
+                                                                ?.job
+                                                                ?.filePosition
+                                                        : filePositionFlitred =
+                                                            filePositionFlitred;
                                                   });
                                                 } else {
                                                   timer.cancel();
@@ -905,9 +911,9 @@ void _pickFile() async {
                                                       ),
                                                       TextSpan(
                                                         text:
-                                                            "Progression  : ${calculatePercentage(filePositionFlitred?.toInt()??1, global.ListofGcodeFile?[global.selectedGcodeFileIndex]?.size??1)} %\n\n",
-                                                            //"Progression  : ${calculatePercentage(600, 1200)}",
-                                                            
+                                                            "Progression  : ${calculatePercentage(filePositionFlitred?.toInt() ?? 1, global.ListofGcodeFile?[global.selectedGcodeFileIndex]?.size ?? 1)} %\n\n",
+                                                        //"Progression  : ${calculatePercentage(600, 1200)}",
+
                                                         style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight
