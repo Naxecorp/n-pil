@@ -39,7 +39,7 @@ jobs:
 
       - name: Create release on public repository
         env:
-          GH_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}  # Utiliser le jeton personnalisé
+          GH_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
           gh release create ${{ github.event.release.tag_name }} \
             --repo naxecorp/n-pil \
@@ -53,11 +53,19 @@ jobs:
         run: |
           # Récupérer l'ID de la release
           RELEASE_ID=$(gh api repos/naxecorp/n-pil/releases --jq '.[] | select(.tag_name == "${{ github.event.release.tag_name }}") | .id')
+          echo "Release ID : $RELEASE_ID"
 
-          # Récupérer les ID des assets à supprimer (les fichiers zip et tar.gz)
-          ASSET_IDS=$(gh api repos/naxecorp/n-pil/releases/$RELEASE_ID/assets --jq '.[] | select(.name | endswith(".zip") or endswith(".tar.gz")) | .id')
+          # Vérifier les assets de la release
+          gh api repos/naxecorp/n-pil/releases/$RELEASE_ID/assets --jq '.[] | {name: .name, id: .id}'
 
-          # Supprimer chaque asset automatiquement généré
-          for ASSET_ID in $ASSET_IDS; do
-            gh api --method DELETE repos/naxecorp/n-pil/releases/assets/$ASSET_ID
-          done
+          # Récupérer les ID des fichiers zip et tar.gz
+          ASSET_IDS=$(gh api repos/naxecorp/n-pil/releases/$RELEASE_ID/assets --jq '.[] | select(.name | test("\\.(zip|tar\\.gz)$")) | .id')
+
+          if [ -z "$ASSET_IDS" ]; then
+            echo "Aucun fichier source zip/tar.gz à supprimer."
+          else
+            for ASSET_ID in $ASSET_IDS; do
+              echo "Suppression de l'asset $ASSET_ID"
+              gh api --method DELETE repos/naxecorp/n-pil/releases/assets/$ASSET_ID
+            done
+          fi
