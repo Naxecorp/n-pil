@@ -12,11 +12,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Archive the release files
+      - name: Collect the specific release file
         run: |
           mkdir release
-          cp -r ./n02/* release/  # Remplacez par le chemin de vos fichiers
-          tar -czvf release-v${{ github.event.release.tag_name }}.tar.gz -C release .
+          cp ./n02/Naxe\ Pilotage.exe release/  # Copier uniquement le fichier Naxe Pilotage.exe
 
       - name: Push release to public repository
         env:
@@ -29,43 +28,21 @@ jobs:
           git config user.email "contact@naxe.fr"  # Utilisez un e-mail valide
           git config user.name "Naxe Bot"  # Utilisez un nom descriptif
 
-          # Copier l'archive dans le repo public
-          cp ../release-v${{ github.event.release.tag_name }}.tar.gz .
+          # Copier le fichier dans le repo public
+          cp ../release/Naxe\ Pilotage.exe .
 
           # Commit et push des fichiers
           git add .
           git commit -m "Release ${{ github.event.release.tag_name }}"
           git push origin main
 
-      - name: Create release on public repository
+      - name: Create release on public repository (with specific file)
         env:
           GH_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
+          # Créer la release et attacher uniquement le fichier Naxe Pilotage.exe
           gh release create ${{ github.event.release.tag_name }} \
             --repo naxecorp/n-pil \
             --title "${{ github.event.release.name }}" \
             --notes "${{ github.event.release.body }}" \
-            release-v${{ github.event.release.tag_name }}.tar.gz
-
-      - name: Delete source archives from the release
-        env:
-          GH_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
-        run: |
-          # Récupérer l'ID de la release
-          RELEASE_ID=$(gh api repos/naxecorp/n-pil/releases --jq '.[] | select(.tag_name == "${{ github.event.release.tag_name }}") | .id')
-          echo "Release ID : $RELEASE_ID"
-
-          # Vérifier les assets de la release
-          gh api repos/naxecorp/n-pil/releases/$RELEASE_ID/assets --jq '.[] | {name: .name, id: .id}'
-
-          # Récupérer les ID des fichiers zip et tar.gz
-          ASSET_IDS=$(gh api repos/naxecorp/n-pil/releases/$RELEASE_ID/assets --jq '.[] | select(.name | test("\\.(zip|tar\\.gz)$")) | .id')
-
-          if [ -z "$ASSET_IDS" ]; then
-            echo "Aucun fichier source zip/tar.gz à supprimer."
-          else
-            for ASSET_ID in $ASSET_IDS; do
-              echo "Suppression de l'asset $ASSET_ID"
-              gh api --method DELETE repos/naxecorp/n-pil/releases/assets/$ASSET_ID
-            done
-          fi
+            ./release/Naxe\ Pilotage.exe
