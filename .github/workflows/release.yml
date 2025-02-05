@@ -15,7 +15,7 @@ jobs:
       - name: Archive the release files
         run: |
           mkdir release
-          cp -r ./path/to/files/* release/  # Remplacez par le chemin de vos fichiers
+          cp -r ./n02/* release/  # Remplacez par le chemin de vos fichiers
           tar -czvf release-v${{ github.event.release.tag_name }}.tar.gz -C release .
 
       - name: Push release to public repository
@@ -36,7 +36,7 @@ jobs:
       - name: Create release on public repository (without code archives)
         run: |
           gh release create ${{ github.event.release.tag_name }} \
-            --repo votre-compte/nom-du-repo-public \
+            --repo naxecorp/n-pil \
             --title "${{ github.event.release.name }}" \
             --notes "${{ github.event.release.body }}" \
             release-v${{ github.event.release.tag_name }}.tar.gz --disable-source-archive
