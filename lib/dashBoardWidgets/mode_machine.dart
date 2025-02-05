@@ -59,6 +59,7 @@ class ModeMachineState extends State<ModeMachine> {
               value: global.MachineMode.laser,
               groupValue: global.machineMode,
               onChanged: (global.MachineMode? MMvalue) async {
+                await API_Manager().sendGcodeCommand('M452 S1');
                 await API_Manager().sendGcodeCommand('M98 P"lasercrea.g"');
                 await API_Manager()
                     .getMachineMode()
