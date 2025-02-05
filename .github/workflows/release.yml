@@ -15,7 +15,7 @@ jobs:
       - name: Collect the specific release file
         run: |
           mkdir release
-          cp ./n02/Naxe\ Pilotage.exe release/  # Copier uniquement le fichier Naxe Pilotage.exe
+          cp ./n02/N-pil.exe release/  # Copier uniquement le fichier N-pil.exe
 
       - name: Push release to public repository
         env:
@@ -29,7 +29,7 @@ jobs:
           git config user.name "Naxe Bot"  # Utilisez un nom descriptif
 
           # Copier le fichier dans le repo public
-          cp ../release/Naxe\ Pilotage.exe .
+          cp ../release/N-pil.exe .
 
           # Commit et push des fichiers
           git add .
@@ -40,9 +40,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
         run: |
-          # Créer la release et attacher uniquement le fichier Naxe Pilotage.exe
+          # Créer la release et attacher uniquement le fichier N-pil.exe
           gh release create ${{ github.event.release.tag_name }} \
             --repo naxecorp/n-pil \
             --title "${{ github.event.release.name }}" \
             --notes "${{ github.event.release.body }}" \
-            ./release/Naxe\ Pilotage.exe
+            ./release/N-pil.exe
