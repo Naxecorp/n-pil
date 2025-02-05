@@ -8,6 +8,8 @@ class OperationLigneDroite extends Operation {
 
   double ParamC = 1; // pronfondeur
   double ParamAP = 0.3; // profondeur de passe
+  double ParamAvance = 1000;
+  double ParamRotation = 15000;
 
   OperationLigneDroite({
     required super.OriginZ,
@@ -18,16 +20,18 @@ class OperationLigneDroite extends Operation {
     required this.ParamC,
     required this.ParamDf,
     required this.ParamAP,
+    required this.ParamAvance,
+    required this.ParamRotation,
   });
 
   List<String> generateGcodeForLine(double startX, double startY, double startZ,
-      double lengthX, double lengthY, double totalDepth, double stepDepthInMM) {
+      double lengthX, double lengthY, double totalDepth, double stepDepthInMM, double VitesseAvance, double Rotation) {
     List<String> gcodeTrajectories = [];
 
     double endX = startX + lengthX;
     double endY = startY + lengthY;
 
-    gcodeTrajectories.add('G1 X${startX} Y${startY}');
+    gcodeTrajectories.add('G1 X${startX} Y${startY} F$VitesseAvance');
 
     // Cas où lengthX ou lengthY est égal à 0
     if (lengthX == 0) {
@@ -90,10 +94,10 @@ class OperationLigneDroite extends Operation {
   @override
   Future<void> construct() async {
     trajectoires.add(';$label');
-    trajectoires.add('G0 Z10 F1500');
+    trajectoires.add('G0 Z5 F$ParamAvance');
     if (global.machineMode == global.MachineMode.cnc) {
       trajectoires.add('M5');
-      trajectoires.add('M3 P0 S10000');
+      trajectoires.add('M3 P0 S$ParamRotation');
     }
     if (global.machineMode == global.MachineMode.laser) {
       trajectoires.add('M98 P"laserOff.g"');
@@ -109,11 +113,13 @@ class OperationLigneDroite extends Operation {
       ParamA,
       ParamC,
       ParamAP,
+      ParamAvance,
+      ParamRotation,
     );
 
     trajectoires.addAll(generatedGcode);
 
-    trajectoires.add('G0 Z10');
+    trajectoires.add('G0 Z5');
     if (global.machineMode == global.MachineMode.cnc) trajectoires.add('M5');
     trajectoires.add('G0 X$OriginX Y$OriginY');
     trajectoires.add(';End of $label\n');

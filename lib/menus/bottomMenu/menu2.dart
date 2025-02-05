@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nweb/OpeListView.dart';
+import 'package:nweb/main.dart';
 import 'package:nweb/service/ObjectModelJobManager.dart';
 import '../../screen/screens.dart';
 import '../../OpeListView.dart';
@@ -79,6 +80,7 @@ class _Menu2 extends State<Menu2> {
                                   backgroundColor: Colors.blue,
                                 ),
                                 onPressed: () async {
+                                  pageToShow = 3;
                                   Navigator.pushNamed(context, '/programmes');
                                 },
                                 child: const Text(

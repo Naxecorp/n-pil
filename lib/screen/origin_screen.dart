@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nweb/globals_var.dart';
+import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -309,6 +310,13 @@ class OriginScreenState extends State<OriginScreen> {
   final Function() notifyParent;
 
   double ZSaved = 0;
+
+   @override
+  void initState() {
+    super.initState();
+    pageToShow = 6;
+  
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -8,6 +8,7 @@ import 'package:nweb/dashBoardWidgets/laser_power.dart';
 import 'package:nweb/dashBoardWidgets/print_tool.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/autoScrollTextFile.dart';
+import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -45,6 +46,7 @@ class JobScreenState extends State<JobScreen> {
 
   @override
   void initState() {
+    pageToShow = 4;
     super.initState();
     global.streamMachineObjectModel.listen((value) {
       setState(() {});
@@ -702,7 +704,8 @@ class JobScreenState extends State<JobScreen> {
                                           await API_Manager().sendGcodeCommand("M0");
                                           await API_Manager()
                                               .sendGcodeCommand("M106 P3 S0");
-                                          API_Manager().pushDataToDb(global.MyMachineN02Config.Serie.toString(), "END PROGRAM");
+                                          API_Manager().pushDataToDb(global.MyMachineN02Config.Serie.toString(), "PROGRAMM END UP BY USER");
+                                          global.programmEndUpByUser = true;
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(

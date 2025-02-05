@@ -9,6 +9,7 @@ import '../op_poche_carre/op_poche_carre.dart';
 import 'op_ligne_droite.dart';
 import '../op_poche_ronde/op_poche_ronde.dart';
 import '../../opeviewer.dart';
+import '/globals_var.dart' as global;
 
 /***************OPERATION LIGNE DROITE***************/
 
@@ -32,6 +33,9 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
   double _ParamDf = 0;
   double _ParamAP = 0.3;
   double _ParamDe = 0;
+
+  double _ParamAvance = 1000;
+  double _ParamRotation = 10000;
 
   @override
   void initState() {
@@ -168,6 +172,58 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
                     ],
                   ),
                   const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      Container(
+                        width: 100,
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          'Vitesse avance ',
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            color: Color(0xFF5A5A5A),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 100,
+                        child: OwnTextField(
+                          label: _ParamAvance,
+                          onChanged: (text) {
+                            _ParamAvance = double.parse(text);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  global.machineMode == global.MachineMode.cnc ? Row(
+                    children: [
+                      Container(
+                        width: 100,
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          'Rotation broche ',
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            color: Color(0xFF5A5A5A),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 100,
+                        child: OwnTextField(
+                          label: _ParamRotation,
+                          onChanged: (text) {
+                            _ParamRotation = double.parse(text);
+                          },
+                        ),
+                      ),
+                    ],
+                  ):Container(),
+                  
                 ],
               ),
             ),
@@ -261,6 +317,8 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
                             ParamC: _ParamC,
                             ParamDf: _ParamDf,
                             ParamAP: _ParamAP,
+                            ParamAvance: _ParamAvance,
+                            ParamRotation: _ParamRotation,
                             //NbLigne: _Nbligne,
                             //Interligne: _Interligne,
                             label: "Lignes droites " +

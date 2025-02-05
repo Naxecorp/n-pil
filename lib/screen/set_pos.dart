@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nweb/globals_var.dart';
+import 'package:nweb/main.dart';
 import 'package:nweb/screen/screens.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
@@ -79,6 +80,8 @@ class _SetPositionState extends State<SetPosition> {
 
   @override
   void initState() {
+    super.initState();
+    pageToShow = 8;
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
       if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);

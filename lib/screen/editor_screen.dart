@@ -46,7 +46,9 @@ class EditorPage extends StatelessWidget {
   ];
 
   @override
-  void initState() {}
+  void initState() {
+  }
+
   @override
   Widget build(BuildContext context) {
     // The files displayed in the navigation bar of the editor.

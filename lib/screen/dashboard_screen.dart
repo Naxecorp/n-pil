@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:nweb/globals_var.dart';
+import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -82,7 +83,9 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void initState() {
+
     super.initState();
+    pageToShow=1;
     global.streamMachineObjectModel.listen((value) {
       setState(() {});
     });

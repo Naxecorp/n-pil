@@ -41,22 +41,23 @@ class JobInfoState extends State<JobInfo> {
                 global.timer!.cancel();
                 Navigator.of(context).pop();
                 API_Manager().sendGcodeCommand("M106 P3 S0");
+                Navigator.pushNamed(context, '/dashboard');
               },
             ),
-            ElevatedButton(
-              child: Text("Recommencer Programme"),
-              onPressed: () async {
-                global.secondsElapsedSinceBeginning = 0;
-                global.globalTimeValue = "00:00:00";
-                global.isJobPausedByUser = false;
-                global.timerStarted = false;
-                global.timer!.cancel();
-                Navigator.of(context).pop();
-                API_Manager()
-                    .sendGcodeCommand('M32 "0:/gcodes/' + progName + '"');
-                Navigator.pushNamed(context, '/jobStatus');
-              },
-            ),
+            // ElevatedButton(
+            //   child: Text("Recommencer Programme"),
+            //   onPressed: () async {
+            //     global.secondsElapsedSinceBeginning = 0;
+            //     global.globalTimeValue = "00:00:00";
+            //     global.isJobPausedByUser = false;
+            //     global.timerStarted = false;
+            //     global.timer!.cancel();
+            //     Navigator.of(context).pop();
+            //     API_Manager()
+            //         .sendGcodeCommand('M32 "0:/gcodes/' + progName + '"');
+            //     Navigator.pushNamed(context, '/jobStatus');
+            //   },
+            // ),
             ElevatedButton(
               child: Text("Dégager tête"),
               onPressed: () async {
@@ -148,7 +149,7 @@ class JobInfoState extends State<JobInfo> {
         });
       }
 
-      API_Manager().getMachineJobObjectModel().then((job) {
+      API_Manager().getMachineJobObjectModel().then((job) async{
         global.objectModelJob = job;
         global.pourcentageComplet =
             (global.objectModelJob.result?.filePosition ?? 0) /
@@ -162,11 +163,14 @@ class JobInfoState extends State<JobInfo> {
           timer.cancel();
           global.timer!.cancel();
           global.secondsElapsedSinceBeginning = 0;
+          if (!global.programmEndUpByUser)await API_Manager().pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "PROG END UP NORMALLY").timeout(Duration (seconds: 2));
+          global.programmEndUpByUser = false;
           showCompletionPopup(context);
           global.timerStarted = false;
         }
         if (global.pourcentageComplet == 100) {
           isPercentage = true;
+          
         }
       });
     });

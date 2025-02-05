@@ -93,6 +93,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
 
   @override
   void initState() {
+    pageToShow = 3;
     ProgressBarcontroller = AnimationController(
       /// [AnimationController]s can be created with `vsync: this` because of
       /// [TickerProviderStateMixin].

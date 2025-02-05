@@ -133,6 +133,7 @@ class AdminScreenState extends State<AdminScreen>
 
   @override
   void initState() {
+    pageToShow=7;
     API_Manager()
         .getfileListSys()
         .then((value) => global.ListofSysFile = value);

@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/globals_var.dart';
+import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -59,6 +60,7 @@ class ParametreScreenState extends State<ParametreScreen> {
   initState() {
     super.initState();
     onReceivedData();
+    pageToShow = 5;
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
       if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
