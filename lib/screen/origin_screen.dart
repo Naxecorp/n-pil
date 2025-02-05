@@ -562,7 +562,7 @@ class OriginScreenState extends State<OriginScreen> {
                                   onPressed: () {
                                     showDialog(
                                       context: context,
-                                      barrierDismissible: false,
+                                      barrierDismissible: true,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           title:
@@ -613,7 +613,7 @@ class OriginScreenState extends State<OriginScreen> {
                                                               Timer.periodic(
                                                             const Duration(
                                                                 milliseconds:
-                                                                    500),
+                                                                    100),
                                                             (timer) {
                                                               API_Manager()
                                                                   .sendrr_reply()
@@ -621,7 +621,7 @@ class OriginScreenState extends State<OriginScreen> {
                                                                       (response) {
                                                                 if (response
                                                                     .contains(
-                                                                        "end of palper2.g")) {
+                                                                        "end of ")) {
                                                                   timer
                                                                       .cancel();
                                                                   Navigator.of(
