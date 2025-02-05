@@ -25,6 +25,10 @@ jobs:
           git clone https://github.com/naxecorp/n-pil.git
           cd n-pil
 
+          # Configurer l'identité Git (nom et e-mail)
+          git config user.email "actions@naxecorp.com"  # Utilisez un e-mail valide
+          git config user.name "Naxe Bot"               # Utilisez un nom descriptif
+
           # Copier l'archive dans le repo public
           cp ../release-v${{ github.event.release.tag_name }}.tar.gz .
 
