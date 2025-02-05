@@ -1,0 +1,42 @@
+name: Publish Release to Public Repository
+
+on:
+  release:
+    types: [published]  # Déclenche l'action lorsqu'une release est publiée
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Archive the release files
+        run: |
+          mkdir release
+          cp -r ./path/to/files/* release/  # Remplacez par le chemin de vos fichiers
+          tar -czvf release-v${{ github.event.release.tag_name }}.tar.gz -C release .
+
+      - name: Push release to public repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+        run: |
+          git clone https://github.com/naxecorp/n-pil.git
+          cd n-pil
+
+          # Copier l'archive dans le repo public
+          cp ../release-v${{ github.event.release.tag_name }}.tar.gz .
+
+          # Commit et push des fichiers
+          git add .
+          git commit -m "Release ${{ github.event.release.tag_name }}"
+          git push origin main
+
+      - name: Create release on public repository (without code archives)
+        run: |
+          gh release create ${{ github.event.release.tag_name }} \
+            --repo votre-compte/nom-du-repo-public \
+            --title "${{ github.event.release.name }}" \
+            --notes "${{ github.event.release.body }}" \
+            release-v${{ github.event.release.tag_name }}.tar.gz --disable-source-archive
