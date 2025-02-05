@@ -37,10 +37,25 @@ jobs:
           git commit -m "Release ${{ github.event.release.tag_name }}"
           git push origin main
 
-      - name: Create release on public repository (without code archives)
+      - name: Create release on public repository
         run: |
           gh release create ${{ github.event.release.tag_name }} \
             --repo naxecorp/n-pil \
             --title "${{ github.event.release.name }}" \
             --notes "${{ github.event.release.body }}" \
-            release-v${{ github.event.release.tag_name }}.tar.gz --disable-source-archive
+            release-v${{ github.event.release.tag_name }}.tar.gz
+
+      - name: Delete source archives from the release
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+        run: |
+          # Récupérer l'ID de la release
+          RELEASE_ID=$(gh api repos/naxecorp/n-pil/releases --jq '.[] | select(.tag_name == "${{ github.event.release.tag_name }}") | .id')
+
+          # Récupérer les ID des assets à supprimer (les fichiers zip et tar.gz)
+          ASSET_IDS=$(gh api repos/naxecorp/n-pil/releases/$RELEASE_ID/assets --jq '.[] | select(.name | endswith(".zip") or endswith(".tar.gz")) | .id')
+
+          # Supprimer chaque asset automatiquement généré
+          for ASSET_ID in $ASSET_IDS; do
+            gh api --method DELETE repos/naxecorp/n-pil/releases/assets/$ASSET_ID
+          done
