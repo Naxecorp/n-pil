@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:nweb/service/outils.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:async/async.dart';
 import '../ObjectModelManager.dart';
 import '../ObjectModelMoveManager.dart';
 import '../ObjectModelJobManager.dart';
@@ -35,7 +33,7 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected = true;
+          
       if (response.statusCode == 200) {
         final MachineObjectModel Machine =
             machineObjectModelFromJson(response.body);
@@ -45,10 +43,8 @@ class API_Manager {
         return MachineObjectModel();
       }
     } catch (e) {
-      if (e.toString() == "XMLHttpRequest error.")
-        global.myEthernet_connection.isConnected = false;
-      if (e.toString().startsWith("TimeoutException"))
-        global.myEthernet_connection.isConnected = false;
+      if (e.toString() == "XMLHttpRequest error.")return MachineObjectModel();
+      if (e.toString().startsWith("TimeoutException"))return MachineObjectModel();
       return MachineObjectModel();
     }
   }
@@ -69,7 +65,6 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
       } else {
         print('Fail to get data, error : ' + response.statusCode.toString());
@@ -97,7 +92,6 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         return 'ok';
       } else {
@@ -208,7 +202,6 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         final ObjectModelMove myObjectModelMove =
             objectModelMoveFromJson(response.body);
@@ -241,7 +234,6 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 10));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         final ObjectModelJob myObjectModelJob =
             objectModelJobFromJson(response.body);
@@ -274,7 +266,6 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         final ReturnedListGcodeProgram myReturnedListGcodeProgram =
             returnedListGcodeProgramFromJson(response.body);
@@ -307,7 +298,6 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         final SystemsFiles myReturnedListofFiles =
             systemsFilesFromJson(response.body);
@@ -344,7 +334,6 @@ class API_Manager {
       var response = await http
           .post(uri, headers: requestHeaders, body: FileContent)
           .timeout(Duration(seconds: 30));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         return 'ok';
       } else {
@@ -371,7 +360,7 @@ class API_Manager {
 
     var uri = Uri.parse(
         'http://${global.MyMachineN02Config.IP}/rr_delete?name=0:/$path/$FileName');
-    http: //192.168.1.73/rr_delete?name=0%3A%2Fgcodes%2Ftest5.gcode
+
 
     try {
       var response = await http
@@ -406,7 +395,6 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 50));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         return response.body;
       } else {
@@ -440,7 +428,6 @@ class API_Manager {
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 50));
 
-      global.myEthernet_connection.isConnected = true;
 
       if (response.statusCode == 200) {
         // Obtenir le répertoire temporaire
@@ -493,7 +480,6 @@ class API_Manager {
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 50));
 
-      global.myEthernet_connection.isConnected = true;
 
       if (response.statusCode == 200) {
         // Obtenir le répertoire temporaire
@@ -561,7 +547,6 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         final MachineN02Config Myconfig =
             returnedMachineN02ConfigFromJson(response.body);
@@ -594,7 +579,6 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-      global.myEthernet_connection.isConnected = true;
       if (response.statusCode == 200) {
         final PlacementOutil Myconfig = returnedOutilFromJson(response.body);
         //print(response.body);

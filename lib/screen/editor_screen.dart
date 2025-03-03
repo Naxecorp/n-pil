@@ -1,113 +1,83 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nweb/globals_var.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
-import 'package:nweb/service/nwc-settings/nwc-settings.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
-import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:code_editor/code_editor.dart';
-import '../dashBoardWidgets/coord_machine.dart';
-import '../dashBoardWidgets/coord_outil.dart';
-import '../dashBoardWidgets/vitesse_broche.dart';
-import '../dashBoardWidgets/baby_stepZ.dart';
-import '../dashBoardWidgets/job_info.dart';
-import '../dashBoardWidgets/coef_vitesse.dart';
-import '../menus/side_menu.dart';
-import '../widgetUtils/window.dart';
-import '../widgetUtils/ArretUrgence.dart';
 
-TextEditingController ManualGcodeComand = TextEditingController();
-
-class EditorPage extends StatelessWidget {
+class EditorPage extends StatefulWidget {
   EditorPage({this.filepath});
 
   final String? filepath;
 
-  final List<FileEditor> files = [
-    FileEditor(
-      name: global.ContentofFileToEdit.substring(1, 10),
-      language: "g",
-      code: global.ContentofFileToEdit, // [code] needs a string
-    ),
-    FileEditor(
-      name: "Page2",
-      language: "Gcode",
-      code: "machine N02",
-    ),
-  ];
+  @override
+  _EditorPageState createState() => _EditorPageState();
+}
+
+class _EditorPageState extends State<EditorPage> {
+  late TextEditingController _editorController;
 
   @override
   void initState() {
+    super.initState();
+    // Charger le contenu du fichier dans le contrôleur
+    _editorController = TextEditingController(text: global.ContentofFileToEdit);
+  }
+
+  // Fonction pour enregistrer le fichier modifié
+  Future<void> saveFile() async {
+    String editedText = _editorController.text;
+
+    if (pageToShow == 7) {
+      await API_Manager().upLoadAFile(
+        "0:/sys/${global.ListofSysFile!.isNotEmpty ? global.ListofSysFile!.elementAt(global.selectedFileSysIndex)?.name?.toString() ?? "default_file" : "default_file"}",
+        editedText.length.toString(),
+        Uint8List.fromList(editedText.codeUnits),
+      );
+      await API_Manager()
+          .getfileListSys()
+          .then((value) => global.ListofSysFile = value);
+    }
+
+    if (pageToShow == 3) {
+      await API_Manager().upLoadAFile(
+        "0:/gcodes/${global.ListofGcodeFile!.isNotEmpty ? global.ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)?.name?.toString() ?? "default_gcode.gcode" : "default_gcode.gcode"}",
+        editedText.length.toString(),
+        Uint8List.fromList(editedText.codeUnits),
+      );
+      await API_Manager()
+          .getfileList()
+          .then((value) => global.ListofGcodeFile = value);
+    }
+
+    if(mounted)ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Fichier enregistré avec succès !")),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // The files displayed in the navigation bar of the editor.
-    // You are not limited.
-    // By default, [name] = "file.${language ?? 'txt'}", [language] = "text" and [code] = "",
-
-    // The model used by the CodeEditor widget, you need it in order to control it.
-    // But, since 1.0.0, the model is not required inside the CodeEditor Widget.
-    EditorModel model = EditorModel(
-      files: files, // the files created above
-      // you can customize the editor as you want
-      styleOptions: EditorModelStyleOptions(
-        heightOfContainer: MediaQuery.of(context).size.height * 0.7,
-        fontSize: 13,
-      ),
-    );
-
-    // A custom TextEditingController.
-    final myController = TextEditingController(text: 'hello!');
     return Scaffold(
       appBar: AppBar(
-        title: Text("Editeur de fichier"),
+        title: Text("Éditeur de fichier"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: saveFile, // Sauvegarder le fichier
+          ),
+        ],
       ),
-      body: CodeEditor(
-        model: model, // the model created above, not required since 1.0.0
-        edit: true, // can edit the files? by default true
-        onSubmit: (String? language, String? value) async{
-          if (pageToShow==7){
-            await API_Manager().upLoadAFile(
-              "0:/sys/" +
-                  global.ListofSysFile!
-                      .elementAt(global.selectedFileSysIndex)!
-                      .name
-                      .toString(),
-              ContentofFileToEdit!.length.toString(),
-              Uint8List.fromList(value!.codeUnits));
-              await API_Manager()
-                      .getfileListSys()
-                      .then((value) => global.ListofSysFile = value);
-          } 
-          if (pageToShow==3){
-            await API_Manager().upLoadAFile(
-              "0:/gcodes/" +
-                  global.ListofGcodeFile!
-                      .elementAt(global.selectedGcodeFileIndex)!
-                      .name
-                      .toString(),
-              ContentofFileToEdit.length.toString(),
-              Uint8List.fromList(value!.codeUnits));
-              await API_Manager()
-                      .getfileList()
-                      .then((value) => global.ListofGcodeFile = value);
-              
-          } 
-        },
-        disableNavigationbar:
-            false, // hide the navigation bar ? by default false
-        textEditingController:
-            myController, // Provide an optional, custom TextEditingController.
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextField(
+          controller: _editorController,
+          maxLines: null, // Permet l'édition sur plusieurs lignes
+          keyboardType: TextInputType.multiline,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: "Éditez votre fichier ici...",
+          ),
+        ),
       ),
     );
   }

@@ -1,16 +1,11 @@
 library my_prj.globals;
-
 import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/nwc-settings/magasinOutils.dart';
 import 'package:nweb/service/nwc-settings/position.dart';
 import 'package:nweb/service/nwc-settings/offset.dart';
 import 'package:nweb/service/outils.dart';
-
-import 'service/API/Ethernet_connection.dart';
 import 'service/ObjectModelManager.dart';
 import 'service/ObjectModelMoveManager.dart';
 import 'service/ObjectModelJobManager.dart';
@@ -23,7 +18,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.8.32";
+String version = "Version 1.8.34";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -154,8 +149,6 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     MagasinOutil: [
       MagasinOutils(CoordX: 457, CoordY: 1206, CoordZ: 189, Ecartement: 60),
     ]);
-
-Ethernet_Connection myEthernet_connection = Ethernet_Connection();
 List<FileElement?>? ListofGcodeFile = [];
 bool isJobPaused = false;
 

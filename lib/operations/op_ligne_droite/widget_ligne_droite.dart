@@ -1,13 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nweb/main.dart';
-import 'package:nweb/operations/operation.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import '../../OpeListView.dart';
-import '../ope_surfacage/op_surfacage.dart';
-import '../op_poche_carre/op_poche_carre.dart';
 import 'op_ligne_droite.dart';
-import '../op_poche_ronde/op_poche_ronde.dart';
 import '../../opeviewer.dart';
 import '/globals_var.dart' as global;
 

@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:math';
 import '../operation.dart';
 
 class OperationDb9 extends Operation {

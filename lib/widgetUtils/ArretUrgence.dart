@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nweb/service/API/API_Manager.dart';
-import '/globals_var.dart' as global;
 
 class ArretUrgence extends StatefulWidget {
   const ArretUrgence({super.key, this.title, required this.notifyParent});

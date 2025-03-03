@@ -1,18 +1,8 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../../globals_var.dart' as global;
 import 'package:nweb/service/API/API_Manager.dart';
-import '../../globals_var.dart';
-import '../../widgetUtils/touche.dart';
 import '../widgetUtils/Joystick/my_joystick.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
 import '../widgetUtils/Joystick/my_joystick2.dart';
 
 double stepValue = 0.1;
@@ -65,6 +55,56 @@ class _DeplacementMachine extends State<DeplacementMachine> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          global.AdminLogged ? Flexible(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                NeumorphicButton(
+                    margin: const EdgeInsets.all(5),
+                    style: const NeumorphicStyle(
+                      color: Color(0xFFF0F0F3),
+                    ),
+                    onPressed: () {
+                      API_Manager().sendGcodeCommand("M18 X");
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.power_off,color: Colors.deepOrange[200]),
+                        Text("X")
+                      ],
+                    )),
+                NeumorphicButton(
+                    margin: const EdgeInsets.all(15),
+                    style: const NeumorphicStyle(
+                      color: Color(0xFFF0F0F3),
+                    ),
+                    onPressed: () {
+                      API_Manager().sendGcodeCommand("M18 Y");
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.power_off,color: Colors.deepOrange[200]),
+                        Text("Y")
+                      ],
+                    )),
+                NeumorphicButton(
+                    margin: const EdgeInsets.all(15),
+                    style: const NeumorphicStyle(
+                      color: Color(0xFFF0F0F3),
+                    ),
+                    onPressed: () {
+                      API_Manager().sendGcodeCommand("M18 Z");
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.power_off,color: Colors.deepOrange[200]),
+                        Text("Z")
+                      ],
+                    )),
+              ],
+            ),
+          ):Container(),
           Flexible(
             flex: 3,
             child: Container(
@@ -390,9 +430,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                       iconColor: const Color(0xFF707585),
                       onUpPressed: () async {
                         if (MovesWithoutEndstop)
-                          await API_Manager()
-                              .sendGcodeCommand(
-                                  "M120\nG91\nG1 Y$stepValue H2 F${global.SpeedValue}\nM121\n");
+                          await API_Manager().sendGcodeCommand(
+                              "M120\nG91\nG1 Y$stepValue H2 F${global.SpeedValue}\nM121\n");
                         else
                           await API_Manager().sendGcodeCommand(
                               "M120\nG91\nG1 Y$stepValue F${global.SpeedValue}\nM121\n");
@@ -754,7 +793,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text("Accel: ${global.objectModelMove.result?.axes?[1].acceleration}"),
+                                Text(
+                                    "Accel: ${global.objectModelMove.result?.axes?[1].acceleration}"),
                                 NeumorphicButton(
                                   margin: const EdgeInsets.all(5),
                                   style: NeumorphicStyle(
@@ -762,7 +802,8 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      var accel = global.objectModelMove.result?.axes?[1].acceleration;
+                                      var accel = global.objectModelMove.result
+                                          ?.axes?[1].acceleration;
                                       accel = accel! + 10;
                                       API_Manager().sendGcodeCommand(
                                           "M201 Y${accel} \n");

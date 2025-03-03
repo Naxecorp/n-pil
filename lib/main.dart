@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/screen/conversationel_screen.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -17,8 +14,6 @@ import 'screen/programme_screen.dart';
 import 'screen/set_pos.dart';
 import 'service/API/API_Manager.dart';
 import 'globals_var.dart' as global;
-import 'package:http/http.dart' as http;
-import 'screen/screens.dart';
 
 int pageToShow = 1;
 
@@ -89,6 +84,8 @@ void main() async {
         .timeout(Duration(seconds: 5));
   });
 
+  
+
   await API_Manager()
       .getMachineMoveObjectModel()
       .then((move) => global.objectModelMove = move)
@@ -103,6 +100,8 @@ void main() async {
       .getfileListSys()
       .then((value) => global.ListofSysFile = value)
       .timeout(Duration(seconds: 5));
+  
+  await API_Manager().sendGcodeCommand('M98 P"config.g"');
 
   if ((global.MyMachineN02Config.Serie ?? "NUMSTD") == "DEFAULT") {
   } else
@@ -116,7 +115,7 @@ void main() async {
 
   Timer.periodic(const Duration(minutes: 10), (timer) async {
     await API_Manager()
-        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "isAlive")
+        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", global.machineObjectModel.result?.state?.status??"is alive")
         .timeout(Duration(seconds: 5));
   });
   

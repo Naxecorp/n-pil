@@ -5,10 +5,8 @@ import '../../operations/op_contournage/widget_contournage.dart';
 import '../../operations/op_ligne_droite/widget_ligne_droite.dart';
 import '../../operations/op_poche_carre/widget_poche_carre.dart';
 import '../../operations/op_poche_ronde/widget_poche_ronde.dart';
-import '../../operations/op_subd9/widget_subd9.dart';
 import '../../operations/ope_surfacage/widget_surfacage.dart';
 import '../../screen/screens.dart';
-import '../../opeviewer.dart';
 
 class OpeMenuUsinage extends StatefulWidget {
   const OpeMenuUsinage({

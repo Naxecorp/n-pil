@@ -3,7 +3,6 @@
 //     final systemsFiles = systemsFilesFromJson(jsonString);
 
 import 'dart:convert';
-
 import 'EnumValues.dart';
 import 'SystemsFilesElement.dart';
 

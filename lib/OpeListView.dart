@@ -1,8 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'operations/operation.dart';
 import 'opeviewer.dart';
-import 'operations/operation.dart';
 
 List<Operation> ListOfOperationCurrent = <Operation>[];
 int selectedIndex = 0;

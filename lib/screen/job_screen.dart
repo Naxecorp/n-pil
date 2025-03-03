@@ -1,32 +1,18 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/dashBoardWidgets/laser_power.dart';
 import 'package:nweb/dashBoardWidgets/print_tool.dart';
-import 'package:nweb/globals_var.dart';
-import 'package:nweb/autoScrollTextFile.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
-import 'package:nweb/service/nwc-settings/nwc-settings.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
-import 'package:nweb/widgetUtils/FileReadScreen.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:code_editor/code_editor.dart';
 import '../dashBoardWidgets/coord_machine.dart';
-import '../dashBoardWidgets/coord_outil.dart';
 import '../dashBoardWidgets/vitesse_broche.dart';
 import '../dashBoardWidgets/baby_stepZ.dart';
 import '../dashBoardWidgets/job_info.dart';
 import '../dashBoardWidgets/coef_vitesse.dart';
 import '../menus/side_menu.dart';
-import '../widgetUtils/window.dart';
 import '../widgetUtils/ArretUrgence.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();

@@ -1,24 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nweb/globals_var.dart';
 import 'package:nweb/main.dart';
-import 'package:nweb/screen/screens.dart';
 import 'package:nweb/service/API/API_Manager.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:nweb/service/nwc-settings/position.dart';
 import '../menus/side_menu.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:code_editor/code_editor.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
 

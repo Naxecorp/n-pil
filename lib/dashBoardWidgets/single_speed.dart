@@ -1,16 +1,6 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../globals_var.dart' as global;
 import 'package:nweb/service/API/API_Manager.dart';
-import '../globals_var.dart';
-import '../widgetUtils/touche.dart';
-import '../widgetUtils/Joystick/my_joystick.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class SpindleSpeed extends StatefulWidget {
   const SpindleSpeed({super.key, this.child});
@@ -343,14 +333,37 @@ class SpindleSpeedState extends State<SpindleSpeed> {
   void _onSpindleStartButtonPressed() {
     if (((global.machineObjectModel.result?.spindles?[0].current) ?? 0.0) ==
         0) {
-      API_Manager().sendGcodeCommand("M5 P0").then((value) {
-        API_Manager()
-            .sendGcodeCommand(
-                "M3 P0 S${global.MyMachineN02Config.VitesseDefaut ?? 6000}")
-            .then((value) {
-          setState(() {});
-        });
-      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Mettre la broche en rotation?"),
+            content: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(1, (index) {
+                return Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: ElevatedButton(
+                    onPressed: () async{
+                      API_Manager().sendGcodeCommand("M5 P0").then((value) {
+                        API_Manager()
+                            .sendGcodeCommand(
+                                "M3 P0 S${global.MyMachineN02Config.VitesseDefaut ?? 6000}")
+                            .then((value) {
+                          setState(() {});
+                        });
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("OUI"),
+                  ),
+                );
+              }),
+            ),
+          );
+        },
+      );
     } else {
       API_Manager().sendGcodeCommand("M5 P0").then((value) {
         setState(() {});
@@ -358,12 +371,31 @@ class SpindleSpeedState extends State<SpindleSpeed> {
     }
   }
 
-  void _onSpindleStopButtonPressed() {
-    if (((global.machineObjectModel.result?.spindles?[0].current) ?? 0.0) > 0) {
-      API_Manager().sendGcodeCommand("M5 P0").then((value) {
-        setState(() {});
-      });
-    }
+  void _onFraiseButtonPressed() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Choisissez l'outil ACTUELLEMENT en broche"),
+          content: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(5, (index) {
+              return Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    API_Manager().sendGcodeCommand("T${index + 1} P0");
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("T${index + 1}"),
+                ),
+              );
+            }),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildToolStatus() {
@@ -414,6 +446,14 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                 );
               },
             ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(12),
+            child: _buildActionButton(
+                icon: Icons.cyclone_outlined,
+                label: 'Fraise',
+                onPressed: _onFraiseButtonPressed,
+                depthCondition: false),
           ),
         ],
       ),

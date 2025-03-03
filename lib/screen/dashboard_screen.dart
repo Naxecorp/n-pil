@@ -1,17 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
-import 'package:nweb/service/nwc-settings/nwc-settings.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import '../dashBoardWidgets/coord_machine.dart';
 import '../dashBoardWidgets/coord_outil.dart';
 import '../dashBoardWidgets/deplacement_machine.dart';
@@ -24,7 +15,6 @@ import '../menus/side_menu.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:code_editor/code_editor.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
@@ -90,18 +80,35 @@ class DashboardScreenState extends State<DashboardScreen> {
       setState(() {});
     });
 
-    Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
-    });
+    
 
+    
+  }
+
+  @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+
+  // Exécuter les fonctions qui nécessitent `context` après l'initialisation complète.
+  Future.microtask(() {
+    if(global.MyMachineN02Config.HasFanOnEnclosure == 1) {
+      global.checkCaissonOpen(context);
+    }
     global.checkAndShowDialog(context);
     checkErrorDrive(context);
-    if(global.DefaultConfigWasLoaded){
-      global.DefaultConfigWasLoaded=false;
-      showDialog(context: context, builder:((context) => AlertDialog(title: const Text("config standard") ,)));
-      
+
+    if(global.DefaultConfigWasLoaded) {
+      global.DefaultConfigWasLoaded = false;
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => const AlertDialog(title: Text("config standard")),
+        );
+      }
     }
-  }
+  });
+}
+
 
   // Fonction qui regarde si les 3 axes sont homes et va au dernières coordonées machines
   Future<void> actualiserHomeMachine() async {

@@ -1,15 +1,6 @@
 // ignore_for_file: prefer_const_constructors, sort_child_properties_last
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nweb/main.dart';
-import 'package:nweb/operations/operation.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'OpeListView.dart';
-import 'operations/ope_surfacage/op_surfacage.dart';
-import 'operations/op_poche_carre/op_poche_carre.dart';
-import 'operations/op_ligne_droite/op_ligne_droite.dart';
-import 'operations/op_poche_ronde/op_poche_ronde.dart';
 
 class GeneralOpeViewer extends StatefulWidget {
 

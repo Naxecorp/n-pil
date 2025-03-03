@@ -1,31 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nweb/globals_var.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:nweb/service/nwc-settings/offset.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:code_editor/code_editor.dart';
-import '../dashBoardWidgets/coord_machine.dart';
-import '../dashBoardWidgets/coord_outil.dart';
-import '../dashBoardWidgets/vitesse_broche.dart';
-import '../dashBoardWidgets/baby_stepZ.dart';
-import '../dashBoardWidgets/job_info.dart';
-import '../dashBoardWidgets/coef_vitesse.dart';
 import '../menus/side_menu.dart';
-import '../widgetUtils/window.dart';
-import '../widgetUtils/ArretUrgence.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
@@ -417,6 +399,7 @@ class OriginScreenState extends State<OriginScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
+                          Container(height: 15,width: 15,color: ((global.machineObjectModel.result!.sensors!.probes![0].value![0]) >= 900) ? Colors.amber:Colors.blue),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -638,7 +621,7 @@ class OriginScreenState extends State<OriginScreen> {
                                                                             'Notification'),
                                                                         content:
                                                                             const Text(
-                                                                          'Mesure terminé ! ',
+                                                                          'Mesure terminée ! ',
                                                                           style:
                                                                               TextStyle(fontSize: 16),
                                                                         ),

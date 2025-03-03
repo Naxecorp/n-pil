@@ -1,24 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:nweb/OpeListView.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
-import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import '../menus/side_menu.dart';
 import '../widgetUtils/gcodeViewer.dart';
-import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:code_editor/code_editor.dart';
+
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
@@ -327,6 +321,47 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     return ((part / total) * 100.0).toInt(); // Conversion implicite en double
   }
 
+
+void analyzeGCode(String gcodeContent) {
+  List<String> lines = gcodeContent.split('\n');
+
+  double minZ = double.infinity;
+  double maxZ = -double.infinity;
+  Map<double, int> radiusOccurrences = {};
+
+  RegExp zMove = RegExp(r'G1.*Z(-?\d*\.?\d+)');
+  RegExp arcMove = RegExp(r'G[23].*I(-?\d*\.?\d+).*J(-?\d*\.?\d+)');
+
+  for (var line in lines) {
+    Match? zMatch = zMove.firstMatch(line);
+    if (zMatch != null) {
+      double zValue = double.parse(zMatch.group(1)!);
+      minZ = min(minZ, zValue);
+      maxZ = max(maxZ, zValue);
+    }
+
+    Match? arcMatch = arcMove.firstMatch(line);
+    if (arcMatch != null) {
+      double iValue = double.parse(arcMatch.group(1)!);
+      double jValue = double.parse(arcMatch.group(2)!);
+      double radius = sqrt(pow(iValue, 2) + pow(jValue, 2));
+      radiusOccurrences[radius] = (radiusOccurrences[radius] ?? 0) + 1;
+    }
+  }
+
+  double estimatedDiameter = 0.0;
+  if (radiusOccurrences.isNotEmpty) {
+    estimatedDiameter = radiusOccurrences.entries
+        .reduce((a, b) => a.value > b.value ? a : b)
+        .key * 2;
+  }
+
+  double maxAxialDepth = maxZ - minZ;
+
+  print('Estimation du diamètre de la fraise : ${estimatedDiameter.toStringAsFixed(2)} mm');
+  print('Profondeur de passe axiale maximale : ${maxAxialDepth.toStringAsFixed(2)} mm');
+}
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -962,6 +997,53 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                                         simulationTimer?.cancel();
                                       });
                                     });
+                                  }
+                                : null,
+                          ),
+                          const Spacer(),
+                          ElevatedButton.icon(
+                            label: const Text(
+                              "Estimer",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            icon: const Icon(
+                              Icons.start_rounded,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            onPressed: global.machineObjectModel.result?.state
+                                        ?.status ==
+                                    "idle"
+                                ? () async{
+                                    if (ListofGcodeFile!
+                                      .elementAt(global.selectedGcodeFileIndex)!
+                                      .size! <
+                                  100000) {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return const AlertDialog(
+                                        title: Text("Chargement en cours..."),
+                                      );
+                                    });
+                                await API_Manager()
+                                    .downLoadAFile(
+                                        'gcodes',
+                                        ListofGcodeFile!
+                                            .elementAt(
+                                                global.selectedGcodeFileIndex)!
+                                            .name
+                                            .toString())
+                                    .then((value) =>
+                                        global.ContentofFileToEdit = value);
+                                Navigator.of(context).pop();
+                                analyzeGCode(global.ContentofFileToEdit);
+                              }
                                   }
                                 : null,
                           ),

@@ -1,15 +1,6 @@
-import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../../globals_var.dart' as global;
-import 'package:nweb/service/API/API_Manager.dart';
-import '../../globals_var.dart';
-import '../../widgetUtils/touche.dart';
-import '../widgetUtils/Joystick/my_joystick.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class CoordoneesMachine extends StatefulWidget {
   const CoordoneesMachine({super.key, this.child, this.notifyParent});
@@ -138,17 +129,27 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                         flex: 2,
                         child: FittedBox(
                             fit: BoxFit.fitHeight,
-                            child: Text(
-                              "Z",
-                              style: TextStyle(
-                                  color: global.objectModelMove.result?.axes
-                                              ?.elementAt(2)
-                                              .homed ==
-                                          false
-                                      ? Colors.red
-                                      : const Color(0xFF707585),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Z",
+                                  style: TextStyle(
+                                      color: global.objectModelMove.result?.axes
+                                                  ?.elementAt(2)
+                                                  .homed ==
+                                              false
+                                          ? Colors.red
+                                          : const Color(0xFF707585),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                                global.AdminLogged ?Container(
+                                    height: 10,
+                                    width: 10,
+                                    color: (((global.machineObjectModel.result?.sensors?.probes?[0].value?[0])??0) >=900)
+                                        ? Colors.amber
+                                        : Colors.blue):Container(),
+                              ],
                             ))),
                     Flexible(
                         flex: 4,

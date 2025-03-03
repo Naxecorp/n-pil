@@ -1,18 +1,9 @@
-import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../../globals_var.dart' as global;
 import 'package:nweb/service/API/API_Manager.dart';
-import '../../globals_var.dart';
-import '../../widgetUtils/touche.dart';
-import '../widgetUtils/Joystick/my_joystick.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class CoordoneesOutil extends StatefulWidget {
   const CoordoneesOutil({super.key, this.child, this.notifyParent});
@@ -106,35 +97,35 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                 ),
                               ),
                             )),
-                        // Flexible(
-                        //     flex: 2,
-                        //     child: Container(
-                        //       margin: const EdgeInsets.symmetric(horizontal: 5),
-                        //       width: double.infinity,
-                        //       height: double.infinity,
-                        //       //color: Colors.orange,
-                        //       child: NeumorphicButton(
-                        //         onPressed: global.machineObjectModel.result
-                        //                     ?.state?.status ==
-                        //                 "processing"
-                        //             ? null
-                        //             : () {
-                        //                 API_Manager().sendGcodeCommand("G0 X0");
-                        //               },
-                        //         style: const NeumorphicStyle(
-                        //           color: Color(0xFFF0F0F3),
-                        //         ),
-                        //         child: const Center(
-                        //           child: Text(
-                        //             "GO TO 0",
-                        //             textAlign: TextAlign.center,
-                        //             style: TextStyle(
-                        //                 color: Color(0xFF707585),
-                        //                 fontWeight: FontWeight.bold),
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     )),
+                        global.AdminLogged ? Flexible(
+                            flex: 2,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              width: double.infinity,
+                              height: double.infinity,
+                              //color: Colors.orange,
+                              child: NeumorphicButton(
+                                onPressed: global.machineObjectModel.result
+                                            ?.state?.status ==
+                                        "processing"
+                                    ? null
+                                    : () {
+                                        API_Manager().sendGcodeCommand("G0 X0");
+                                      },
+                                style: const NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "GO TO 0",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Color(0xFF707585),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            )):Container(),
                       ],
                     ),
                   )),
@@ -203,35 +194,35 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                 ),
                               ),
                             )),
-                        // Flexible(
-                        //     flex: 2,
-                        //     child: Container(
-                        //       margin: const EdgeInsets.symmetric(horizontal: 5),
-                        //       width: double.infinity,
-                        //       height: double.infinity,
-                        //       //color: Colors.orange,
-                        //       child: NeumorphicButton(
-                        //         onPressed: global.machineObjectModel.result
-                        //                     ?.state?.status ==
-                        //                 "processing"
-                        //             ? null
-                        //             : () {
-                        //                 API_Manager().sendGcodeCommand("G0 Y0");
-                        //               },
-                        //         style: const NeumorphicStyle(
-                        //           color: Color(0xFFF0F0F3),
-                        //         ),
-                        //         child: const Center(
-                        //           child: Text(
-                        //             "GO TO 0",
-                        //             textAlign: TextAlign.center,
-                        //             style: TextStyle(
-                        //                 color: Color(0xFF707585),
-                        //                 fontWeight: FontWeight.bold),
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     )),
+                        global.AdminLogged ? Flexible(
+                            flex: 2,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              width: double.infinity,
+                              height: double.infinity,
+                              //color: Colors.orange,
+                              child: NeumorphicButton(
+                                onPressed: global.machineObjectModel.result
+                                            ?.state?.status ==
+                                        "processing"
+                                    ? null
+                                    : () {
+                                        API_Manager().sendGcodeCommand("G0 Y0");
+                                      },
+                                style: const NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "GO TO 0",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Color(0xFF707585),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            )):Container(),
                       ],
                     ),
                   )),
@@ -300,35 +291,35 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                 ),
                               ),
                             )),
-                        // Flexible(
-                        //     flex: 2,
-                        //     child: Container(
-                        //       margin: const EdgeInsets.symmetric(horizontal: 5),
-                        //       width: double.infinity,
-                        //       height: double.infinity,
-                        //       //color: Colors.orange,
-                        //       child: NeumorphicButton(
-                        //         onPressed: global.machineObjectModel.result
-                        //                     ?.state?.status ==
-                        //                 "processing"
-                        //             ? null
-                        //             : () {
-                        //                 API_Manager().sendGcodeCommand("G0 Z0");
-                        //               },
-                        //         style: const NeumorphicStyle(
-                        //           color: Color(0xFFF0F0F3),
-                        //         ),
-                        //         child: const Center(
-                        //           child: Text(
-                        //             "GO TO 0",
-                        //             textAlign: TextAlign.center,
-                        //             style: TextStyle(
-                        //                 color: Color(0xFF707585),
-                        //                 fontWeight: FontWeight.bold),
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     )),
+                        global.AdminLogged ? Flexible(
+                            flex: 2,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              width: double.infinity,
+                              height: double.infinity,
+                              //color: Colors.orange,
+                              child: NeumorphicButton(
+                                onPressed: global.machineObjectModel.result
+                                            ?.state?.status ==
+                                        "processing"
+                                    ? null
+                                    : () {
+                                        API_Manager().sendGcodeCommand("G0 Z0");
+                                      },
+                                style: const NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "GO TO 0",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Color(0xFF707585),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            )):Container(),
                       ],
                     ),
                   )),

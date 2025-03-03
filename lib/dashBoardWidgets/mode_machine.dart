@@ -1,16 +1,8 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../globals_var.dart' as global;
 import 'package:nweb/service/API/API_Manager.dart';
-import '../globals_var.dart';
-import '../widgetUtils/touche.dart';
-import '../widgetUtils/Joystick/my_joystick.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
+
 
 class ModeMachine extends StatefulWidget {
   const ModeMachine({super.key, this.child});

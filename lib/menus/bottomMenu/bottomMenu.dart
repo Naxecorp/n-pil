@@ -1,9 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:nweb/OpeListView.dart';
-import '../../screen/screens.dart';
-import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/globals_var.dart' as global;
 
 import 'menu1.dart';

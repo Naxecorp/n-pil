@@ -1,30 +1,16 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/service/API/API_Manager.dart';
-import 'package:nweb/service/ObjectModelMoveManager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:nweb/service/outils.dart';
-import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:code_editor/code_editor.dart';
-import '../dashBoardWidgets/coord_machine.dart';
-import '../dashBoardWidgets/coord_outil.dart';
-import '../dashBoardWidgets/vitesse_broche.dart';
-import '../dashBoardWidgets/baby_stepZ.dart';
-import '../dashBoardWidgets/job_info.dart';
-import '../dashBoardWidgets/coef_vitesse.dart';
 import '../menus/side_menu.dart';
-import '../widgetUtils/window.dart';
-import '../widgetUtils/ArretUrgence.dart';
 import '../main.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
@@ -100,10 +86,12 @@ class AdminScreenState extends State<AdminScreen>
                         child: TextFormField(
                           obscureText: true,
                           controller: MDP,
-                          onFieldSubmitted: (value) {
+                          onFieldSubmitted: (value) async{
                             if (MDP.text == global.pwd) {
                               global.AdminLogged = true;
                               global.Title = "ADMIN MODE | $version";
+                              await API_Manager().sendGcodeCommand("M581 T1 P-1"); // on desactive toutes les pauses 
+                              await API_Manager().sendGcodeCommand('M98 P"alarmdriver.g"'); // Arret d'urgence sur entree 9 quelque soit le mode, sur front montant (driver en erreur)
                               Navigator.pop(context, '/admin');
                             }
                           },
@@ -133,7 +121,7 @@ class AdminScreenState extends State<AdminScreen>
 
   @override
   void initState() {
-    pageToShow=7;
+    pageToShow = 7;
     API_Manager()
         .getfileListSys()
         .then((value) => global.ListofSysFile = value);
@@ -144,7 +132,8 @@ class AdminScreenState extends State<AdminScreen>
     }
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
+      if (global.MyMachineN02Config.HasFanOnEnclosure == 1)
+        global.checkCaissonOpen(context);
     });
     ProgressBarcontroller = AnimationController(
       /// [AnimationController]s can be created with `vsync: this` because of
@@ -388,6 +377,56 @@ class AdminScreenState extends State<AdminScreen>
                                     .sendGcodeCommand('M98 P"diagY.g"');
                               } else
                                 null;
+                            },
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 5,
+                        child: Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: ElevatedButton.icon(
+                            label: const FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "Test de code editor",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.bug_report_outlined,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            onPressed: () async {
+                              if (global.AdminLogged) {
+                                String generateRandomText() {
+                                  List<String> sampleCommands = [
+                                    "G1 X${Random().nextInt(100)} Y${Random().nextInt(100)} Z${Random().nextInt(50)}",
+                                    "G28 ; Retour à l'origine",
+                                    "M106 S${Random().nextInt(255)} ; Réglage du ventilateur",
+                                    "M104 S${Random().nextInt(200) + 150} ; Température de l'extrudeur",
+                                    "M140 S${Random().nextInt(100) + 50} ; Température du plateau",
+                                    "G92 X0 Y0 Z0 ; Réinitialisation des axes",
+                                    "M82 ; Mode extrusion absolue",
+                                  ];
+
+                                  sampleCommands.shuffle();
+                                  return sampleCommands.take(5).join(
+                                      "\n"); // Sélectionne 5 lignes aléatoires
+                                }
+
+                                global.ContentofFileToEdit =
+                                    await generateRandomText();
+                                Navigator.pushNamed(context, '/editor');
+                              }
                             },
                           ),
                         ),
@@ -651,9 +690,10 @@ class AdminScreenState extends State<AdminScreen>
                       ElevatedButton(
                         onPressed: () {
                           if (global.AdminLogged) {
-                            setState(() {
+                            setState(()async {
                               global.AdminLogged = false;
                               global.Title = global.DefaultTitle;
+                              if (global.MyMachineN02Config.HasLedOnEnclosure == 1) await API_Manager().sendGcodeCommand('M98 P"caissoncrea.g"');
                               Navigator.pushNamed(context, '/admin');
                             });
                           } else
