@@ -30,7 +30,7 @@ class _EditorPageState extends State<EditorPage> {
 
     if (pageToShow == 7) {
       await API_Manager().upLoadAFile(
-        "0:/sys/${global.ListofSysFile!.isNotEmpty ? global.ListofSysFile!.elementAt(global.selectedFileSysIndex)?.name?.toString() ?? "default_file" : "default_file"}",
+        "0:/sys/${global.ListofSysFile!.isNotEmpty ? global.ListofSysFile!.elementAt(global.selectedFileSysIndex)?.name?.toString() ?? "aie.g" : "aie.g"}",
         editedText.length.toString(),
         Uint8List.fromList(editedText.codeUnits),
       );
@@ -41,7 +41,7 @@ class _EditorPageState extends State<EditorPage> {
 
     if (pageToShow == 3) {
       await API_Manager().upLoadAFile(
-        "0:/gcodes/${global.ListofGcodeFile!.isNotEmpty ? global.ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)?.name?.toString() ?? "default_gcode.gcode" : "default_gcode.gcode"}",
+        "0:/gcodes/${global.ListofGcodeFile!.isNotEmpty ? global.ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)?.name?.toString() ?? "ouille.g" : "ouille.g"}",
         editedText.length.toString(),
         Uint8List.fromList(editedText.codeUnits),
       );
@@ -50,9 +50,22 @@ class _EditorPageState extends State<EditorPage> {
           .then((value) => global.ListofGcodeFile = value);
     }
 
-    if(mounted)ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Fichier enregistré avec succès !")),
+    if (mounted) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Empêche la fermeture en cliquant à l'extérieur
+      builder: (context) {
+        Future.delayed(Duration(seconds: 5), () {
+          if (mounted) Navigator.of(context).pop(); // Ferme le popup après 5 secondes
+        });
+
+        return AlertDialog(
+          title: Text("Enregistrement"),
+          content: Text("Veuillez patienter..."),
+        );
+      },
     );
+  }
   }
 
   @override

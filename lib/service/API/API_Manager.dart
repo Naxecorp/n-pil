@@ -35,8 +35,10 @@ class API_Manager {
           .timeout(Duration(seconds: 1));
           
       if (response.statusCode == 200) {
+        print("toto ${response.body}");
         final MachineObjectModel Machine =
             machineObjectModelFromJson(response.body);
+        
         return Machine;
       } else {
         print('Fail to get data, error : ' + response.statusCode.toString());

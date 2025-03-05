@@ -203,7 +203,7 @@ class Input {
         feedRate: json["feedRate"],
         inMacro: json["inMacro"],
         lineNumber: json["lineNumber"],
-        state: stateEnumValues.map[json["state"]]!,
+        state: stateEnumValues.map[json["state"]]??StateEnum.UNKNOW,
       );
 
   Map<String, dynamic> toJson() => {
@@ -214,10 +214,10 @@ class Input {
       };
 }
 
-enum StateEnum { WAITING, IDLE }
+enum StateEnum { WAITING, IDLE , UNKNOW }
 
 final stateEnumValues =
-    EnumValues({"idle": StateEnum.IDLE, "waiting": StateEnum.WAITING});
+    EnumValues({"idle": StateEnum.IDLE, "waiting": StateEnum.WAITING,"unknow": StateEnum.UNKNOW});
 
 class Job {
   Job({
@@ -244,7 +244,7 @@ class Job {
 
   factory Job.fromJson(Map<String, dynamic> json) => Job(
         build: json["build"] == null ? null : Build.fromJson(json["build"]),
-        duration: json["duration"],
+        duration: json["duration"]??0,
         filePosition: json["filePosition"],
         layer: json["layer"],
         layerTime: json["layerTime"],
@@ -428,9 +428,8 @@ class Sensors {
             ? []
             : List<Analog>.from(json["analog"]!.map((x) => Analog.fromJson(x))),
         endstops: json["endstops"] == null
-            ? []
-            : List<Endstop>.from(
-                json["endstops"]!.map((x) => Endstop.fromJson(x))),
+    ? []
+    : List<Endstop>.from(json["endstops"]!.where((x) => x != null).map((x) => Endstop.fromJson(x))),
         filamentMonitors: json["filamentMonitors"] == null
             ? []
             : List<dynamic>.from(json["filamentMonitors"]!.map((x) => x)),
