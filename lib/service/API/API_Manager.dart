@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:nweb/service/outils.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,6 +12,7 @@ import 'package:nweb/globals_var.dart' as global;
 import '../system/SystemsFiles.dart';
 import '../gCode/ListGcodeProgram.dart';
 import '../gCode/gCodeProgram.dart';
+import 'dart:convert';
 
 import '../nwc-settings/nwc-settings.dart';
 import '../system/SystemsFilesElement.dart';
@@ -35,7 +37,7 @@ class API_Manager {
           .timeout(Duration(seconds: 1));
           
       if (response.statusCode == 200) {
-        print("toto ${response.body}");
+        //print("toto ${response.body}");
         final MachineObjectModel Machine =
             machineObjectModelFromJson(response.body);
         
@@ -664,4 +666,171 @@ class API_Manager {
       return 'nok';
     }
   }
+
+  Future<String> sendGcodeToServer({
+  required String filename,
+  required String content,
+  required bool overwrite,
+  required String serial,
+}) async {
+  const token = '9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825';
+  final baseUrl = 'https://naxe.fr/naxen02/reception.php';
+
+
+  // Joindre les caractères en une seule chaîne
+  
+
+  final uri = Uri.parse('$baseUrl?filename=$filename&overwrite=${overwrite.toString()}&serial=$serial');
+
+  try {
+    final response = await http.post(
+      uri,
+      headers: {
+        'Content-Type': 'text/plain',
+        'Authorization': 'Bearer $token',
+        "Access-Control-Allow-Headers": "*",
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate",
+        "Access-Control-Allow-Origin": "*",
+        "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+      },
+      body: content,
+    );
+
+    final responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      print("✅ Succès : ${responseBody['message']}");
+      print("📄 Fichier enregistré sous : ${responseBody['filename']}");
+      return response.statusCode.toString();      
+    } else {
+      print("❌ Erreur : ${responseBody['message']}");
+      return response.statusCode.toString();
+    }
+    
+  } catch (e) {
+    print("⚠️ Erreur lors de l’envoi : $e");
+    return "404";
+  }
+  
+}
+
+
+
+
+
+
+Future<void> showUploadProgressDialog({
+  required BuildContext context,
+  required List<SysFileElement> files,
+  required bool overwrite,
+  required String serial,
+}) async {
+  final progressNotifier = ValueNotifier<double>(0.0);
+  final stepTextNotifier = ValueNotifier<String>("Préparation...");
+  bool cancelRequested = false;
+
+  // Afficher la boîte modale de progression
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (dialogContext) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Envoi en cours'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ValueListenableBuilder<double>(
+                  valueListenable: progressNotifier,
+                  builder: (context, value, _) {
+                    return LinearProgressIndicator(value: value);
+                  },
+                ),
+                SizedBox(height: 10),
+                ValueListenableBuilder<String>(
+                  valueListenable: stepTextNotifier,
+                  builder: (context, value, _) => Text(value),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  cancelRequested = true;
+                  Navigator.of(context).pop(); // Ferme le popup immédiatement
+                },
+                child: Text('Annuler'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  int total = files.length;
+  int done = 0;
+  int successCount = 0;
+  int failCount = 0;
+
+  for (final file in files) {
+    if (cancelRequested) break;
+
+    done++;
+
+    if (file.name == null) {
+      failCount++;
+      progressNotifier.value = done / total;
+      continue;
+    }
+
+    stepTextNotifier.value = 'Téléchargement : ${file.name}';
+
+    try {
+      final content = await downLoadAFile('sys', file.name!);
+
+      if (content.toLowerCase() == 'nok') {
+        failCount++;
+      } else {
+        stepTextNotifier.value = 'Envoi : ${file.name}';
+        await sendGcodeToServer(
+          filename: file.name!,
+          content: content,
+          overwrite: overwrite,
+          serial: serial,
+        );
+        successCount++;
+      }
+    } catch (e) {
+      failCount++;
+    }
+
+    progressNotifier.value = done / total;
+  }
+
+  // Affiche un résumé seulement si ce n'était pas annulé
+  if (!cancelRequested) {
+    Navigator.of(context).pop();
+    await showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('Résultat de l\'envoi'),
+          content: Text('✔️ Succès : $successCount\n❌ Échecs : $failCount'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+
+
 }

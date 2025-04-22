@@ -6,6 +6,7 @@ import '../../operations/op_ligne_droite/widget_ligne_droite.dart';
 import '../../operations/op_poche_carre/widget_poche_carre.dart';
 import '../../operations/op_poche_ronde/widget_poche_ronde.dart';
 import '../../operations/ope_surfacage/widget_surfacage.dart';
+import '../../operations/op_gravure_text/widget_gravure_text.dart';
 import '../../screen/screens.dart';
 
 class OpeMenuUsinage extends StatefulWidget {
@@ -232,6 +233,32 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 5),
+                        child: Card(
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            tileColor: opeToShow == 'GravureText'
+                                ? Color(0xFF9A9A9A)
+                                : Colors.white,
+                            onTap: () {
+                              opeToShow = 'GravureText';
+                              setState(() {});
+                              return onAnytap!();
+                            },
+                            leading: Icon(Icons.abc),
+                            title: Text(
+                              'Gravure Text',
+                              style: TextStyle(
+                                  color: Colors.black45,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ))
             ],
@@ -251,8 +278,10 @@ class _OpeMenuUsinage extends State<OpeMenuUsinage> {
                               ? OpeContournage()
                               : opeToShow == 'LigneDroite'
                                   ? OpeLigneDroite()
-                                  : Center(
-                                      child: Text('Sélectionner opération')),
+                                  : opeToShow == 'GravureText'
+                                    ? TextGcodeUI()
+                                      : Center(
+                                        child: Text('Sélectionner opération')),
             )) // Affichage des VUES opération
       ],
     );

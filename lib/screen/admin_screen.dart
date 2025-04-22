@@ -12,6 +12,7 @@ import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import '../menus/side_menu.dart';
 import '../main.dart';
+import 'package:nweb/service/system/SystemsFilesElement.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
@@ -86,12 +87,14 @@ class AdminScreenState extends State<AdminScreen>
                         child: TextFormField(
                           obscureText: true,
                           controller: MDP,
-                          onFieldSubmitted: (value) async{
+                          onFieldSubmitted: (value) async {
                             if (MDP.text == global.pwd) {
                               global.AdminLogged = true;
                               global.Title = "ADMIN MODE | $version";
-                              await API_Manager().sendGcodeCommand("M581 T1 P-1"); // on desactive toutes les pauses 
-                              await API_Manager().sendGcodeCommand('M98 P"alarmdriver.g"'); // Arret d'urgence sur entree 9 quelque soit le mode, sur front montant (driver en erreur)
+                              await API_Manager().sendGcodeCommand(
+                                  "M581 T1 P-1"); // on desactive toutes les pauses
+                              await API_Manager().sendGcodeCommand(
+                                  'M98 P"alarmdriver.g"'); // Arret d'urgence sur entree 9 quelque soit le mode, sur front montant (driver en erreur)
                               Navigator.pop(context, '/admin');
                             }
                           },
@@ -391,12 +394,12 @@ class AdminScreenState extends State<AdminScreen>
                             label: const FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
-                                "Test de code editor",
+                                "Upload to server",
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
                             icon: const Icon(
-                              Icons.bug_report_outlined,
+                              Icons.upload_file,
                               color: Colors.white,
                             ),
                             style: ElevatedButton.styleFrom(
@@ -425,7 +428,8 @@ class AdminScreenState extends State<AdminScreen>
 
                                 global.ContentofFileToEdit =
                                     await generateRandomText();
-                                Navigator.pushNamed(context, '/editor');
+                                await API_Manager().showUploadProgressDialog(files: (global.ListofSysFile ?? []).whereType<SysFileElement>().toList(), overwrite: true, serial: global.MyMachineN02Config.Serie??"01902", context: context);    
+
                               }
                             },
                           ),
@@ -690,10 +694,13 @@ class AdminScreenState extends State<AdminScreen>
                       ElevatedButton(
                         onPressed: () {
                           if (global.AdminLogged) {
-                            setState(()async {
+                            setState(() async {
                               global.AdminLogged = false;
                               global.Title = global.DefaultTitle;
-                              if (global.MyMachineN02Config.HasLedOnEnclosure == 1) await API_Manager().sendGcodeCommand('M98 P"caissoncrea.g"');
+                              if (global.MyMachineN02Config.HasLedOnEnclosure ==
+                                  1)
+                                await API_Manager()
+                                    .sendGcodeCommand('M98 P"caissoncrea.g"');
                               Navigator.pushNamed(context, '/admin');
                             });
                           } else

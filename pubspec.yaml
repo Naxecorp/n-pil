@@ -107,6 +107,7 @@ flutter:
     - 'assets/Icon Subd.png'
     - 'assets/Icon HDMI.png'
     - 'assets/convGcode/NPS_motif2.gcode'
+    - 'assets/svg/'
 
 
   #
