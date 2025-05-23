@@ -109,6 +109,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
             flex: 3,
             child: Container(
               padding: const EdgeInsets.all(2),
+              //color: Colors.amber,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -302,6 +303,62 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                             ),
                           ),
                         ),
+                        if (((global.machineObjectModel.result?.move?.axes?.length) ?? 0) >=
+              4)Flexible(
+                          flex: 1,
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: Stack(
+                              alignment: Alignment.topCenter,
+                              children: <Widget>[
+                                if (zCapteur == true)
+                                  Container(
+                                    width: 16,
+                                    height: 13,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                // Bouton
+                                NeumorphicButton(
+                                  margin: const EdgeInsets.all(15),
+                                  style: const NeumorphicStyle(
+                                    color: Color(0xFFF0F0F3),
+                                  ),
+                                  onPressed: global.objectModelMove.result?.axes
+                                              ?.elementAt(3)
+                                              .homed ==
+                                          false
+                                      ? () async {
+                                          await API_Manager()
+                                              .sendGcodeCommand("G28 U");
+                                        }
+                                      : null,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(
+                                        Icons.home_rounded,
+                                        color: Colors.black87,
+                                      ),
+                                      FittedBox(
+                                        fit: BoxFit.contain,
+                                        child: Text(
+                                          'Axe U',
+                                          style: TextStyle(
+                                              color: Color(0xFF707585)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      
                       ],
                     ),
                   ),
@@ -1024,6 +1081,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                   ],
                 ),
               ))
+          
         ],
       ),
     );

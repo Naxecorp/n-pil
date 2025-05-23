@@ -323,6 +323,105 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                       ],
                     ),
                   )),
+              if (((global.machineObjectModel.result?.move?.axes?.length) ?? 0) >=
+              4)Flexible(
+                  flex: 2,
+                  child: Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.all(5),
+                    //color: Colors.green,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Flexible(
+                            flex: 1,
+                            child: FittedBox(
+                                fit: BoxFit.fitHeight,
+                                child: Text(
+                                  "U",
+                                  style: TextStyle(
+                                      color: Color(0xFF707585),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ))),
+                        Flexible(
+                            flex: 3,
+                            child: FittedBox(
+                                fit: BoxFit.fitHeight,
+                                child: Text(
+                                  global.machineObjectModel.result?.move?.axes
+                                          ?.elementAt(3)
+                                          .userPosition
+                                          ?.toStringAsFixed(2) ??
+                                      "...",
+                                  style: const TextStyle(
+                                      color: Color(0xFF707585), fontSize: 50),
+                                ))),
+                        Flexible(
+                            flex: 2,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              width: double.infinity,
+                              height: double.infinity,
+                              //color: Colors.orange,
+                              child: NeumorphicButton(
+                                onPressed: global.machineObjectModel.result
+                                            ?.state?.status ==
+                                        "processing"
+                                    ? null
+                                    : () async{
+                                        await API_Manager()
+                                            .sendGcodeCommand("G10 L20 P1 U0");
+                                        API_Manager()
+                                            .sendGcodeCommand("G10 L20 P1");
+                                      },
+                                style: const NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "Set 0",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Color(0xFF707585),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            )),
+                        global.AdminLogged ? Flexible(
+                            flex: 2,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              width: double.infinity,
+                              height: double.infinity,
+                              //color: Colors.orange,
+                              child: NeumorphicButton(
+                                onPressed: global.machineObjectModel.result
+                                            ?.state?.status ==
+                                        "processing"
+                                    ? null
+                                    : () {
+                                        API_Manager().sendGcodeCommand("G0 U0");
+                                      },
+                                style: const NeumorphicStyle(
+                                  color: Color(0xFFF0F0F3),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "GO TO 0",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Color(0xFF707585),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            )):Container(),
+                      ],
+                    ),
+                  )),
+              
               Flexible(
                   flex: 1,
                   child: Column(
@@ -336,7 +435,7 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                         ?.status ==
                                     "processing"
                                 ? null
-                                : () {
+                                : () async {
                                     String contentXYZ =
                                         ';File\n ;is written after set Zero\necho "${global.machineObjectModel.result?.move?.axes?[0].machinePosition}"\necho "${global.machineObjectModel.result?.move?.axes?[1].machinePosition}"\necho "${global.machineObjectModel.result?.move?.axes?[2].machinePosition}"';
                                     API_Manager().upLoadAFile(
@@ -347,10 +446,9 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                             .toString(),
                                         Uint8List.fromList(
                                             utf8.encode(contentXYZ)));
-                                    API_Manager().sendGcodeCommand(
-                                        "G10 L20 P1 X0 Y0 Z0");
-                                    API_Manager()
-                                        .sendGcodeCommand("G10 L20 P1");
+                                    await  API_Manager().sendGcodeCommand("G10 L20 P1 X0 Y0 Z0");
+                                    if (((global.machineObjectModel.result?.move?.axes?.length) ?? 0) >= 4)await API_Manager().sendGcodeCommand("G10 L20 P1 U0");  
+                                    await API_Manager().sendGcodeCommand("G10 L20 P1");
                                   },
                             style: const NeumorphicStyle(
                               color: Color(0xFFF0F0F3),

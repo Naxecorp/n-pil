@@ -40,6 +40,5 @@ class _BottomMenu extends State<BottomMenu> {
               return onAnytap!();
             },
           );
-    throw UnimplementedError();
   }
 }
