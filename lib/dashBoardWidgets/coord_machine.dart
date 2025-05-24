@@ -168,6 +168,49 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                 ),
               ),
             ),
+          Flexible(
+                flex: 1,
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(1),
+                  //color: Colors.green,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: FittedBox(
+                          fit: BoxFit.fitHeight,
+                          child: Text(
+                            "U",
+                            style: TextStyle(
+                                color: global.objectModelMove.result?.axes
+                                            ?.elementAt(3)
+                                            .homed ==
+                                        false
+                                    ? Colors.red
+                                    : const Color(0xFF707585),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                          flex: 4,
+                          child: FittedBox(
+                              fit: BoxFit.fitHeight,
+                              child: Text(
+                                global.machineObjectModel.result?.move?.axes
+                                        ?.elementAt(3)
+                                        .machinePosition
+                                        ?.toStringAsFixed(2) ??
+                                    "...",
+                                style: const TextStyle(
+                                    color: Color(0xFF707585), fontSize: 50),
+                              ))),
+                    ],
+                  ),
+                )),
           ],
         ),
       ),
