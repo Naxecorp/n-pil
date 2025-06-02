@@ -775,283 +775,290 @@ class API_Manager {
   }
 
   /// Fonction principale de synchronisation
-Future<void> synchronizeFilesToMachine({
-  required BuildContext context,
-  required String serial,
-}) async {
-  int successCount = 0;
-  int failCount = 0;
-  final StringBuffer logBuffer = StringBuffer();
+  Future<void> synchronizeFilesToMachine({
+    required BuildContext context,
+    required String serial,
+  }) async {
+    int successCount = 0;
+    int failCount = 0;
+    final StringBuffer logBuffer = StringBuffer();
 
-  try {
-    // 1️⃣ Demander le numéro de série à l'utilisateur
-    String enteredSerial = await _promptSerialNumber(context, serial);
-    if (enteredSerial.isEmpty) {
-      print('⚠️ Annulé par l\'utilisateur');
-      return;
-    }
-
-    // 2️⃣ Vérifier si le numéro correspond à celui configuré
-    if (enteredSerial != serial) {
-      final confirm = await _confirmSerialMismatch(context, serial, enteredSerial);
-      if (!confirm) {
-        print('⚠️ Annulé par l\'utilisateur après mismatch');
+    try {
+      // 1️⃣ Demander le numéro de série à l'utilisateur
+      String enteredSerial = await _promptSerialNumber(context, serial);
+      if (enteredSerial.isEmpty) {
+        print('⚠️ Annulé par l\'utilisateur');
         return;
       }
-    }
 
-    // 3️⃣ Récupérer la liste complète des fichiers sur le serveur
-    List<Map<String, dynamic>> filesOnServer = [];
-    try {
-      filesOnServer = await getAllFilesOnServer(enteredSerial);
-    } catch (e) {
-      print('❌ Erreur lors de la récupération de la liste des fichiers : $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur récupération fichiers')),
+      // 2️⃣ Vérifier si le numéro correspond à celui configuré
+      if (enteredSerial != serial) {
+        final confirm =
+            await _confirmSerialMismatch(context, serial, enteredSerial);
+        if (!confirm) {
+          print('⚠️ Annulé par l\'utilisateur après mismatch');
+          return;
+        }
+      }
+
+      // 3️⃣ Récupérer la liste complète des fichiers sur le serveur
+      List<Map<String, dynamic>> filesOnServer = [];
+      try {
+        filesOnServer = await getAllFilesOnServer(enteredSerial);
+      } catch (e) {
+        print('❌ Erreur lors de la récupération de la liste des fichiers : $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur récupération fichiers')),
+        );
+        return;
+      }
+
+      if (filesOnServer.isEmpty) {
+        print('ℹ️ Aucun fichier à synchroniser');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Aucun fichier à synchroniser')),
+        );
+        return;
+      }
+
+      // 4️⃣ Ouvrir le dialogue de progression
+      final progressNotifier = ValueNotifier<double>(0.0);
+      final stepTextNotifier = ValueNotifier<String>('Préparation...');
+      bool cancelRequested = false;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Synchronisation'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ValueListenableBuilder<double>(
+                    valueListenable: progressNotifier,
+                    builder: (context, value, _) {
+                      return LinearProgressIndicator(value: value);
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  ValueListenableBuilder<String>(
+                    valueListenable: stepTextNotifier,
+                    builder: (context, value, _) => Text(value),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    cancelRequested = true;
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text('Annuler'),
+                ),
+              ],
+            );
+          });
+        },
       );
-      return;
-    }
 
-    if (filesOnServer.isEmpty) {
-      print('ℹ️ Aucun fichier à synchroniser');
+      // 5️⃣ Synchroniser chaque fichier
+      int total = filesOnServer.length;
+      int done = 0;
+
+      for (final file in filesOnServer) {
+        if (cancelRequested) break;
+
+        final filename = file['filename'];
+
+        final now = DateTime.now();
+        final timestamp =
+            "[${now.year}-${_twoDigits(now.month)}-${_twoDigits(now.day)} ${_twoDigits(now.hour)}:${_twoDigits(now.minute)}:${_twoDigits(now.second)}]";
+
+        stepTextNotifier.value = 'Téléchargement : $filename';
+
+        String downloadStatus = 'nok';
+        String uploadStatus = 'nok';
+
+        try {
+          // Télécharger le fichier depuis le serveur
+          final content = await downloadFileFromServer(enteredSerial, filename);
+          downloadStatus = 'ok';
+
+          // Convertir en Uint8List
+          final fileContent = Uint8List.fromList(utf8.encode(content));
+
+          // Envoyer à la machine
+          stepTextNotifier.value = 'Envoi à la machine : $filename';
+
+          final result = await upLoadAFile(
+              "0:/sys/$filename", fileContent.length.toString(), fileContent);
+
+          if (result.toLowerCase() == 'ok') {
+            uploadStatus = 'ok';
+            successCount++;
+          } else {
+            uploadStatus = 'nok';
+            failCount++;
+          }
+        } catch (e) {
+          print('⚠️ Erreur avec $filename : $e');
+          failCount++;
+        }
+
+        // Ajout au log
+        logBuffer.writeln(
+            '$timestamp Nom: $filename | Serial: $enteredSerial | Téléchargement: $downloadStatus | Upload: $uploadStatus');
+
+        done++;
+        progressNotifier.value = done / total;
+      }
+
+      // 6️⃣ Fermer la modale après traitement
+      Navigator.of(context).pop();
+
+      // 7️⃣ Envoyer le log à la machine CNC et au serveur
+      if (!cancelRequested) {
+        final logContent = logBuffer.toString();
+        final logBytes = Uint8List.fromList(utf8.encode(logContent));
+
+        final now = DateTime.now();
+        final formattedDate =
+            "${now.year}${_twoDigits(now.month)}${_twoDigits(now.day)}_${_twoDigits(now.hour)}${_twoDigits(now.minute)}${_twoDigits(now.second)}";
+        final logFilename = 'log_synchro_$formattedDate.txt';
+
+        final logResult = await upLoadAFile(
+            "0:/sys/$logFilename", logBytes.length.toString(), logBytes);
+        print('📄 Transfert du log à la machine : $logResult');
+
+        final serverResult =
+            await sendLogFileToServer(enteredSerial, logFilename, logContent);
+        print('🌐 Transfert du log au serveur : $serverResult');
+      }
+
+      // 8️⃣ Résumé final
+      if (!cancelRequested) {
+        await showDialog(
+          context: context,
+          builder: (dialogContext) {
+            return AlertDialog(
+              title: Text('Synchronisation terminée'),
+              content: Text('✔️ Succès : $successCount\n❌ Échecs : $failCount'),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    await API_Manager()
+                        .getfileList()
+                        .then((value) => global.ListofGcodeFile = value)
+                        .timeout(Duration(seconds: 5));
+                    Navigator.of(dialogContext).pop();
+                    Navigator.pushNamed(context, '/admin');
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } on TimeoutException catch (_) {
+      print('⏱️ Synchronisation annulée (timeout)');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Aucun fichier à synchroniser')),
+        SnackBar(content: Text('Erreur : synchronisation annulée (timeout)')),
       );
-      return;
     }
+  }
 
-    // 4️⃣ Ouvrir le dialogue de progression
-    final progressNotifier = ValueNotifier<double>(0.0);
-    final stepTextNotifier = ValueNotifier<String>('Préparation...');
-    bool cancelRequested = false;
-
-    showDialog(
+  /// Boîte de dialogue pour demander le numéro de série
+  Future<String> _promptSerialNumber(
+      BuildContext context, String defaultSerial) async {
+    String enteredSerial = '';
+    await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
-        return StatefulBuilder(builder: (context, setState) {
-          return AlertDialog(
-            title: Text('Synchronisation'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ValueListenableBuilder<double>(
-                  valueListenable: progressNotifier,
-                  builder: (context, value, _) {
-                    return LinearProgressIndicator(value: value);
-                  },
-                ),
-                SizedBox(height: 10),
-                ValueListenableBuilder<String>(
-                  valueListenable: stepTextNotifier,
-                  builder: (context, value, _) => Text(value),
-                ),
-              ],
+        final controller = TextEditingController(text: defaultSerial);
+        return AlertDialog(
+          title: Text('Numéro de série'),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(labelText: 'Numéro de série'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                enteredSerial = controller.text.trim();
+                Navigator.of(dialogContext).pop();
+              },
+              child: Text('Valider'),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  cancelRequested = true;
-                  Navigator.of(dialogContext).pop();
-                },
-                child: Text('Annuler'),
-              ),
-            ],
-          );
-        });
+          ],
+        );
       },
     );
+    return enteredSerial;
+  }
 
-    // 5️⃣ Synchroniser chaque fichier
-    int total = filesOnServer.length;
-    int done = 0;
-
-    for (final file in filesOnServer) {
-      if (cancelRequested) break;
-
-      final filename = file['filename'];
-
-      final now = DateTime.now();
-      final timestamp =
-          "[${now.year}-${_twoDigits(now.month)}-${_twoDigits(now.day)} ${_twoDigits(now.hour)}:${_twoDigits(now.minute)}:${_twoDigits(now.second)}]";
-
-      stepTextNotifier.value = 'Téléchargement : $filename';
-
-      String downloadStatus = 'nok';
-      String uploadStatus = 'nok';
-
-      try {
-        // Télécharger le fichier depuis le serveur
-        final content = await downloadFileFromServer(enteredSerial, filename);
-        downloadStatus = 'ok';
-
-        // Convertir en Uint8List
-        final fileContent = Uint8List.fromList(utf8.encode(content));
-
-        // Envoyer à la machine
-        stepTextNotifier.value = 'Envoi à la machine : $filename';
-
-        final result = await upLoadAFile(
-            filename, fileContent.length.toString(), fileContent);
-
-        if (result.toLowerCase() == 'ok') {
-          uploadStatus = 'ok';
-          successCount++;
-        } else {
-          uploadStatus = 'nok';
-          failCount++;
-        }
-      } catch (e) {
-        print('⚠️ Erreur avec $filename : $e');
-        failCount++;
-      }
-
-      // Ajout au log
-      logBuffer.writeln(
-          '$timestamp Nom: $filename | Serial: $enteredSerial | Téléchargement: $downloadStatus | Upload: $uploadStatus');
-
-      done++;
-      progressNotifier.value = done / total;
-    }
-
-    // 6️⃣ Fermer la modale après traitement
-    Navigator.of(context).pop();
-
-    // 7️⃣ Envoyer le log à la machine CNC et au serveur
-    if (!cancelRequested) {
-      final logContent = logBuffer.toString();
-      final logBytes = Uint8List.fromList(utf8.encode(logContent));
-
-      final now = DateTime.now();
-      final formattedDate =
-          "${now.year}${_twoDigits(now.month)}${_twoDigits(now.day)}_${_twoDigits(now.hour)}${_twoDigits(now.minute)}${_twoDigits(now.second)}";
-      final logFilename = 'log_synchro_$formattedDate.txt';
-
-      final logResult = await upLoadAFile(
-          logFilename, logBytes.length.toString(), logBytes);
-      print('📄 Transfert du log à la machine : $logResult');
-
-      final serverResult =
-          await sendLogFileToServer(enteredSerial, logFilename, logContent);
-      print('🌐 Transfert du log au serveur : $serverResult');
-    }
-
-    // 8️⃣ Résumé final
-    if (!cancelRequested) {
-      await Future.delayed(Duration.zero);
-      await showDialog(
-        context: context,
-        builder: (dialogContext) {
-          return AlertDialog(
-            title: Text('Synchronisation terminée'),
-            content: Text('✔️ Succès : $successCount\n❌ Échecs : $failCount'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  } on TimeoutException catch (_) {
-    print('⏱️ Synchronisation annulée (timeout)');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Erreur : synchronisation annulée (timeout)')),
+  /// Boîte de confirmation si le numéro saisi ne correspond pas
+  Future<bool> _confirmSerialMismatch(
+      BuildContext context, String expectedSerial, String enteredSerial) async {
+    bool confirmed = false;
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('Numéro de série différent'),
+          content: Text(
+              'Le numéro de série saisi ($enteredSerial) est différent de celui attendu ($expectedSerial). Voulez-vous continuer ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                confirmed = false;
+                Navigator.of(dialogContext).pop();
+              },
+              child: Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                confirmed = true;
+                Navigator.of(dialogContext).pop();
+              },
+              child: Text('Continuer'),
+            ),
+          ],
+        );
+      },
     );
+    return confirmed;
   }
-}
 
-/// Boîte de dialogue pour demander le numéro de série
-Future<String> _promptSerialNumber(BuildContext context, String defaultSerial) async {
-  String enteredSerial = '';
-  await showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (dialogContext) {
-      final controller = TextEditingController(text: defaultSerial);
-      return AlertDialog(
-        title: Text('Numéro de série'),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(labelText: 'Numéro de série'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              enteredSerial = controller.text.trim();
-              Navigator.of(dialogContext).pop();
-            },
-            child: Text('Valider'),
-          ),
-        ],
-      );
-    },
-  );
-  return enteredSerial;
-}
+  String _twoDigits(int n) => n.toString().padLeft(2, '0');
 
-/// Boîte de confirmation si le numéro saisi ne correspond pas
-Future<bool> _confirmSerialMismatch(
-    BuildContext context, String expectedSerial, String enteredSerial) async {
-  bool confirmed = false;
-  await showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (dialogContext) {
-      return AlertDialog(
-        title: Text('Numéro de série différent'),
-        content: Text(
-            'Le numéro de série saisi ($enteredSerial) est différent de celui attendu ($expectedSerial). Voulez-vous continuer ?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              confirmed = false;
-              Navigator.of(dialogContext).pop();
-            },
-            child: Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () {
-              confirmed = true;
-              Navigator.of(dialogContext).pop();
-            },
-            child: Text('Continuer'),
-          ),
-        ],
-      );
-    },
-  );
-  return confirmed;
-}
+  /// Appelle le serveur pour récupérer tous les fichiers du répertoire du serial
+  Future<List<Map<String, dynamic>>> getAllFilesOnServer(String serial) async {
+    final uri =
+        Uri.parse('https://naxe.fr/naxen02/file_list.php?serial=$serial');
+    final response = await http.get(uri, headers: {
+      'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
+    });
 
-String _twoDigits(int n) => n.toString().padLeft(2, '0');
-
-
-/// Appelle le serveur pour récupérer tous les fichiers du répertoire du serial
-Future<List<Map<String, dynamic>>> getAllFilesOnServer(String serial) async {
-  final uri =
-      Uri.parse('https://naxe.fr/naxen02/file_list.php?serial=$serial');
-  final response = await http.get(uri, headers: {
-    'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
-  });
-
-  if (response.statusCode == 200) {
-    print(response.body);
-    final json = jsonDecode(response.body);
-    if (json['success'] == true) {
-      return List<Map<String, dynamic>>.from(json['files']);
-    } else {
-      throw Exception('Erreur du serveur : ${json['message']}');
+    if (response.statusCode == 200) {
+      print(response.body);
+      final json = jsonDecode(response.body);
+      if (json['success'] == true) {
+        return List<Map<String, dynamic>>.from(json['files']);
+      } else {
+        throw Exception('Erreur du serveur : ${json['message']}');
+      }
     }
+
+    throw Exception('Erreur lors de la récupération des fichiers');
   }
 
-  throw Exception('Erreur lors de la récupération des fichiers');
-}
-
-  
-  Future<String> sendLogFileToServer(String serial, String logContent,String filename) async {
+  Future<String> sendLogFileToServer(
+      String serial, String logContent, String filename) async {
     final uri = Uri.parse('https://naxe.fr/naxen02/upload_log.php');
     final response = await http.post(
       uri,
