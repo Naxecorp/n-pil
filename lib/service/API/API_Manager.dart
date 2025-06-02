@@ -898,7 +898,7 @@ class API_Manager {
           stepTextNotifier.value = 'Envoi à la machine : $filename';
 
           final result = await upLoadAFile(
-              filename, fileContent.length.toString(), fileContent);
+              "0:/sys/$filename", fileContent.length.toString(), fileContent);
 
           if (result.toLowerCase() == 'ok') {
             uploadStatus = 'ok';
