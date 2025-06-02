@@ -93,8 +93,8 @@ class AdminScreenState extends State<AdminScreen>
                               global.Title = "ADMIN MODE | $version";
                               await API_Manager().sendGcodeCommand(
                                   "M581 T1 P-1"); // on desactive toutes les pauses
-                              await API_Manager().sendGcodeCommand(
-                                  'M98 P"alarmdriver.g"'); // Arret d'urgence sur entree 9 quelque soit le mode, sur front montant (driver en erreur)
+                              await API_Manager()
+                                  .sendGcodeCommand('M98 P"alarmdriver.g"');
                               Navigator.pop(context, '/admin');
                             }
                           },
@@ -262,6 +262,21 @@ class AdminScreenState extends State<AdminScreen>
                         ],
                       ),
                     ),
+                    const SizedBox(width: 10),
+                    NeumorphicButton(
+                        style: const NeumorphicStyle(
+                          color: Color(0xFFF0F0F3),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            global.commandHistory.add(ManualGcodeComand.text);
+                            ManualGcodeComand.clear();
+                            API_Manager()
+                                .sendGcodeCommand(ManualGcodeComand.text)
+                                .then((value) => API_Manager().sendrr_reply());
+                          });
+                        },
+                        child: const Icon(Icons.send,color: Color(0xFF20917F),)),
                     Spacer(),
                     Text(
                       global.Title,
@@ -410,27 +425,50 @@ class AdminScreenState extends State<AdminScreen>
                             ),
                             onPressed: () async {
                               if (global.AdminLogged) {
-                                String generateRandomText() {
-                                  List<String> sampleCommands = [
-                                    "G1 X${Random().nextInt(100)} Y${Random().nextInt(100)} Z${Random().nextInt(50)}",
-                                    "G28 ; Retour à l'origine",
-                                    "M106 S${Random().nextInt(255)} ; Réglage du ventilateur",
-                                    "M104 S${Random().nextInt(200) + 150} ; Température de l'extrudeur",
-                                    "M140 S${Random().nextInt(100) + 50} ; Température du plateau",
-                                    "G92 X0 Y0 Z0 ; Réinitialisation des axes",
-                                    "M82 ; Mode extrusion absolue",
-                                  ];
-
-                                  sampleCommands.shuffle();
-                                  return sampleCommands.take(5).join(
-                                      "\n"); // Sélectionne 5 lignes aléatoires
-                                }
-
-                                global.ContentofFileToEdit =
-                                    await generateRandomText();
-                                await API_Manager().showUploadProgressDialog(files: (global.ListofSysFile ?? []).whereType<SysFileElement>().toList(), overwrite: true, serial: global.MyMachineN02Config.Serie??"01902", context: context);    
-
+                                await API_Manager().showUploadProgressDialog(
+                                    files: (global.ListofSysFile ?? [])
+                                        .whereType<SysFileElement>()
+                                        .toList(),
+                                    overwrite: true,
+                                    serial: global.MyMachineN02Config.Serie ??
+                                        "01902",
+                                    context: context);
                               }
+                            },
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 5,
+                        child: Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: ElevatedButton.icon(
+                            label: const FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "Download from serv",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.download,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2B879B),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            onPressed: () async {
+                              //API_Manager().getUpdatedFiles("220216", 102);
+                              await API_Manager().synchronizeFilesToMachine(
+                                  context: context,
+                                  serial: global.MyMachineN02Config.Serie ??
+                                      "190222");
+                              //await API_Manager().downloadFileFromServer("220216","config.g");
                             },
                           ),
                         ),

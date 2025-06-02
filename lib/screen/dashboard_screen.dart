@@ -302,6 +302,21 @@ void didChangeDependencies() {
                         ],
                       ),
                     ),
+                    const SizedBox(width: 10),
+                    NeumorphicButton(
+                        style: const NeumorphicStyle(
+                          color: Color(0xFFF0F0F3),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            global.commandHistory.add(ManualGcodeComand.text);
+                            ManualGcodeComand.clear();
+                            API_Manager()
+                                .sendGcodeCommand(ManualGcodeComand.text)
+                                .then((value) => API_Manager().sendrr_reply());
+                          });
+                        },
+                        child: const Icon(Icons.send,color: Color(0xFF20917F),)),
                     Spacer(),
                     Text(
                       global.Title,

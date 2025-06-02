@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "N-pil"
-#define MyAppVersion "1.8.35"
+#define MyAppVersion "1.8.38"
 #define MyAppPublisher "Naxe"
 #define MyAppURL "https://www.naxe.fr/"
 #define MyAppExeName "nweb.exe"
@@ -26,9 +26,9 @@ ChangesAssociations=yes
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=C:\Users\Jordan\AndroidStudioProjects\nweb\n02
+OutputDir=C:\Users\J.Fortel\Documents\nweb\n02
 OutputBaseFilename=N-pil
-SetupIconFile=C:\Users\Jordan\AndroidStudioProjects\nweb\assets\iconnaxe-_3_.ico
+SetupIconFile=C:\Users\J.Fortel\Documents\nweb\assets\iconnaxe-_3_.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -41,12 +41,12 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "acceptcgu"; Description: "J'accepte les Conditions Générales d'Utilisation. Visible sur www.naxe.fr/cgu-logiciel.pdf"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\msvcp140.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\vcruntime140.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Jordan\AndroidStudioProjects\nweb\build\windows\x64\runner\Release\vcruntime140_1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\J.Fortel\Documents\nweb\build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\J.Fortel\Documents\nweb\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\J.Fortel\Documents\nweb\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\J.Fortel\Documents\nweb\build\windows\x64\runner\Release\msvcp140.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\J.Fortel\Documents\nweb\build\windows\x64\runner\Release\vcruntime140.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\J.Fortel\Documents\nweb\build\windows\x64\runner\Release\vcruntime140_1.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

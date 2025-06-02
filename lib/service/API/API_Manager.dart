@@ -13,11 +13,15 @@ import '../system/SystemsFiles.dart';
 import '../gCode/ListGcodeProgram.dart';
 import '../gCode/gCodeProgram.dart';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../nwc-settings/nwc-settings.dart';
 import '../system/SystemsFilesElement.dart';
 
 class API_Manager {
+  static const _token = '9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825';
+  static const _lastSyncKey = 'last_sync_timestamp';
+
   Future<MachineObjectModel> getdataMachineObjectModel() async {
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
@@ -35,20 +39,21 @@ class API_Manager {
       var response = await http
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 1));
-          
+
       if (response.statusCode == 200) {
         //print("toto ${response.body}");
         final MachineObjectModel Machine =
             machineObjectModelFromJson(response.body);
-        
+
         return Machine;
       } else {
         print('Fail to get data, error : ' + response.statusCode.toString());
         return MachineObjectModel();
       }
     } catch (e) {
-      if (e.toString() == "XMLHttpRequest error.")return MachineObjectModel();
-      if (e.toString().startsWith("TimeoutException"))return MachineObjectModel();
+      if (e.toString() == "XMLHttpRequest error.") return MachineObjectModel();
+      if (e.toString().startsWith("TimeoutException"))
+        return MachineObjectModel();
       return MachineObjectModel();
     }
   }
@@ -337,7 +342,7 @@ class API_Manager {
     try {
       var response = await http
           .post(uri, headers: requestHeaders, body: FileContent)
-          .timeout(Duration(seconds: 30));
+          .timeout(Duration(seconds: 3));
       if (response.statusCode == 200) {
         return 'ok';
       } else {
@@ -364,7 +369,6 @@ class API_Manager {
 
     var uri = Uri.parse(
         'http://${global.MyMachineN02Config.IP}/rr_delete?name=0:/$path/$FileName');
-
 
     try {
       var response = await http
@@ -432,7 +436,6 @@ class API_Manager {
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 50));
 
-
       if (response.statusCode == 200) {
         // Obtenir le répertoire temporaire
         Directory tempDir = await getTemporaryDirectory();
@@ -484,7 +487,6 @@ class API_Manager {
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 50));
 
-
       if (response.statusCode == 200) {
         // Obtenir le répertoire temporaire
         Directory tempDir = await getTemporaryDirectory();
@@ -503,37 +505,6 @@ class API_Manager {
       return false;
     }
   }
-
-  // Future<int> getCurrentLine(String path, String fileName, int currentByte) async {
-
-  //   try {
-  //       // Obtenir le répertoire temporaire
-  //       Directory tempDir = await getTemporaryDirectory();
-  //       String tempPath = '${tempDir.path}/$fileName';
-
-  //       // Lire le fichier
-  //       List<String> lines = await tempFile.readAsLines();
-
-  //       // Obtenir le nombre total de lignes
-  //       int totalLines = lines.length;
-
-  //       // Obtenir la taille totale du fichier en octets
-  //       int totalBytes = response.contentLength ?? await tempFile.length();
-
-  //       // Calculer le pourcentage de progression
-  //       double percentage = currentByte / totalBytes;
-
-  //       // Calculer la ligne actuelle basée sur le pourcentage
-  //       int currentLine = (percentage * totalLines).round();
-
-  //       print(currentLine);
-  //       return currentLine;
-
-  //   } catch (e) {
-  //     print(e.toString());
-  //     return 0;
-  //   }
-  // }
 
   Future<MachineN02Config> downLoadNwcSettings() async {
     Map<String, String> requestHeaders = {
@@ -598,46 +569,6 @@ class API_Manager {
     }
   }
 
-  //Recupération données en BDD
-  // Future getDataFromDB() async {
-  //   try {
-  //     var url = Uri.parse('https://naxe.fr/naxen02/get.php');
-  //     http.Response response = await http.get(url);
-  //     var data = jsonDecode(response.body);
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
-
-  // Future<void> writeToFile(String message) async {
-  //   try {
-  //     // Obtenir le répertoire local où le fichier sera stocké
-  //     final directory = await getApplicationDocumentsDirectory();
-  //     final path = '${directory.path}/logfile.txt';
-  //     final file = File(path);
-
-  //     // Vérifier si le fichier existe
-  //     if (!await file.exists()) {
-  //       await file.create();
-  //     }
-
-  //     // Obtenir la date et l'heure actuelles
-  //     final now = DateTime.now();
-  //     final formattedDate =
-  //         '${now.day}-${now.month}-${now.year} ${now.hour}:${now.minute}:${now.second}';
-
-  //     // Préparer le contenu à écrire
-  //     final content = '$formattedDate: $message\n';
-
-  //     // Écrire le contenu dans le fichier
-  //     await file.writeAsString(content, mode: FileMode.append);
-
-  //     print('Message écrit dans le fichier avec succès\n ${directory.path}');
-  //   } catch (e) {
-  //     print('Erreur lors de l\'écriture dans le fichier: $e');
-  //   }
-  // }
-
   // Insertion en BDD
   Future<String> pushDataToDb(String serie, String action) async {
     Map<String, String> requestHeaders = {
@@ -668,169 +599,479 @@ class API_Manager {
   }
 
   Future<String> sendGcodeToServer({
-  required String filename,
-  required String content,
-  required bool overwrite,
-  required String serial,
-}) async {
-  const token = '9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825';
-  final baseUrl = 'https://naxe.fr/naxen02/reception.php';
+    required String filename,
+    required String content,
+    required bool overwrite,
+    required String serial,
+  }) async {
+    const token = '9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825';
+    final baseUrl = 'https://naxe.fr/naxen02/reception.php';
 
+    // Joindre les caractères en une seule chaîne
 
-  // Joindre les caractères en une seule chaîne
-  
+    final uri = Uri.parse(
+        '$baseUrl?filename=$filename&overwrite=${overwrite.toString()}&serial=$serial');
 
-  final uri = Uri.parse('$baseUrl?filename=$filename&overwrite=${overwrite.toString()}&serial=$serial');
+    try {
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'text/plain',
+          'Authorization': 'Bearer $token',
+          "Access-Control-Allow-Headers": "*",
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate",
+          "Access-Control-Allow-Origin": "*",
+          "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+        },
+        body: content,
+      );
 
-  try {
-    final response = await http.post(
-      uri,
-      headers: {
-        'Content-Type': 'text/plain',
-        'Authorization': 'Bearer $token',
-        "Access-Control-Allow-Headers": "*",
-        "Accept": "*/*",
-        "Accept-Encoding": "gzip, deflate",
-        "Access-Control-Allow-Origin": "*",
-        "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
-      },
-      body: content,
-    );
+      final responseBody = jsonDecode(response.body);
 
-    final responseBody = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      print("✅ Succès : ${responseBody['message']}");
-      print("📄 Fichier enregistré sous : ${responseBody['filename']}");
-      return response.statusCode.toString();      
-    } else {
-      print("❌ Erreur : ${responseBody['message']}");
-      return response.statusCode.toString();
+      if (response.statusCode == 200) {
+        print("✅ Succès : ${responseBody['message']}");
+        print("📄 Fichier enregistré sous : ${responseBody['filename']}");
+        return response.statusCode.toString();
+      } else {
+        print("❌ Erreur : ${responseBody['message']}");
+        return response.statusCode.toString();
+      }
+    } catch (e) {
+      print("⚠️ Erreur lors de l’envoi : $e");
+      return "404";
     }
-    
-  } catch (e) {
-    print("⚠️ Erreur lors de l’envoi : $e");
-    return "404";
   }
-  
-}
 
+  Future<void> showUploadProgressDialog({
+    required BuildContext context,
+    required List<SysFileElement> files,
+    required bool overwrite,
+    required String serial,
+  }) async {
+    final progressNotifier = ValueNotifier<double>(0.0);
+    final stepTextNotifier = ValueNotifier<String>("Préparation...");
+    bool cancelRequested = false;
 
-
-
-
-
-Future<void> showUploadProgressDialog({
-  required BuildContext context,
-  required List<SysFileElement> files,
-  required bool overwrite,
-  required String serial,
-}) async {
-  final progressNotifier = ValueNotifier<double>(0.0);
-  final stepTextNotifier = ValueNotifier<String>("Préparation...");
-  bool cancelRequested = false;
-
-  // Afficher la boîte modale de progression
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (dialogContext) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: Text('Envoi en cours'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ValueListenableBuilder<double>(
-                  valueListenable: progressNotifier,
-                  builder: (context, value, _) {
-                    return LinearProgressIndicator(value: value);
+    // Afficher la boîte modale de progression
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Envoi en cours'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ValueListenableBuilder<double>(
+                    valueListenable: progressNotifier,
+                    builder: (context, value, _) {
+                      return LinearProgressIndicator(value: value);
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  ValueListenableBuilder<String>(
+                    valueListenable: stepTextNotifier,
+                    builder: (context, value, _) => Text(value),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    cancelRequested = true;
+                    Navigator.of(context).pop(); // Ferme le popup immédiatement
                   },
-                ),
-                SizedBox(height: 10),
-                ValueListenableBuilder<String>(
-                  valueListenable: stepTextNotifier,
-                  builder: (context, value, _) => Text(value),
+                  child: Text('Annuler'),
                 ),
               ],
-            ),
+            );
+          },
+        );
+      },
+    );
+
+    int total = files.length;
+    int done = 0;
+    int successCount = 0;
+    int failCount = 0;
+
+    for (final file in files) {
+      if (cancelRequested) break;
+
+      done++;
+
+      if (file.name == null) {
+        failCount++;
+        progressNotifier.value = done / total;
+        continue;
+      }
+
+      stepTextNotifier.value = 'Téléchargement : ${file.name}';
+
+      try {
+        final content = await downLoadAFile('sys', file.name!);
+
+        if (content.toLowerCase() == 'nok') {
+          failCount++;
+        } else {
+          stepTextNotifier.value = 'Envoi : ${file.name}';
+          await sendGcodeToServer(
+            filename: file.name!,
+            content: content,
+            overwrite: overwrite,
+            serial: serial,
+          );
+          successCount++;
+        }
+      } catch (e) {
+        failCount++;
+      }
+
+      progressNotifier.value = done / total;
+    }
+
+    // Affiche un résumé seulement si ce n'était pas annulé
+    if (!cancelRequested) {
+      Navigator.of(context).pop();
+      await showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: Text('Résultat de l\'envoi'),
+            content: Text('✔️ Succès : $successCount\n❌ Échecs : $failCount'),
             actions: [
               TextButton(
-                onPressed: () {
-                  cancelRequested = true;
-                  Navigator.of(context).pop(); // Ferme le popup immédiatement
-                },
-                child: Text('Annuler'),
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text('OK'),
               ),
             ],
           );
         },
       );
-    },
-  );
-
-  int total = files.length;
-  int done = 0;
-  int successCount = 0;
-  int failCount = 0;
-
-  for (final file in files) {
-    if (cancelRequested) break;
-
-    done++;
-
-    if (file.name == null) {
-      failCount++;
-      progressNotifier.value = done / total;
-      continue;
     }
-
-    stepTextNotifier.value = 'Téléchargement : ${file.name}';
-
-    try {
-      final content = await downLoadAFile('sys', file.name!);
-
-      if (content.toLowerCase() == 'nok') {
-        failCount++;
-      } else {
-        stepTextNotifier.value = 'Envoi : ${file.name}';
-        await sendGcodeToServer(
-          filename: file.name!,
-          content: content,
-          overwrite: overwrite,
-          serial: serial,
-        );
-        successCount++;
-      }
-    } catch (e) {
-      failCount++;
-    }
-
-    progressNotifier.value = done / total;
   }
 
-  // Affiche un résumé seulement si ce n'était pas annulé
-  if (!cancelRequested) {
-    Navigator.of(context).pop();
+  Future<List<Map<String, dynamic>>> getUpdatedFiles(
+      String serial, int since) async {
+    final uri = Uri.parse(
+        'https://naxe.fr/naxen02/get_updated_files.php?serial=$serial&since=$since');
+
+    final response = await http.get(uri, headers: {
+      'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
+    });
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print(response.body);
+      final json = jsonDecode(response.body);
+      if (json['success'] == true) {
+        return List<Map<String, dynamic>>.from(json['files']);
+      }
+    }
+
+    throw Exception('Erreur lors de la récupération des fichiers mis à jour');
+  }
+
+  /// Fonction principale de synchronisation
+  Future<void> synchronizeFilesToMachine({
+    required BuildContext context,
+    required String serial,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastSyncTimestamp = prefs.getInt('$_lastSyncKey-$serial') ?? 100;
+
+    int successCount = 0;
+    int failCount = 0;
+    final StringBuffer logBuffer = StringBuffer();
+
+    try {
+      // 1️⃣ Demander le numéro de série à l'utilisateur
+      String enteredSerial = await _promptSerialNumber(context, serial);
+      if (enteredSerial.isEmpty) {
+        print('⚠️ Annulé par l\'utilisateur');
+        return;
+      }
+
+      // 2️⃣ Vérifier si le numéro correspond à celui configuré
+      if (enteredSerial != serial) {
+        final confirm =
+            await _confirmSerialMismatch(context, serial, enteredSerial);
+        if (!confirm) {
+          print('⚠️ Annulé par l\'utilisateur après mismatch');
+          return;
+        }
+      }
+
+      // 3️⃣ Récupérer la liste des fichiers modifiés
+      List<Map<String, dynamic>> updatedFiles = [];
+      try {
+        updatedFiles = await getUpdatedFiles(enteredSerial, lastSyncTimestamp);
+      } catch (e) {
+        print('❌ Erreur lors de la récupération de la liste des fichiers : $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur récupération fichiers')),
+        );
+        return;
+      }
+
+      if (updatedFiles.isEmpty) {
+        print('ℹ️ Aucun fichier à synchroniser');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Aucun fichier à synchroniser')),
+        );
+        return;
+      }
+
+      // 4️⃣ OUVERTURE DU DIALOGUE APRÈS VÉRIFICATION
+      final progressNotifier = ValueNotifier<double>(0.0);
+      final stepTextNotifier = ValueNotifier<String>('Préparation...');
+      bool cancelRequested = false;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Synchronisation'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ValueListenableBuilder<double>(
+                    valueListenable: progressNotifier,
+                    builder: (context, value, _) {
+                      return LinearProgressIndicator(value: value);
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  ValueListenableBuilder<String>(
+                    valueListenable: stepTextNotifier,
+                    builder: (context, value, _) => Text(value),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    cancelRequested = true;
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text('Annuler'),
+                ),
+              ],
+            );
+          });
+        },
+      );
+
+      // 5️⃣ Traitement séquentiel
+      int total = updatedFiles.length;
+      int done = 0;
+      int newMaxTimestamp = lastSyncTimestamp;
+
+      for (final file in updatedFiles) {
+        if (cancelRequested) break;
+
+        final filename = file['filename'];
+        final timestamp = file['timestamp'] as int;
+
+        if (timestamp > newMaxTimestamp) {
+          newMaxTimestamp = timestamp;
+        }
+
+        stepTextNotifier.value = 'Téléchargement : $filename';
+
+        String downloadStatus = 'nok';
+        String uploadStatus = 'nok';
+
+        try {
+          // Télécharger le fichier depuis le serveur
+          final content = await downloadFileFromServer(enteredSerial, filename);
+          downloadStatus = 'ok';
+
+          // Convertir en Uint8List
+          final fileContent = Uint8List.fromList(utf8.encode(content));
+
+          // Envoyer à la machine
+          stepTextNotifier.value = 'Envoi à la machine : $filename';
+
+          final result = await upLoadAFile(
+              filename, fileContent.length.toString(), fileContent);
+
+          if (result.toLowerCase() == 'ok') {
+            uploadStatus = 'ok';
+            successCount++;
+          } else {
+            uploadStatus = 'nok';
+            failCount++;
+          }
+        } catch (e) {
+          print('⚠️ Erreur avec $filename : $e');
+          failCount++;
+        }
+
+        String _twoDigits(int n) => n.toString().padLeft(2, '0');
+
+        final now = DateTime.now();
+        final timestamp2 =
+            "${now.year}-${_twoDigits(now.month)}-${_twoDigits(now.day)} ${_twoDigits(now.hour)}:${_twoDigits(now.minute)}:${_twoDigits(now.second)}";
+
+        logBuffer.writeln(
+            '[$timestamp2] Nom: $filename | Serial: $enteredSerial | Téléchargement: $downloadStatus | Upload: $uploadStatus');
+
+        done++;
+        progressNotifier.value = done / total;
+      }
+
+      // 6️⃣ Fermer la modale après traitement
+      Navigator.of(context).pop();
+
+      // 7️⃣ Mettre à jour le timestamp local si non annulé
+      if (!cancelRequested && newMaxTimestamp > lastSyncTimestamp) {
+        await prefs.setInt('$_lastSyncKey-$enteredSerial', newMaxTimestamp);
+      }
+
+      // 8️⃣ Envoi du fichier de log à la machine
+      if (!cancelRequested) {
+        final logContent = logBuffer.toString();
+        final logBytes = Uint8List.fromList(utf8.encode(logContent));
+
+        final logResult = await upLoadAFile(
+            'log_synchro.txt', logBytes.length.toString(), logBytes);
+
+        // 9️⃣ Envoi du log au serveur distant
+        final serverResult = await sendLogFileToServer(serial, logContent);
+        print('🌐 Transfert du log au serveur : $serverResult');
+
+        print('📄 Transfert du log : $logResult');
+      }
+
+      // 9️⃣ Résumé final
+      if (!cancelRequested) {
+        await showDialog(
+          context: context,
+          builder: (dialogContext) {
+            return AlertDialog(
+              title: Text('Synchronisation terminée'),
+              content: Text('✔️ Succès : $successCount\n❌ Échecs : $failCount'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } on TimeoutException catch (_) {
+      print('⏱️ Synchronisation annulée (timeout)');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur : synchronisation annulée (timeout)')),
+      );
+    }
+  }
+
+  /// Boîte de dialogue pour demander le numéro de série
+  Future<String> _promptSerialNumber(
+      BuildContext context, String defaultSerial) async {
+    String enteredSerial = '';
     await showDialog(
       context: context,
-      builder: (BuildContext dialogContext) {
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final controller = TextEditingController(text: defaultSerial);
         return AlertDialog(
-          title: Text('Résultat de l\'envoi'),
-          content: Text('✔️ Succès : $successCount\n❌ Échecs : $failCount'),
+          title: Text('Numéro de série'),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(labelText: 'Numéro de série'),
+          ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text('OK'),
+              onPressed: () {
+                enteredSerial = controller.text.trim();
+                Navigator.of(dialogContext).pop();
+              },
+              child: Text('Valider'),
             ),
           ],
         );
       },
     );
+    return enteredSerial;
   }
-}
 
+  /// Boîte de confirmation si le numéro saisi ne correspond pas
+  Future<bool> _confirmSerialMismatch(
+      BuildContext context, String expectedSerial, String enteredSerial) async {
+    bool confirmed = false;
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('Numéro de série différent'),
+          content: Text(
+              'Le numéro de série saisi ($enteredSerial) est différent de celui attendu ($expectedSerial). Voulez-vous continuer ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                confirmed = false;
+                Navigator.of(dialogContext).pop();
+              },
+              child: Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                confirmed = true;
+                Navigator.of(dialogContext).pop();
+              },
+              child: Text('Continuer'),
+            ),
+          ],
+        );
+      },
+    );
+    return confirmed;
+  }
 
+  Future<String> sendLogFileToServer(String serial, String logContent) async {
+    final uri = Uri.parse('https://naxe.fr/naxen02/upload_log.php');
+    final response = await http.post(
+      uri,
+      headers: {
+        'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'serial': serial,
+        'filename': 'log_synchro.txt',
+        'content': logContent,
+      }),
+    );
 
+    if (response.statusCode == 200) {
+      return 'ok';
+    } else {
+      return 'nok';
+    }
+  }
+
+  /// Télécharger un fichier individuel
+  Future<String> downloadFileFromServer(String serial, String filename) async {
+    final uri = Uri.parse(
+        'https://naxe.fr/naxen02/get_file.php?serial=$serial&filename=${Uri.encodeComponent(filename)}');
+    final response = await http.get(uri, headers: {
+      'Authorization': 'Bearer $_token'
+    }).timeout(Duration(seconds: 3));
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Erreur téléchargement $filename');
+    }
+  }
 }
