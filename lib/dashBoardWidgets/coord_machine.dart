@@ -168,7 +168,7 @@ class _CoordoneesMachine extends State<CoordoneesMachine> {
                 ),
               ),
             ),
-          if((global.objectModelMove.result?.axes?.length??0) > 4)Flexible(
+          if((global.objectModelMove.result?.axes?.length??0) >=4)Flexible(
                 flex: 1,
                 child: Container(
                   width: double.infinity,
