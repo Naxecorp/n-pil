@@ -11,8 +11,9 @@ Bienvenue dans l'interface de pilotage de la machine CNC **N02** de Naxe. Ce log
 - 🔄 **Synchronisation serveur** : Téléchargez et envoyez vos fichiers de projet avec une authentification sécurisée.  
 
 ## 🚀 Démarrage rapide  
-1. Téléchargez et installez le logiciel fourni par Naxe.  
-2. Ouvrez le logiciel.  
+1. Téléchargez N-Pil.exe
+2. Installez le logiciel.  
+3. Ouvrez le logiciel.  
 
 ## ℹ️ Support et assistance  
 En cas de question ou de problème, contactez l’équipe support Naxe :  
