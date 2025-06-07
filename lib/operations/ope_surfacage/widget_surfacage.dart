@@ -3,7 +3,6 @@ import '../../OpeListView.dart';
 import '../ope_surfacage/op_surfacage.dart';
 import '../../opeviewer.dart';
 
-
 /***************OPERATION DE Surfacage***************/
 
 class OpeSurfacage extends StatefulWidget {
@@ -260,27 +259,59 @@ class OpeSurfacageState extends State<OpeSurfacage> {
                         width: 150,
                         child: AddOperation(
                           onPressed: () {
-                            ListOfOperationCurrent.add(OperationSurfacage(
+                            // Vérification des paramètres
+                            if (_ParamB !=
+                                    0 && // Inversion due à une erreur de dessin
+                                _ParamA != 0 &&
+                                _ParamC != 0 &&
+                                _ParamDf != 0 &&
+                                _ParamAP != 0) {
+                              // Ajout de l'opération
+                              ListOfOperationCurrent.add(OperationSurfacage(
                                 OriginZ: _ParamZ,
                                 OriginY: _ParamY,
                                 OriginX: _ParamX,
                                 ParamA:
-                                    _ParamB, // Inversion du a erreur de dessin ...
+                                    _ParamB, // Inversion due à une erreur de dessin
                                 ParamB: _ParamA,
                                 ParamC: _ParamC,
                                 ParamDf: _ParamDf,
                                 ParamAP: _ParamAP,
                                 ParamDecalage: _ParamDecalage,
-                                label: "Surfacage " +
-                                    ListOfOperationCurrent.length.toString()));
-                            setState(() {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('Opération ajoutée'),
-                                  duration: const Duration(milliseconds: 400),
-                                ),
+                                label:
+                                    "Surfacage ${ListOfOperationCurrent.length}",
+                              ));
+                              // Mise à jour de l'interface utilisateur
+                              setState(() {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Opération ajoutée'),
+                                    duration: Duration(milliseconds: 400),
+                                  ),
+                                );
+                              });
+                            } else {
+                              // Affichage d'un message d'erreur si un paramètre est égal à 0
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Paramètres invalides'),
+                                    content: const Text(
+                                      'L\'opération n\'a pas été ajoutée car un ou plusieurs paramètres sont égaux à 0.',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
-                            });
+                            }
                           },
                         ),
                       ),

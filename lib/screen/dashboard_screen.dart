@@ -310,10 +310,11 @@ void didChangeDependencies() {
                         onPressed: () {
                           setState(() {
                             global.commandHistory.add(ManualGcodeComand.text);
-                            ManualGcodeComand.clear();
+                            
                             API_Manager()
                                 .sendGcodeCommand(ManualGcodeComand.text)
                                 .then((value) => API_Manager().sendrr_reply());
+                                ManualGcodeComand.clear();
                           });
                         },
                         child: const Icon(Icons.send,color: Color(0xFF20917F),)),

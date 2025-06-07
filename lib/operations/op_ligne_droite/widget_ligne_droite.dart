@@ -191,32 +191,33 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
                     ],
                   ),
                   const SizedBox(height: 15),
-                  global.machineMode == global.MachineMode.cnc ? Row(
-                    children: [
-                      Container(
-                        width: 100,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(
-                          'Rotation broche ',
-                          textAlign: TextAlign.justify,
-                          style: TextStyle(
-                            color: Color(0xFF5A5A5A),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 100,
-                        child: OwnTextField(
-                          label: _ParamRotation,
-                          onChanged: (text) {
-                            _ParamRotation = double.parse(text);
-                          },
-                        ),
-                      ),
-                    ],
-                  ):Container(),
-                  
+                  global.machineMode == global.MachineMode.cnc
+                      ? Row(
+                          children: [
+                            Container(
+                              width: 100,
+                              padding: EdgeInsets.symmetric(horizontal: 4),
+                              child: Text(
+                                'Rotation broche ',
+                                textAlign: TextAlign.justify,
+                                style: TextStyle(
+                                  color: Color(0xFF5A5A5A),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 100,
+                              child: OwnTextField(
+                                label: _ParamRotation,
+                                onChanged: (text) {
+                                  _ParamRotation = double.parse(text);
+                                },
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container(),
                 ],
               ),
             ),
@@ -301,23 +302,47 @@ class OpeLigneDroiteState extends State<OpeLigneDroite> {
                     width: 150,
                     child: AddOperation(
                       onPressed: () {
-                        ListOfOperationCurrent.add(
-                          OperationLigneDroite(
-                            OriginZ: _ParamZ,
-                            OriginY: _ParamY,
-                            OriginX: _ParamX,
-                            ParamA: _ParamA,
-                            ParamC: _ParamC,
-                            ParamDf: _ParamDf,
-                            ParamAP: _ParamAP,
-                            ParamAvance: _ParamAvance,
-                            ParamRotation: _ParamRotation,
-                            //NbLigne: _Nbligne,
-                            //Interligne: _Interligne,
-                            label: "Lignes droites " +
-                                ListOfOperationCurrent.length.toString(),
-                          ),
-                        );
+                        if (_ParamC != 0 &&
+                            _ParamAP != 0 &&
+                            _ParamAvance != 0 &&
+                            _ParamRotation != 0) {
+                          ListOfOperationCurrent.add(
+                            OperationLigneDroite(
+                              OriginZ: _ParamZ,
+                              OriginY: _ParamY,
+                              OriginX: _ParamX,
+                              ParamA: _ParamA,
+                              ParamC: _ParamC,
+                              ParamDf: _ParamDf,
+                              ParamAP: _ParamAP,
+                              ParamAvance: _ParamAvance,
+                              ParamRotation: _ParamRotation,
+                              label:
+                                  "Lignes droites ${ListOfOperationCurrent.length}",
+                            ),
+                          );
+                        } else {
+                          showDialog(
+                            context:
+                                context, // assure-toi que 'context' est disponible ici
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Paramètres invalides'),
+                                content: Text(
+                                    'L\'opération n\'a pas été ajoutée car un ou plusieurs paramètres sont égaux à 0.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+
                         setState(
                           () {
                             //CurrentLis

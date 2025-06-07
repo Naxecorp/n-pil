@@ -240,6 +240,7 @@ class AdminScreenState extends State<AdminScreen>
                                     (value) => API_Manager().sendrr_reply());
                               });
                             },
+                            
                           ),
                           PopupMenuButton<String>(
                             tooltip: "Historique",
@@ -270,10 +271,13 @@ class AdminScreenState extends State<AdminScreen>
                         onPressed: () {
                           setState(() {
                             global.commandHistory.add(ManualGcodeComand.text);
-                            ManualGcodeComand.clear();
+                            print(ManualGcodeComand.text);
+                            
                             API_Manager()
                                 .sendGcodeCommand(ManualGcodeComand.text)
                                 .then((value) => API_Manager().sendrr_reply());
+                            ManualGcodeComand.clear();
+                                
                           });
                         },
                         child: const Icon(Icons.send,color: Color(0xFF20917F),)),

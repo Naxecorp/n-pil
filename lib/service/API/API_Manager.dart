@@ -132,7 +132,7 @@ class API_Manager {
           .get(uri, headers: requestHeaders)
           .timeout(Duration(seconds: 10));
       if (response.statusCode == 200) {
-        if (response.body.length > 2)
+        if (response.body.length > 2 && RegExp(r'[a-zA-Z0-9]').hasMatch(response.body))
           global.ReplyListFiFo.addItem(response.body);
         return response.body;
       } else {
@@ -631,7 +631,7 @@ class API_Manager {
 
       if (response.statusCode == 200) {
         print("✅ Succès : ${responseBody['message']}");
-        print("📄 Fichier enregistré sous : ${responseBody['filename']}");
+        print("📄 Fichier enregistré sous : ${response.body}");
         return response.statusCode.toString();
       } else {
         print("❌ Erreur : ${responseBody['message']}");

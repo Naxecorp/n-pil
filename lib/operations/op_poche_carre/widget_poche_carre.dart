@@ -255,7 +255,14 @@ class OpePocheCarreState extends State {
                         width: 150,
                         child: AddOperation(
                           onPressed: () {
-                            ListOfOperationCurrent.add(OperationPocheCarre(
+                            // Vérification des paramètres
+                            if (_ParamA != 0 &&
+                                _ParamB != 0 &&
+                                _ParamC != 0 &&
+                                _ParamDf != 0 &&
+                                _ParamAP != 0) {
+                              // Ajout de l'opération
+                              ListOfOperationCurrent.add(OperationPocheCarre(
                                 OriginZ: _ParamZ,
                                 OriginY: _ParamY,
                                 OriginX: _ParamX,
@@ -264,17 +271,40 @@ class OpePocheCarreState extends State {
                                 ParamC: _ParamC,
                                 ParamDf: _ParamDf,
                                 ParamAP: _ParamAP,
-                                label: "Poche Carrée " +
-                                    ListOfOperationCurrent.length.toString()));
-                            setState(() {
-                              //CurrentLis
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('Opération ajoutée'),
-                                  duration: const Duration(milliseconds: 400),
-                                ),
+                                label:
+                                    "Poche Carrée ${ListOfOperationCurrent.length}",
+                              ));
+                              // Mise à jour de l'interface utilisateur
+                              setState(() {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Opération ajoutée'),
+                                    duration: Duration(milliseconds: 400),
+                                  ),
+                                );
+                              });
+                            } else {
+                              // Affichage d'un message d'erreur si un paramètre est égal à 0
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Paramètres invalides'),
+                                    content: const Text(
+                                      'L\'opération n\'a pas été ajoutée car un ou plusieurs paramètres sont égaux à 0.',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
-                            });
+                            }
                           },
                         ),
                       ),
