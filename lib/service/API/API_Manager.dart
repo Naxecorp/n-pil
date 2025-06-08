@@ -783,7 +783,7 @@ class API_Manager {
       } catch (e) {
         print('❌ Erreur lors de la récupération de la liste des fichiers : $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur récupération fichiers')),
+          SnackBar(content: Text('Erreur récupération fichiers $e')),
         );
         return;
       }
