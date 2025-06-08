@@ -38,7 +38,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
+          .timeout(const Duration(seconds: 3));
 
       if (response.statusCode == 200) {
         //print("toto ${response.body}");
@@ -47,7 +47,7 @@ class API_Manager {
 
         return Machine;
       } else {
-        print('Fail to get data, error : ' + response.statusCode.toString());
+        //print('Fail to get data, error : ' + response.statusCode.toString());
         return MachineObjectModel();
       }
     } catch (e) {
@@ -58,31 +58,6 @@ class API_Manager {
     }
   }
 
-  Future<void> getdata(String toto) async {
-    Map<String, String> requestHeaders = {
-      "Access-Control-Allow-Headers": "*",
-      "Content-Type": "application/json",
-      "Accept": "*/*",
-      "Accept-Encoding": "gzip, deflate",
-      "Access-Control-Allow-Origin": "*",
-      "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
-      "Connection": "keep-alive",
-    };
-
-    var uri = Uri.parse('http://${global.MyMachineN02Config.IP}/$toto');
-    try {
-      var response = await http
-          .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
-      if (response.statusCode == 200) {
-      } else {
-        print('Fail to get data, error : ' + response.statusCode.toString());
-      }
-    } catch (e) {
-      //if (e.toString()=="XMLHttpRequest error.")global.myEthernet_connection.isConnected=false;
-      //if (e.toString().startsWith("TimeoutException"))global.myEthernet_connection.isConnected=false;
-    }
-  }
 
   Future<String> sendGcodeCommand(String command) async {
     Map<String, String> requestHeaders = {
@@ -100,7 +75,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(seconds: 3));
       if (response.statusCode == 200) {
         return 'ok';
       } else {
@@ -130,7 +105,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+          .timeout(Duration(seconds: 3));
       if (response.statusCode == 200) {
         if (response.body.length > 2 && RegExp(r'[a-zA-Z0-9]').hasMatch(response.body))
           global.ReplyListFiFo.addItem(response.body);
@@ -210,7 +185,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(seconds: 3));
       if (response.statusCode == 200) {
         final ObjectModelMove myObjectModelMove =
             objectModelMoveFromJson(response.body);
@@ -242,7 +217,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+          .timeout(Duration(seconds: 3));
       if (response.statusCode == 200) {
         final ObjectModelJob myObjectModelJob =
             objectModelJobFromJson(response.body);
@@ -274,7 +249,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(seconds: 6));
       if (response.statusCode == 200) {
         final ReturnedListGcodeProgram myReturnedListGcodeProgram =
             returnedListGcodeProgramFromJson(response.body);
@@ -306,7 +281,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(seconds: 6));
       if (response.statusCode == 200) {
         final SystemsFiles myReturnedListofFiles =
             systemsFilesFromJson(response.body);
@@ -342,7 +317,7 @@ class API_Manager {
     try {
       var response = await http
           .post(uri, headers: requestHeaders, body: FileContent)
-          .timeout(Duration(seconds: 3));
+          .timeout(Duration(seconds: 15));
       if (response.statusCode == 200) {
         return 'ok';
       } else {
@@ -521,7 +496,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(seconds: 10));
       if (response.statusCode == 200) {
         final MachineN02Config Myconfig =
             returnedMachineN02ConfigFromJson(response.body);
@@ -553,7 +528,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(seconds: 10));
       if (response.statusCode == 200) {
         final PlacementOutil Myconfig = returnedOutilFromJson(response.body);
         //print(response.body);
@@ -586,7 +561,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 1));
+          .timeout(Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         return 'ok';
@@ -625,7 +600,7 @@ class API_Manager {
           "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
         },
         body: content,
-      );
+      ).timeout(Duration(seconds:10));
 
       final responseBody = jsonDecode(response.body);
 
@@ -1054,7 +1029,7 @@ class API_Manager {
       }
     }
 
-    throw Exception('Erreur lors de la récupération des fichiers');
+    throw Exception('Erreur lors de la récupération des fichiers ${response.statusCode}');
   }
 
   Future<String> sendLogFileToServer(

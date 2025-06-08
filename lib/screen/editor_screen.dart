@@ -25,11 +25,32 @@ class _EditorPageState extends State<EditorPage> {
   }
 
   // Fonction pour enregistrer le fichier modifié
-  Future<void> saveFile() async {
-    String editedText = _editorController.text;
+ Future<void> saveFile() async {
+  String editedText = _editorController.text;
+  String result = "nok"; // Par défaut
 
+  // Affiche la pop-up "Veuillez patienter..."
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        title: Text("Enregistrement en cours"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text("Veuillez patienter..."),
+          ],
+        ),
+      );
+    },
+  );
+
+  try {
     if (pageToShow == 7) {
-      await API_Manager().upLoadAFile(
+      result = await API_Manager().upLoadAFile(
         "0:/sys/${global.ListofSysFile!.isNotEmpty ? global.ListofSysFile!.elementAt(global.selectedFileSysIndex)?.name?.toString() ?? "aie.g" : "aie.g"}",
         editedText.length.toString(),
         Uint8List.fromList(editedText.codeUnits),
@@ -40,7 +61,7 @@ class _EditorPageState extends State<EditorPage> {
     }
 
     if (pageToShow == 3) {
-      await API_Manager().upLoadAFile(
+      result = await API_Manager().upLoadAFile(
         "0:/gcodes/${global.ListofGcodeFile!.isNotEmpty ? global.ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)?.name?.toString() ?? "ouille.g" : "ouille.g"}",
         editedText.length.toString(),
         Uint8List.fromList(editedText.codeUnits),
@@ -49,24 +70,51 @@ class _EditorPageState extends State<EditorPage> {
           .getfileList()
           .then((value) => global.ListofGcodeFile = value);
     }
-
+  } finally {
+    // Ferme la pop-up "Veuillez patienter..."
     if (mounted) {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Empêche la fermeture en cliquant à l'extérieur
-      builder: (context) {
-        Future.delayed(Duration(seconds: 5), () {
-          if (mounted) Navigator.of(context).pop(); // Ferme le popup après 5 secondes
-        });
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+  }
 
-        return AlertDialog(
-          title: Text("Enregistrement"),
-          content: Text("Veuillez patienter..."),
-        );
-      },
-    );
+  // Affiche le résultat en fonction du retour de upLoadAFile
+  if (mounted) {
+    if (result == "ok") {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          Future.delayed(Duration(seconds: 3), () {
+            if (mounted) Navigator.of(context).pop();
+          });
+          return AlertDialog(
+            title: Text("Succès"),
+            content: Text("Le fichier a été enregistré avec succès."),
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Erreur"),
+            content: Text("Échec de l'enregistrement du fichier."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
-  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
