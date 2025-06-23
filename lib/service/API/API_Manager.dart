@@ -249,7 +249,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 6));
+          .timeout(Duration(seconds: 5));
       if (response.statusCode == 200) {
         final ReturnedListGcodeProgram myReturnedListGcodeProgram =
             returnedListGcodeProgramFromJson(response.body);
@@ -496,7 +496,7 @@ class API_Manager {
     try {
       var response = await http
           .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+          .timeout(Duration(seconds: 2));
       if (response.statusCode == 200) {
         final MachineN02Config Myconfig =
             returnedMachineN02ConfigFromJson(response.body);

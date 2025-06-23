@@ -14,6 +14,7 @@ import 'screen/programme_screen.dart';
 import 'screen/set_pos.dart';
 import 'service/API/API_Manager.dart';
 import 'globals_var.dart' as global;
+import 'Loading_screen.dart';
 
 int pageToShow = 1;
 
@@ -60,6 +61,9 @@ Future<void> actualiserMoveObjectModel() async {
 }
 
 void main() async {
+
+  runApp(const LoadingScreen());
+
   await API_Manager().downLoadNwcSettings().then((value)  {
     if (value.hasAnyNull()){
       var prov = value.Serie;
@@ -75,39 +79,32 @@ void main() async {
     }
     else
       global.MyMachineN02Config = value;
-  }).timeout(Duration(seconds: 5));
+  });
 
   await API_Manager().sendGcodeCommand("M453").then((_) {
     API_Manager()
         .getMachineMode()
-        .then((value) => global.machineMode = value)
-        .timeout(Duration(seconds: 5));
+        .then((value) => global.machineMode = value);
   });
-
-  
 
   await API_Manager()
       .getMachineMoveObjectModel()
-      .then((move) => global.objectModelMove = move)
-      .timeout(Duration(seconds: 5));
-
+      .then((move) => global.objectModelMove = move);
+      
   await API_Manager()
       .getfileList()
-      .then((value) => global.ListofGcodeFile = value)
-      .timeout(Duration(seconds: 5));
-
+      .then((value) => global.ListofGcodeFile = value);
+      
   await API_Manager()
       .getfileListSys()
-      .then((value) => global.ListofSysFile = value)
-      .timeout(Duration(seconds: 5));
+      .then((value) => global.ListofSysFile = value);
   
   await API_Manager().sendGcodeCommand('M98 P"config.g"');
 
   if ((global.MyMachineN02Config.Serie ?? "NUMSTD") == "DEFAULT") {
   } else
     await API_Manager()
-        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "Start")
-        .timeout(Duration(seconds: 5));
+        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "Start");
 
   actualiserMachineObjectModel();
   actualiserMoveObjectModel();
@@ -115,8 +112,7 @@ void main() async {
 
   Timer.periodic(const Duration(minutes: 10), (timer) async {
     await API_Manager()
-        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", global.machineObjectModel.result?.state?.status??"is alive")
-        .timeout(Duration(seconds: 5));
+        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", global.machineObjectModel.result?.state?.status??"is alive");
   });
   
   runApp(const MyApp());

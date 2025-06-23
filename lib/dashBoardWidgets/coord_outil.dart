@@ -97,7 +97,7 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                 ),
                               ),
                             )),
-                        global.AdminLogged ? Flexible(
+                        global.AdminLogged || global.isModeDegrade ? Flexible(
                             flex: 2,
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -194,7 +194,7 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                 ),
                               ),
                             )),
-                        global.AdminLogged ? Flexible(
+                        global.AdminLogged || global.isModeDegrade ? Flexible(
                             flex: 2,
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -291,7 +291,7 @@ class CoordoneesOutilState extends State<CoordoneesOutil> {
                                 ),
                               ),
                             )),
-                        global.AdminLogged ? Flexible(
+                        global.AdminLogged || global.isModeDegrade ? Flexible(
                             flex: 2,
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 5),
