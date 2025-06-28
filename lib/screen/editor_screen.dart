@@ -21,20 +21,33 @@ class _EditorPageState extends State<EditorPage> {
   void initState() {
     super.initState();
     // Charger le contenu du fichier dans le contrôleur
-    _editorController = TextEditingController(text: global.ContentofFileToEdit);
+    //_editorController = TextEditingController(text: global.ContentofFileToEdit);
+    _editorController = TextEditingController();
+    _editorController.text = global.ContentofFileToEdit ?? "";
   }
 
-  // Fonction pour enregistrer le fichier modifié
- Future<void> saveFile() async {
-  String editedText = _editorController.text;
-  String result = "nok"; // Par défaut
+  @override
+void dispose() {
+  global.ContentofFileToEdit = '';
+  _editorController.dispose();
+  super.dispose();
+}
 
-  // Affiche la pop-up "Veuillez patienter..."
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) {
-      return AlertDialog(
+  // Fonction pour enregistrer le fichier modifié
+  bool _isSaving = false;
+
+  Future<void> saveFile() async {
+    if (_isSaving) return;
+    _isSaving = true;
+
+    String editedText = _editorController.text;
+    String result = "nok";
+
+    // Affiche la pop-up "Veuillez patienter..."
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
         title: Text("Enregistrement en cours"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -44,63 +57,46 @@ class _EditorPageState extends State<EditorPage> {
             Text("Veuillez patienter..."),
           ],
         ),
-      );
-    },
-  );
+      ),
+    );
 
-  try {
-    if (pageToShow == 7) {
-      result = await API_Manager().upLoadAFile(
-        "0:/sys/${global.ListofSysFile!.isNotEmpty ? global.ListofSysFile!.elementAt(global.selectedFileSysIndex)?.name?.toString() ?? "aie.g" : "aie.g"}",
-        editedText.length.toString(),
-        Uint8List.fromList(editedText.codeUnits),
-      );
-      await API_Manager()
-          .getfileListSys()
-          .then((value) => global.ListofSysFile = value);
+    try {
+      if (pageToShow == 7) {
+        result = await API_Manager().upLoadAFile(
+          "0:/sys/${global.ListofSysFile!.isNotEmpty ? global.ListofSysFile!.elementAt(global.selectedFileSysIndex)?.name?.toString() ?? "aie.g" : "aie.g"}",
+          editedText.length.toString(),
+          Uint8List.fromList(editedText.codeUnits),
+        );
+        global.ListofSysFile = await API_Manager().getfileListSys();
+      }
+
+      if (pageToShow == 3) {
+        result = await API_Manager().upLoadAFile(
+          "0:/gcodes/${global.ListofGcodeFile!.isNotEmpty ? global.ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)?.name?.toString() ?? "ouille.g" : "ouille.g"}",
+          editedText.length.toString(),
+          Uint8List.fromList(editedText.codeUnits),
+        );
+        global.ListofGcodeFile = await API_Manager().getfileList();
+      }
+    } catch (e) {
+      // Log pour le debug
+      print("Erreur API: $e");
+    } finally {
+      if (mounted)
+        Navigator.of(context, rootNavigator: true).pop(); // Ferme loading
     }
 
-    if (pageToShow == 3) {
-      result = await API_Manager().upLoadAFile(
-        "0:/gcodes/${global.ListofGcodeFile!.isNotEmpty ? global.ListofGcodeFile!.elementAt(global.selectedGcodeFileIndex)?.name?.toString() ?? "ouille.g" : "ouille.g"}",
-        editedText.length.toString(),
-        Uint8List.fromList(editedText.codeUnits),
-      );
-      await API_Manager()
-          .getfileList()
-          .then((value) => global.ListofGcodeFile = value);
-    }
-  } finally {
-    // Ferme la pop-up "Veuillez patienter..."
+
     if (mounted) {
-      Navigator.of(context, rootNavigator: true).pop();
-    }
-  }
-
-  // Affiche le résultat en fonction du retour de upLoadAFile
-  if (mounted) {
-    if (result == "ok") {
-      showDialog(
+      await showDialog(
         context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          Future.delayed(Duration(seconds: 3), () {
-            if (mounted) Navigator.of(context).pop();
-          });
-          return AlertDialog(
-            title: Text("Succès"),
-            content: Text("Le fichier a été enregistré avec succès."),
-          );
-        },
-      );
-    } else {
-      showDialog(
-        context: context,
-        barrierDismissible: true,
+        barrierDismissible: result != "ok",
         builder: (context) {
           return AlertDialog(
-            title: Text("Erreur"),
-            content: Text("Échec de l'enregistrement du fichier."),
+            title: Text(result == "ok" ? "Succès" : "Erreur"),
+            content: Text(result == "ok"
+                ? "Le fichier a été enregistré avec succès."
+                : "Échec de l'enregistrement du fichier."),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -111,10 +107,14 @@ class _EditorPageState extends State<EditorPage> {
         },
       );
     }
+
+    _isSaving = false;
+
+    if (result == "ok") {
+      global.ContentofFileToEdit = _editorController.text;
+    }
+
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
