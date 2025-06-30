@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:nweb/dashBoardWidgets/palpeur_layout.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
@@ -8,6 +9,7 @@ import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import '../menus/side_menu.dart';
+
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
@@ -293,11 +295,10 @@ class OriginScreenState extends State<OriginScreen> {
 
   double ZSaved = 0;
 
-   @override
+  @override
   void initState() {
     super.initState();
     pageToShow = 6;
-  
   }
 
   @override
@@ -396,288 +397,7 @@ class OriginScreenState extends State<OriginScreen> {
                     child: Window(
                       title1: "Mesure Hauteur",
                       title2: " fraise",
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(height: 15,width: 15,color: ((global.machineObjectModel.result!.sensors!.probes![0].value![0]) >= 900) ? Colors.amber:Colors.blue),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 1,
-                                child: NeumorphicButton(
-                                  margin: EdgeInsets.all(22),
-                                  style: NeumorphicStyle(
-                                    color: Color(0xFFF0F0F3),
-                                  ),
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: true,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title:
-                                              const Text("Mesure en cours..."),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: const [
-                                              CircularProgressIndicator(
-                                                color: Colors.blue,
-                                              ),
-                                            ],
-                                          ),
-                                          actions: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                API_Manager()
-                                                    .sendGcodeCommand("M112");
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.red,
-                                                textStyle: const TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              child: const Text(
-                                                'Arrêt immédiat',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                    API_Manager()
-                                        .sendGcodeCommand("G53 G1 Z188")
-                                        .then((value) {
-                                      return API_Manager().sendGcodeCommand(
-                                          "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}");
-                                    }).then((value) {
-                                      return API_Manager()
-                                          .sendGcodeCommand('M98 P"palper1.g"');
-                                    }).then((value) {
-                                      Timer.periodic(
-                                        const Duration(milliseconds: 500),
-                                        (timer) {
-                                          API_Manager()
-                                              .sendrr_reply()
-                                              .then((response) {
-                                            if (response
-                                                .contains("end of palper1.g")) {
-                                              timer.cancel();
-                                              Navigator.of(context).pop();
-                                              showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: const Text(
-                                                        'Notification'),
-                                                    content: const Text(
-                                                      'Vous pouvez changer d\'outil',
-                                                      style: TextStyle(
-                                                          fontSize: 16),
-                                                    ),
-                                                    actions: <Widget>[
-                                                      ElevatedButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        style: ElevatedButton
-                                                            .styleFrom(
-                                                          backgroundColor:
-                                                              Colors.blue,
-                                                          textStyle:
-                                                              const TextStyle(
-                                                                  color: Colors
-                                                                      .white),
-                                                        ),
-                                                        child: const Text(
-                                                          'Fermer',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            }
-                                          });
-                                        },
-                                      );
-                                    });
-                                  },
-                                  child: const Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Icon(
-                                        Icons.looks_one_outlined,
-                                        color: Color(0xFF707585),
-                                      ),
-                                      FittedBox(
-                                        fit: BoxFit.fitHeight,
-                                        child: Text(
-                                          'Palper outil actuel',
-                                          style: TextStyle(
-                                              color: Color(0xFF707585)),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 1,
-                                child: NeumorphicButton(
-                                  margin: const EdgeInsets.all(22),
-                                  style: const NeumorphicStyle(
-                                    color: Color(0xFFF0F0F3),
-                                  ),
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: true,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title:
-                                              const Text("Mesure en cours..."),
-                                          content: const Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              CircularProgressIndicator(
-                                                color: Colors.blue,
-                                              ),
-                                            ],
-                                          ),
-                                          actions: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                API_Manager()
-                                                    .sendGcodeCommand("M112");
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.red,
-                                                textStyle: const TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                              child: const Text(
-                                                'Arrêt immédiat',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-
-                                    API_Manager()
-                                        .sendGcodeCommand("G53 G1 Z189")
-                                        .then(
-                                          (value) => API_Manager()
-                                              .sendGcodeCommand(
-                                                  "G53 G1 X${global.MyMachineN02Config.Palpeur!.PosX} Y${global.MyMachineN02Config.Palpeur!.PosY}")
-                                              .then(
-                                                (value) =>
-                                                    API_Manager()
-                                                        .sendGcodeCommand(
-                                                            'M98 P"palper2.g"')
-                                                        .then(
-                                                          (value) =>
-                                                              Timer.periodic(
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    100),
-                                                            (timer) {
-                                                              API_Manager()
-                                                                  .sendrr_reply()
-                                                                  .then(
-                                                                      (response) {
-                                                                if (response
-                                                                    .contains(
-                                                                        "end of ")) {
-                                                                  timer
-                                                                      .cancel();
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (BuildContext
-                                                                            context) {
-                                                                      return AlertDialog(
-                                                                        title: const Text(
-                                                                            'Notification'),
-                                                                        content:
-                                                                            const Text(
-                                                                          'Mesure terminée ! ',
-                                                                          style:
-                                                                              TextStyle(fontSize: 16),
-                                                                        ),
-                                                                        actions: <Widget>[
-                                                                          ElevatedButton(
-                                                                            onPressed:
-                                                                                () {
-                                                                              Navigator.of(context).pop();
-                                                                            },
-                                                                            style:
-                                                                                ElevatedButton.styleFrom(
-                                                                              backgroundColor: Colors.blue,
-                                                                              textStyle: const TextStyle(color: Colors.white),
-                                                                            ),
-                                                                            child:
-                                                                                const Text(
-                                                                              'Fermer',
-                                                                              style: TextStyle(color: Colors.white),
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                }
-                                                              });
-                                                            },
-                                                          ),
-                                                        ),
-                                              ),
-                                        );
-                                  },
-                                  child: const Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Icon(
-                                        Icons.looks_two_outlined,
-                                        color: Color(0xFF707585),
-                                      ),
-                                      FittedBox(
-                                        fit: BoxFit.fitHeight,
-                                        child: Text(
-                                          "Palper nouvel outil",
-                                          style: TextStyle(
-                                              color: Color(0xFF707585)),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                      child: ResponsiveImageGrid()
                     ),
                   ),
                   Flexible(
@@ -864,9 +584,7 @@ class OriginScreenState extends State<OriginScreen> {
                                               padding: EdgeInsets.all(2.0),
                                             ),
                                             IconButton(
-                                              onPressed: () {
-                                                
-                                              },
+                                              onPressed: () {},
                                               icon: const Icon(Icons.edit),
                                               iconSize: 24.0,
                                               color: Colors.orange,
@@ -927,8 +645,11 @@ class ButtonLayout extends StatelessWidget {
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: const [
-                          Text("Ce message disparaîtra au bout de quelques secondes"),
-                          SizedBox(height: 10,),
+                          Text(
+                              "Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(
+                            height: 10,
+                          ),
                           CircularProgressIndicator(
                             color: Colors.blue,
                           ),
@@ -990,8 +711,11 @@ class ButtonLayout extends StatelessWidget {
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: const [
-                          Text("Ce message disparaîtra au bout de quelques secondes"),
-                          SizedBox(height: 10,),
+                          Text(
+                              "Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(
+                            height: 10,
+                          ),
                           CircularProgressIndicator(
                             color: Colors.blue,
                           ),
@@ -1053,8 +777,11 @@ class ButtonLayout extends StatelessWidget {
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: const [
-                          Text("Ce message disparaîtra au bout de quelques secondes"),
-                          SizedBox(height: 10,),
+                          Text(
+                              "Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(
+                            height: 10,
+                          ),
                           CircularProgressIndicator(
                             color: Colors.blue,
                           ),
@@ -1116,8 +843,11 @@ class ButtonLayout extends StatelessWidget {
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: const [
-                          Text("Ce message disparaîtra au bout de quelques secondes"),
-                          SizedBox(height: 10,),
+                          Text(
+                              "Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(
+                            height: 10,
+                          ),
                           CircularProgressIndicator(
                             color: Colors.blue,
                           ),
@@ -1177,8 +907,11 @@ class ButtonLayout extends StatelessWidget {
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: const [
-                          Text("Ce message disparaîtra au bout de quelques secondes"),
-                          SizedBox(height: 10,),
+                          Text(
+                              "Ce message disparaîtra au bout de quelques secondes"),
+                          SizedBox(
+                            height: 10,
+                          ),
                           CircularProgressIndicator(
                             color: Colors.blue,
                           ),

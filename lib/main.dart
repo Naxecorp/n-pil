@@ -81,10 +81,16 @@ void main() async {
       global.MyMachineN02Config = value;
   });
 
+
   await API_Manager().sendGcodeCommand("M453").then((_) {
     API_Manager()
         .getMachineMode()
         .then((value) => global.machineMode = value);
+  });
+
+  // Actualiser la position du palpeur
+    await API_Manager().sendGcodeCommand("set global.CoordPalpeurY = ${global.MyMachineN02Config.Palpeur?.PosY??"0"}").then((_) async {
+      await API_Manager().sendGcodeCommand("set global.CoordPalpeurX = ${global.MyMachineN02Config.Palpeur?.PosX??"0"}");
   });
 
   await API_Manager()

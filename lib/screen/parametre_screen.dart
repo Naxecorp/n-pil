@@ -56,14 +56,15 @@ class ParametreScreenState extends State<ParametreScreen> {
     pageToShow = 5;
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
+      if (global.MyMachineN02Config.HasFanOnEnclosure == 1)
+        global.checkCaissonOpen(context);
     });
     global.streamMachineObjectModel.listen((value) {
       setState(() {});
     });
   }
 
-  void saveConfig() async {
+  Future<void> saveConfig() async {
     global.MyMachineN02Config.Lastmodifition = DateTime.now().toString();
     await API_Manager().upLoadAFile(
         "0:/sys/nwc-settings.json",
@@ -75,6 +76,10 @@ class ParametreScreenState extends State<ParametreScreen> {
     await API_Manager().upLoadAFile("0:/sys/coordToolShop.g",
         content.length.toString(), Uint8List.fromList(utf8.encode(content)));
     await API_Manager().sendGcodeCommand('M98 P"CoordToolShop.g"');
+
+    await API_Manager().downLoadNwcSettings().then((value)  {
+      global.MyMachineN02Config = value;
+  });
   }
 
   final MaterialStateProperty<Icon?> thumbIcon =
@@ -856,14 +861,42 @@ class ParametreScreenState extends State<ParametreScreen> {
                             //SizedBox(height: 20,),
                             Padding(
                               padding: const EdgeInsets.all(18.0),
-                              child: global.AdminLogged? ElevatedButton(onPressed: (){
-                                setState(() {
-                                  global.MyMachineN02Config.MagasinOutil?[0].CoordX = global.machineObjectModel.result?.move?.axes?[0].machinePosition?.toDouble()??0;
-                                  global.MyMachineN02Config.MagasinOutil?[0].CoordY = global.machineObjectModel.result?.move?.axes?[1].machinePosition?.toDouble()??0;
-                                  global.MyMachineN02Config.MagasinOutil?[0].CoordZ = global.machineObjectModel.result?.move?.axes?[2].machinePosition?.toDouble()??0;
-                                });
-                              },child: Text("Charger position actuelle")):Container(),
-                            ), 
+                              child: global.AdminLogged
+                                  ? ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          global.MyMachineN02Config
+                                              .MagasinOutil?[0].CoordX = global
+                                                  .machineObjectModel
+                                                  .result
+                                                  ?.move
+                                                  ?.axes?[0]
+                                                  .machinePosition
+                                                  ?.toDouble() ??
+                                              0;
+                                          global.MyMachineN02Config
+                                              .MagasinOutil?[0].CoordY = global
+                                                  .machineObjectModel
+                                                  .result
+                                                  ?.move
+                                                  ?.axes?[1]
+                                                  .machinePosition
+                                                  ?.toDouble() ??
+                                              0;
+                                          global.MyMachineN02Config
+                                              .MagasinOutil?[0].CoordZ = global
+                                                  .machineObjectModel
+                                                  .result
+                                                  ?.move
+                                                  ?.axes?[2]
+                                                  .machinePosition
+                                                  ?.toDouble() ??
+                                              0;
+                                        });
+                                      },
+                                      child: Text("Charger position actuelle"))
+                                  : Container(),
+                            ),
                           ],
                         ),
                       ),
@@ -875,8 +908,16 @@ class ParametreScreenState extends State<ParametreScreen> {
             Flexible(
                 flex: 1,
                 child: NeumorphicButton(
-                  onPressed: () {
-                    saveConfig();
+                  onPressed: () async {
+                    await saveConfig();
+                    // Actualiser la position du palpeur
+                    await API_Manager()
+                        .sendGcodeCommand(
+                            "set global.CoordPalpeurY = ${global.MyMachineN02Config.Palpeur?.PosY ?? "0"}")
+                        .then((_) async {
+                      await API_Manager().sendGcodeCommand(
+                          "set global.CoordPalpeurX = ${global.MyMachineN02Config.Palpeur?.PosX ?? "0"}");
+                    });
                     setState(() {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

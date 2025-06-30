@@ -89,6 +89,118 @@ class API_Manager {
     }
   }
 
+Future<bool> moveToPositionAndConfirm({
+  double? x,
+  double? y,
+  double? z,
+  double tolerance = 0.1,
+}) async {
+  // Étape 0 : déplacement initial de Z à 189 si Z final est demandé
+  if (z != null) {
+    final resultZ = await sendGcodeCommand('G53 G0 Z189');
+    if (resultZ != 'ok') {
+      print("Erreur lors du pré-positionnement de Z.");
+      return false;
+    }
+
+    // Attente que Z atteigne 189
+    final startZ = DateTime.now();
+    while (DateTime.now().difference(startZ).inSeconds < 10) {
+      await Future.delayed(const Duration(milliseconds: 250));
+      final axes = global.machineObjectModel.result?.move?.axes;
+      if (axes == null || axes.length < 3) continue;
+
+      final posZ = double.tryParse(axes.elementAt(2).machinePosition?.toString() ?? '') ?? 0.0;
+      if ((posZ - 189).abs() < tolerance) break;
+    }
+  }
+
+  // Étape 1 : construction du G-code
+  final buffer = StringBuffer('G53 G0');
+  if (x != null) buffer.write(' X${x.toStringAsFixed(3)}');
+  if (y != null) buffer.write(' Y${y.toStringAsFixed(3)}');
+  if (z != null) buffer.write(' Z${z.toStringAsFixed(3)}');
+
+  // Étape 2 : envoi du G-code
+  final sendResult = await sendGcodeCommand(buffer.toString());
+  if (sendResult != 'ok') {
+    print("Erreur lors de l'envoi du G-code final.");
+    return false;
+  }
+
+  // Étape 3 : boucle de vérification
+  final startTime = DateTime.now();
+  while (DateTime.now().difference(startTime).inSeconds < 45) {
+    await Future.delayed(const Duration(milliseconds: 250));
+
+    final axes = global.machineObjectModel.result?.move?.axes;
+    if (axes == null || axes.length < 3) continue;
+
+    final posX = double.tryParse(axes.elementAt(0).machinePosition?.toString() ?? '') ?? 0.0;
+    final posY = double.tryParse(axes.elementAt(1).machinePosition?.toString() ?? '') ?? 0.0;
+    final posZ = double.tryParse(axes.elementAt(2).machinePosition?.toString() ?? '') ?? 0.0;
+
+    final isXOk = x == null || (posX - x).abs() < tolerance;
+    final isYOk = y == null || (posY - y).abs() < tolerance;
+    final isZOk = z == null || (posZ - z).abs() < tolerance;
+
+    if (isXOk && isYOk && isZOk) return true;
+  }
+
+  return false;
+}
+
+Future<bool> waitUntilMachineIsStill({
+  Duration stableDuration = const Duration(seconds: 1),
+  Duration maxWait = const Duration(seconds: 30),
+  double tolerance = 0.01,
+}) async {
+  DateTime? stableSince;
+  final startTime = DateTime.now();
+
+  List<double>? lastPositions;
+
+  while (DateTime.now().difference(startTime) < maxWait) {
+    await Future.delayed(const Duration(milliseconds: 250));
+
+    final axes = global.machineObjectModel.result?.move?.axes;
+    if (axes == null || axes.length < 3) continue;
+
+    final current = [
+      double.tryParse(axes[0].machinePosition?.toString() ?? '') ?? 0.0,
+      double.tryParse(axes[1].machinePosition?.toString() ?? '') ?? 0.0,
+      double.tryParse(axes[2].machinePosition?.toString() ?? '') ?? 0.0,
+    ];
+
+    if (lastPositions == null) {
+      lastPositions = current;
+      stableSince = DateTime.now();
+      continue;
+    }
+
+    final moved = List.generate(3, (i) => (current[i] - lastPositions![i]).abs() > tolerance)
+        .any((v) => v);
+
+    if (moved) {
+      // Reset timer if motion detected
+      lastPositions = current;
+      stableSince = DateTime.now();
+    } else {
+      final stableTime = DateTime.now().difference(stableSince!);
+      if (stableTime >= stableDuration) {
+        return true; // Machine stable assez longtemps
+      }
+    }
+  }
+
+  return false; // Timeout
+}
+
+
+
+
+
+
   Future<String> sendrr_reply() async {
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
