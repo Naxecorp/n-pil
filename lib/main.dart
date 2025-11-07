@@ -31,10 +31,16 @@ Future<void> actualiserMachineObjectModel() async {
   });
 }
 
-// Fonctions qui actualise le temps d'utilisation de la machine
-Future<void> actualiserMachineUsedTime() async {
+Future<String> setDateTimeAndShowAnswer() async {
   await API_Manager().sendGcodeCommand(
       "M905 P${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} S${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}");
+  await API_Manager().sendGcodeCommand("M905");
+  return API_Manager().sendrr_reply();
+}
+  
+
+// Fonctions qui actualise le temps d'utilisation de la machine
+Future<void> actualiserMachineUsedTime() async {
   Timer.periodic(Duration(minutes: 2), (timer) async {
     await API_Manager().downLoadNwcSettings();
     await API_Manager().downLoadToolSettings();
@@ -62,7 +68,12 @@ Future<void> actualiserMoveObjectModel() async {
 
 void main() async {
 
-  runApp(const LoadingScreen());
+  runApp(const LoadingScreen(message: "Starting",));
+  await Future.delayed(Duration(seconds: 1));
+
+  String dateTime = await setDateTimeAndShowAnswer();
+  runApp(LoadingScreen(message: dateTime,));
+  await Future.delayed(Duration(seconds: 3));
 
   await API_Manager().downLoadNwcSettings().then((value)  {
     if (value.hasAnyNull()){
@@ -81,31 +92,45 @@ void main() async {
       global.MyMachineN02Config = value;
   });
 
+  runApp(const LoadingScreen(message: "NWCSetting is loaded",));
 
   await API_Manager().sendGcodeCommand("M453").then((_) {
     API_Manager()
         .getMachineMode()
         .then((value) => global.machineMode = value);
   });
+ 
+  runApp(const LoadingScreen(message: "Machine mode is loaded",));
+
 
   // Actualiser la position du palpeur
     await API_Manager().sendGcodeCommand("set global.CoordPalpeurY = ${global.MyMachineN02Config.Palpeur?.PosY??"0"}").then((_) async {
       await API_Manager().sendGcodeCommand("set global.CoordPalpeurX = ${global.MyMachineN02Config.Palpeur?.PosX??"0"}");
   });
 
+  runApp(const LoadingScreen(message: "Palpeur position is set",));
+
   await API_Manager()
       .getMachineMoveObjectModel()
       .then((move) => global.objectModelMove = move);
+
+  runApp(const LoadingScreen(message: "Machine OBM is gettable",));
       
   await API_Manager()
       .getfileList()
       .then((value) => global.ListofGcodeFile = value);
+
+  runApp(const LoadingScreen(message: "File List is get",));
       
   await API_Manager()
       .getfileListSys()
       .then((value) => global.ListofSysFile = value);
   
+  runApp(const LoadingScreen(message: "File SYS List is get",));
+  
   await API_Manager().sendGcodeCommand('M98 P"config.g"');
+  
+  runApp(const LoadingScreen(message: "config.g is sent",));
 
   if ((global.MyMachineN02Config.Serie ?? "NUMSTD") == "DEFAULT") {
   } else
@@ -120,6 +145,10 @@ void main() async {
     await API_Manager()
         .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", global.machineObjectModel.result?.state?.status??"is alive");
   });
+
+  runApp(const LoadingScreen(message: "ENJOY ! :)",));
+
+  await Future.delayed(Duration(seconds: 1));
   
   runApp(const MyApp());
 }

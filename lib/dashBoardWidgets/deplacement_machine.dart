@@ -638,6 +638,48 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                             ),
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: NeumorphicButton(
+                              style: const NeumorphicStyle(
+                                color: Color(0xFFF0F0F3),
+                              ),
+                              onPressed: global.machineObjectModel.result?.move
+                                                  ?.axes
+                                                  ?.elementAt(0)!
+                                                  .machinePosition ==
+                                              0.001 &&
+                                          global.machineObjectModel.result?.move
+                                                  ?.axes
+                                                  ?.elementAt(1)!
+                                                  .machinePosition ==
+                                              550.0 &&
+                                          global.machineObjectModel.result?.move
+                                                  ?.axes
+                                                  ?.elementAt(2)!
+                                                  .machinePosition ==
+                                              189.0 ||
+                                      global.machineObjectModel.result?.state
+                                              ?.status ==
+                                          "processing"
+                                  ? null
+                                  : () {
+                                      API_Manager().sendGcodeCommand(
+                                          'M98 P"front.g"');
+                                    },
+                              child: const Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text("Front."),
+                                  Icon(Icons.south)
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                         global.MyMachineN02Config.HasFanOnEnclosure == 1
                             ? Padding(
                                 padding: const EdgeInsets.all(5.0),

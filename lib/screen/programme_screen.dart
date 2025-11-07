@@ -292,7 +292,7 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
                         .elementAt(global.selectedGcodeFileIndex)!
                         .name
                         .toString());
-                await API_Manager()
+                API_Manager()
                     .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD",
                         "Start prog ${progName}")
                     .timeout(Duration(seconds: 5));

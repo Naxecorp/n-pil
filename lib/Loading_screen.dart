@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 
 
 class LoadingScreen extends StatelessWidget {
-  const LoadingScreen({super.key});
+  final String message;
+
+  const LoadingScreen({
+    super.key,
+    this.message = "Chargement en cours...", // valeur par défaut
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,17 +18,16 @@ class LoadingScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // ▶ Progress bar circulaire infinie
               CircularProgressIndicator(
-                strokeWidth: 3, // plus fin ? augmente/diminue
+                strokeWidth: 3,
                 valueColor: AlwaysStoppedAnimation(
-                  Theme.of(context).colorScheme.primary, // couleur thème
+                  Theme.of(context).colorScheme.primary,
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                "Chargement en cours...",
-                style: TextStyle(fontSize: 18),
+              Text(
+                message, // <-- utilisation du message
+                style: const TextStyle(fontSize: 18),
               ),
             ],
           ),
@@ -32,4 +36,5 @@ class LoadingScreen extends StatelessWidget {
     );
   }
 }
+
 

@@ -155,7 +155,7 @@ class JobInfoState extends State<JobInfo> {
           timer.cancel();
           global.timer!.cancel();
           global.secondsElapsedSinceBeginning = 0;
-          if (!global.programmEndUpByUser)await API_Manager().pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "PROG END UP NORMALLY").timeout(Duration (seconds: 2));
+          if (!global.programmEndUpByUser) API_Manager().pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "PROG END UP NORMALLY").timeout(Duration (seconds: 2));
           global.programmEndUpByUser = false;
           showCompletionPopup(context);
           global.timerStarted = false;

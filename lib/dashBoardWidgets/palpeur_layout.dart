@@ -32,6 +32,115 @@ class _ResponsiveImageGridState extends State<ResponsiveImageGrid> {
     super.dispose();
   }
 
+  Future<double?> getCurrentZ() async {
+  final axes = global.machineObjectModel.result?.move?.axes;
+  if (axes == null || axes.length < 3) return null;
+  return double.tryParse(axes[2].machinePosition?.toString() ?? "");
+}
+
+void testRepetabilitePalpeur(BuildContext context) async {
+  List<double> zPositions = [];
+  List<double> differences = [];
+  ValueNotifier<int> progress = ValueNotifier(0);
+
+  // Pour capturer le setState interne du StatefulBuilder
+  late void Function(void Function()) localSetState;
+
+  // Affiche la popup avec UI dynamique
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          localSetState = setState; // on récupère le vrai setState
+
+          return AlertDialog(
+            title: const Text("Test de répétabilité"),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text("Palpages en cours..."),
+                  const SizedBox(height: 8),
+                  LinearProgressIndicator(value: progress.value / 10),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                      itemCount: zPositions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          dense: true,
+                          title: Text("Palpage ${index + 1}"),
+                          subtitle: Text(
+                            "Z = ${zPositions[index].toStringAsFixed(5)} mm   |   Δ = ${differences[index].toStringAsFixed(5)} mm",
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Fermer"),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  try {
+    // Positionnement initial
+    await API_Manager().sendGcodeCommand("G53 G0 Z187");
+    await API_Manager().sendGcodeCommand(
+        "G53 G0 X${global.MyMachineN02Config.Palpeur?.PosX ?? 0} Y${global.MyMachineN02Config.Palpeur?.PosY ?? 0}");
+    await API_Manager().sendGcodeCommand("M558 K0 F800"); // palpage rapide
+    await API_Manager().sendGcodeCommand("G38.2 Z-200");
+    await API_Manager().sendGcodeCommand("G91\nG0 Z7\nG90");
+    await API_Manager().waitUntilMachineIsStill(stableDuration: Duration(seconds: 2));
+
+    // Premier relevé
+    double previous = await getCurrentZ() ?? 0;
+
+
+    // Boucle de palpage
+    for (int i = 0; i < 10; i++) {
+      await API_Manager().sendGcodeCommand("M558 K0 F50"); // palpage lent
+      await API_Manager().sendGcodeCommand("G38.2 Z-200");
+      await API_Manager().sendGcodeCommand("G91\nG0 Z7\nG90");
+      await API_Manager().sendGcodeCommand("M400");
+      await API_Manager().waitUntilMachineIsStill(stableDuration: Duration(seconds: 2));
+
+      double currentZ = await getCurrentZ() ?? previous;
+      double diff = (currentZ - previous).abs();
+      previous = currentZ;
+
+      localSetState(() {
+        zPositions.add(currentZ);
+        differences.add(diff);
+        progress.value++;
+      });
+
+      await Future.delayed(Duration(milliseconds: 300));
+    }
+  } catch (e) {
+    Navigator.of(context).pop(); // Ferme le dialogue si erreur
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Erreur lors du test : $e")),
+    );
+  }
+}
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -254,6 +363,7 @@ class _ResponsiveImageGridState extends State<ResponsiveImageGrid> {
                       );
                       bool MachineSuccessToBeStable = false;
                       try {
+                        await API_Manager().sendGcodeCommand("M558 K0 F100");
                         await API_Manager().sendGcodeCommand("G38.2 Z-200 F100");
                         MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
                           stableDuration: Duration(seconds: 3),
@@ -261,7 +371,7 @@ class _ResponsiveImageGridState extends State<ResponsiveImageGrid> {
                         );
                         if (MachineSuccessToBeStable) await API_Manager().sendGcodeCommand("G10 L20 P1 Z${global.MyMachineN02Config.Palpeur?.Height ?? 33}");
                         if (MachineSuccessToBeStable) await API_Manager().sendGcodeCommand("G91 \n G54 \n G91 \n G1 Z5 F3700 \n G90");
-                        if (MachineSuccessToBeStable) await API_Manager().waitUntilMachineIsStill(maxWait: Duration(seconds: 30));
+                        if (MachineSuccessToBeStable) await API_Manager().waitUntilMachineIsStill(stableDuration: Duration(seconds: 2),maxWait: Duration(seconds: 30));
                       } catch (e) {
                         print("Erreur pendant le palpage : \$e");
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -284,40 +394,7 @@ class _ResponsiveImageGridState extends State<ResponsiveImageGrid> {
                   child: NeumorphicButton(
                     style: const NeumorphicStyle(color: Color(0xFFF0F0F3)),
                     child: const Center(child: Text("Répéta.")),
-                    onPressed: () async {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => AlertDialog(
-                          title: Text('Test de répétabilité'),
-                          content: Row(
-                            children: [
-                              CircularProgressIndicator(),
-                              SizedBox(width: 16),
-                              Expanded(child: Text('Durée estimée : 2 minutes')),
-                            ],
-                          ),
-                        ),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Démarrage du fichier repet.g.'),
-                            backgroundColor: Color.fromARGB(255, 34, 34, 34),
-                          ),
-                        );
-                      await API_Manager().sendGcodeCommand('M98 P"repet.g"');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('On attend que la machine soit immobile pendant 5 secondes'),
-                            backgroundColor: Color.fromARGB(255, 34, 34, 34),
-                          ),
-                        );
-                      await API_Manager().waitUntilMachineIsStill(
-                        stableDuration: Duration(seconds: 5),
-                        maxWait: Duration(minutes: 2),
-                      );
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: () => testRepetabilitePalpeur(context),
                   ),
                 ),
               ),

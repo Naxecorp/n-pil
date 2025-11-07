@@ -345,7 +345,7 @@ class AdminScreenState extends State<AdminScreen>
                             label: const FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
-                                "Diagnostique X",
+                                "Diag backlash",
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
@@ -362,41 +362,7 @@ class AdminScreenState extends State<AdminScreen>
                             onPressed: () {
                               if (global.AdminLogged) {
                                 API_Manager()
-                                    .sendGcodeCommand('M98 P"diagX.g"');
-                              } else
-                                null;
-                            },
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 5,
-                        child: Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton.icon(
-                            label: const FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                "Diagnostique Y",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            icon: const Icon(
-                              Icons.bug_report_outlined,
-                              color: Colors.white,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2B879B),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                            ),
-                            onPressed: () {
-                              if (global.AdminLogged) {
-                                API_Manager()
-                                    .sendGcodeCommand('M98 P"diagY.g"');
+                                    .sendGcodeCommand('M98 P"baclash_test.g"');
                               } else
                                 null;
                             },
@@ -467,12 +433,75 @@ class AdminScreenState extends State<AdminScreen>
                               ),
                             ),
                             onPressed: () async {
-                              //API_Manager().getUpdatedFiles("220216", 102);
                               await API_Manager().synchronizeFilesToMachine(
                                   context: context,
                                   serial: global.MyMachineN02Config.Serie ??
                                       "190222");
                               //await API_Manager().downloadFileFromServer("220216","config.g");
+                            },
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 5,
+                        child: Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: ElevatedButton.icon(
+                            label: const FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "Start log",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.info,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 43, 155, 112),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            onPressed: () async {
+                              await API_Manager().sendGcodeCommand("M929 S3");
+                              await API_Manager().sendGcodeCommand("M929");
+                              API_Manager().sendrr_reply();
+                            },
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 5,
+                        child: Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: ElevatedButton.icon(
+                            label: const FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "Stop log",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.offline_bolt,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 189, 145, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            onPressed: () async {
+                              await API_Manager().sendGcodeCommand("M929 S0");
+                              await API_Manager().sendGcodeCommand("M929");
+                              API_Manager().sendrr_reply();
                             },
                           ),
                         ),
@@ -707,7 +736,6 @@ class AdminScreenState extends State<AdminScreen>
                   flex: 7,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
-                    //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
                         onPressed: () {
@@ -739,10 +767,6 @@ class AdminScreenState extends State<AdminScreen>
                             setState(() async {
                               global.AdminLogged = false;
                               global.Title = global.DefaultTitle;
-                              if (global.MyMachineN02Config.HasLedOnEnclosure ==
-                                  1)
-                                await API_Manager()
-                                    .sendGcodeCommand('M98 P"caissoncrea.g"');
                               Navigator.pushNamed(context, '/admin');
                             });
                           } else
@@ -881,8 +905,6 @@ class AdminScreenState extends State<AdminScreen>
                         // Boutton qui execute les fichiers macro GCode
                         onPressed: () async {
                           if (global.AdminLogged) {
-                            await API_Manager().sendGcodeCommand(
-                                "M905 P${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} S${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}");
                             API_Manager()
                                 .sendGcodeCommand(
                                     'M98 P"${global.ListofSysFile?.elementAt(global.selectedFileSysIndex)?.name}"')
