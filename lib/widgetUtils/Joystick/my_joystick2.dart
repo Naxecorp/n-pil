@@ -79,10 +79,15 @@ class _JoystickState2 extends State<Joystick2> {
                   //padding: const EdgeInsets.all(12.0),
                   child: FittedBox(
                     fit: BoxFit.contain,
-                    child: Icon(
-                      Icons.arrow_upward_rounded,
-                      size: (widget.size)! / 1.5,
-                      color: widget.iconColor,
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.arrow_upward_rounded,
+                          size: (widget.size)! / 1.9,
+                          color: widget.iconColor,
+                        ),
+                        Text("Z+",style: TextStyle(fontWeight: FontWeight.bold),)
+                      ],
                     ),
                   ),
                 ),
@@ -100,10 +105,15 @@ class _JoystickState2 extends State<Joystick2> {
                   //padding: const EdgeInsets.all(12.0),
                   child: FittedBox(
                     fit: BoxFit.contain,
-                    child: Icon(
-                      Icons.arrow_downward_rounded,
-                      size: (widget.size)! / 1.5,
-                      color: widget.iconColor,
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.arrow_downward_rounded,
+                          size: (widget.size)! / 1.9,
+                          color: widget.iconColor,
+                        ),
+                        Text("Z-",style: TextStyle(fontWeight: FontWeight.bold),)
+                      ],
                     ),
                   ),
                 ),

@@ -80,7 +80,7 @@ class DashboardScreenState extends State<DashboardScreen> {
       setState(() {});
     });
 
-    
+    if(global.machineObjectModel.result?.tools?[0].state == "active" && global.MyMachineN02Config.HasACT ==1)_onFraiseMustbeSelected();
 
     
   }
@@ -152,6 +152,33 @@ void didChangeDependencies() {
         
       }
     });
+  }
+
+  void _onFraiseMustbeSelected() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Choisissez l'outil ACTUELLEMENT en broche"),
+          content: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(5, (index) {
+              return Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    API_Manager().sendGcodeCommand("T${index + 1} P0");
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("T${index + 1}"),
+                ),
+              );
+            }),
+          ),
+        );
+      },
+    );
   }
 
   // Fonction de redemarrage lors de l'emergency stop
@@ -230,6 +257,8 @@ void didChangeDependencies() {
       );
     });
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -344,6 +373,18 @@ void didChangeDependencies() {
                         "Aquiter AU",
                         style: TextStyle(color: Colors.white),
                       ),
+                    ),
+                    SizedBox(width: 15,),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      child: GestureDetector(onTap: () {
+                        global.AdminLogged = !global.AdminLogged;
+                        setState(() {
+                          
+                        });
+                      },
+                        child: Container(color: global.AdminLogged==true ? Color(0x0020917F):Color(0x0020917F))),
                     ),
                     SizedBox(width: 15,),
                     global.MyMachineN02Config.HasFanOnEnclosure == 1 ? Switch(value: global.isModeDegrade, onChanged: (value){

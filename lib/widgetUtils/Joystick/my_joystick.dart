@@ -64,10 +64,15 @@ class _JoystickState extends State<Joystick> {
               //padding: const EdgeInsets.all(12.0),
               child: FittedBox(
                 fit: BoxFit.contain,
-                child: Icon(
-                  Icons.arrow_drop_up_rounded,
-                  size: (widget.size)! / 1.5,
-                  color: widget.iconColor,
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.arrow_drop_up_rounded,
+                      size: (widget.size)! / 2.5,
+                      color: widget.iconColor,
+                    ),
+                    Text("Y+",style: TextStyle(fontWeight: FontWeight.bold),)
+                  ],
                 ),
               ),
             ),
@@ -90,10 +95,15 @@ class _JoystickState extends State<Joystick> {
                     //padding: const EdgeInsets.all(12.0),
                     child: FittedBox(
                       fit: BoxFit.contain,
-                      child: Icon(
-                        Icons.arrow_left_rounded,
-                        size: (widget.size)! / 1.5,
-                        color: widget.iconColor,
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.arrow_left_rounded,
+                            size: (widget.size)! / 2.5,
+                            color: widget.iconColor,
+                          ),
+                          Text("X-",style: TextStyle(fontWeight: FontWeight.bold),)
+                        ],
                       ),
                     ),
                   ),
@@ -111,10 +121,15 @@ class _JoystickState extends State<Joystick> {
                     //padding: const EdgeInsets.all(12.0),
                     child: FittedBox(
                       fit: BoxFit.contain,
-                      child: Icon(
-                        Icons.arrow_right_rounded,
-                        size: (widget.size)! / 1.5,
-                        color: widget.iconColor,
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.arrow_right_rounded,
+                            size: (widget.size)! / 2.5,
+                            color: widget.iconColor,
+                          ),
+                          Text("X+",style: TextStyle(fontWeight: FontWeight.bold),)
+                        ],
                       ),
                     ),
                   ),
@@ -135,10 +150,15 @@ class _JoystickState extends State<Joystick> {
               //padding: const EdgeInsets.all(12.0),
               child: FittedBox(
                 fit: BoxFit.contain,
-                child: Icon(
-                  Icons.arrow_drop_down_rounded,
-                  size: (widget.size)! / 1.5,
-                  color: widget.iconColor,
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.arrow_drop_down_rounded,
+                      size: (widget.size)! / 2.5,
+                      color: widget.iconColor,
+                    ),
+                    Text("Y-",style: TextStyle(fontWeight: FontWeight.bold),)
+                  ],
                 ),
               ),
             ),

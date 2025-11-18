@@ -811,6 +811,7 @@ Future<bool> waitUntilMachineIsStill({
             overwrite: overwrite,
             serial: serial,
           );
+          
           successCount++;
         }
       } catch (e) {

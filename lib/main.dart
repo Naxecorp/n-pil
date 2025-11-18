@@ -15,6 +15,7 @@ import 'screen/set_pos.dart';
 import 'service/API/API_Manager.dart';
 import 'globals_var.dart' as global;
 import 'Loading_screen.dart';
+import 'Error_screen.dart';
 
 int pageToShow = 1;
 
@@ -72,7 +73,9 @@ void main() async {
   await Future.delayed(Duration(seconds: 1));
 
   String dateTime = await setDateTimeAndShowAnswer();
-  runApp(LoadingScreen(message: dateTime,));
+  if (dateTime.contains("Error"))runApp(const ErrorScreen(message: "Could not reach the machine.",));
+  else {
+runApp(LoadingScreen(message: dateTime,));
   await Future.delayed(Duration(seconds: 3));
 
   await API_Manager().downLoadNwcSettings().then((value)  {
@@ -151,6 +154,8 @@ void main() async {
   await Future.delayed(Duration(seconds: 1));
   
   runApp(const MyApp());
+  }
+  
 }
 
 class MyApp extends StatelessWidget {

@@ -767,6 +767,7 @@ class AdminScreenState extends State<AdminScreen>
                             setState(() async {
                               global.AdminLogged = false;
                               global.Title = global.DefaultTitle;
+                              await API_Manager().sendGcodeCommand('M98 P"caissoncrea.g"'); // reinitialiser les affectations du capteur de porte. 
                               Navigator.pushNamed(context, '/admin');
                             });
                           } else
@@ -783,6 +784,7 @@ class AdminScreenState extends State<AdminScreen>
                           style: TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
+                      
                       ),
                       const SizedBox(
                         width: 10,
