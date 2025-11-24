@@ -293,11 +293,13 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                           0) >
                       0) {
                     API_Manager().sendGcodeCommand("M42 P2 S0").then((value) {
+                      API_Manager().sendGcodeCommand("M42 P1 S1"); // Souffler
                       setState(() {});
                       Navigator.of(context).pop();
                     });
                   } else {
-                    API_Manager().sendGcodeCommand("M42 P2 S1").then((value) {
+                    API_Manager().sendGcodeCommand("M42 P1 S0").then((value) {// stop Souffler
+                      API_Manager().sendGcodeCommand("M42 P2 S1"); //  puis piston clamping
                       setState(() {});
                       Navigator.of(context).pop();
                     });

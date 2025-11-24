@@ -378,8 +378,19 @@ void didChangeDependencies() {
                     Container(
                       width: 30,
                       height: 30,
-                      child: GestureDetector(onTap: () {
+                      child: GestureDetector(onTap: () async {
                         global.AdminLogged = !global.AdminLogged;
+                        if(global.AdminLogged==false) {
+                          API_Manager().sendGcodeCommand('M98 P"caissoncrea.g"');// reinitialiser les affectations du capteur de porte.
+                          global.Title = "$version";
+                         } 
+                        else {
+                          global.Title = "ADMIN MODE | $version";
+                              await API_Manager().sendGcodeCommand(
+                                  "M581 T1 P-1"); // on desactive toutes les pauses
+                              await API_Manager()
+                                  .sendGcodeCommand('M98 P"alarmdriver.g"'); //Mais on garde celle des erreurs Driver
+                        }
                         setState(() {
                           
                         });

@@ -487,6 +487,7 @@ class OriginScreenState extends State<OriginScreen> {
                         },
                       ),
                     ),
+                    
                     Flexible(
                       flex: 4,
                       child: Container(
@@ -500,7 +501,7 @@ class OriginScreenState extends State<OriginScreen> {
             Flexible(
               flex: 1,
               child: Window(
-                title1: "Changement",
+                title1: "Tableau",
                 title2: " outils",
                 child: Column(
                   children: [
@@ -511,99 +512,126 @@ class OriginScreenState extends State<OriginScreen> {
                         height: double.infinity,
                       ),
                     ),
-                    Flexible(
-                      flex: 5,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              RichText(
-                                text: const TextSpan(
-                                  text: "Outil actuel : ",
-                                  style: TextStyle(color: Colors.black),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: "1",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10.0),
-                          const Divider(
-                            height: 20,
-                            thickness: 0.8,
-                            color: Colors.grey,
-                            indent: 20,
-                            endIndent: 20,
-                          ),
-                          const SizedBox(height: 10.0),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: DataTable(
-                                columns: const [
-                                  DataColumn(label: Text('N°')),
-                                  DataColumn(label: Text('Nom de l\'outil')),
-                                  DataColumn(label: Text('Longueur')),
-                                  DataColumn(label: Text('Diamètre')),
-                                  DataColumn(label: Text('Actions')),
-                                ],
-                                rows: List<DataRow>.generate(
-                                    global.magasinOutil.outil?.length ?? 0,
-                                    (index) {
-                                  return DataRow(
-                                    cells: [
-                                      DataCell(Text("${index + 1}")),
-                                      DataCell(Text(global.magasinOutil
-                                              .outil?[index].name ??
-                                          "0")),
-                                      DataCell(Text(
-                                          '${global.magasinOutil.outil?[index].diametre ?? 0} mm')),
-                                      DataCell(Text(
-                                          '${global.magasinOutil.outil?[index].hauteur ?? 0} mm')),
-                                      DataCell(
-                                        Row(
-                                          children: [
-                                            IconButton(
-                                              onPressed: () {
-                                                API_Manager().sendGcodeCommand(
-                                                    "T${index + 1}");
-                                              },
-                                              icon: const Icon(
-                                                  Icons.swap_vert_rounded),
-                                              iconSize: 24.0,
-                                              color: Colors.blue,
-                                            ),
-                                            const Padding(
-                                              padding: EdgeInsets.all(2.0),
-                                            ),
-                                            IconButton(
-                                              onPressed: () {},
-                                              icon: const Icon(Icons.edit),
-                                              iconSize: 24.0,
-                                              color: Colors.orange,
-                                            ),
-                                            const Padding(
-                                              padding: EdgeInsets.all(2.0),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                    // Flexible(
+                    //   flex: 5,
+                    //   child: Column(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       Row(
+                    //         mainAxisAlignment: MainAxisAlignment.center,
+                    //         children: [
+                    //           RichText(
+                    //             text: const TextSpan(
+                    //               text: "Outil actuel : ",
+                    //               style: TextStyle(color: Colors.black),
+                    //               children: <TextSpan>[
+                    //                 TextSpan(
+                    //                   text: "1",
+                    //                   style: TextStyle(
+                    //                       fontWeight: FontWeight.bold),
+                    //                 ),
+                    //               ],
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       const SizedBox(height: 10.0),
+                    //       const Divider(
+                    //         height: 20,
+                    //         thickness: 0.8,
+                    //         color: Colors.grey,
+                    //         indent: 20,
+                    //         endIndent: 20,
+                    //       ),
+                    //       const SizedBox(height: 10.0),
+                    //       Expanded(
+                    //         child: SingleChildScrollView(
+                    //           scrollDirection: Axis.horizontal,
+                    //           child: DataTable(
+                    //             columns: const [
+                    //               DataColumn(label: Text('N°')),
+                    //               DataColumn(label: Text('Nom de l\'outil')),
+                    //               DataColumn(label: Text('Longueur')),
+                    //               DataColumn(label: Text('Diamètre')),
+                    //               DataColumn(label: Text('Actions')),
+                    //             ],
+                    //             rows: List<DataRow>.generate(
+                    //                 global.magasinOutil.outil?.length ?? 0,
+                    //                 (index) {
+                    //               return DataRow(
+                    //                 cells: [
+                    //                   DataCell(Text("${index + 1}")),
+                    //                   DataCell(Text(global.magasinOutil
+                    //                           .outil?[index].name ??
+                    //                       "0")),
+                    //                   DataCell(Text(
+                    //                       '${global.magasinOutil.outil?[index].diametre ?? 0} mm')),
+                    //                   DataCell(Text(
+                    //                       '${global.magasinOutil.outil?[index].hauteur ?? 0} mm')),
+                    //                   DataCell(
+                    //                     Row(
+                    //                       children: [
+                    //                         IconButton(
+                    //                           onPressed: () {
+                    //                             API_Manager().sendGcodeCommand(
+                    //                                 "T${index + 1}");
+                    //                           },
+                    //                           icon: const Icon(
+                    //                               Icons.swap_vert_rounded),
+                    //                           iconSize: 24.0,
+                    //                           color: Colors.blue,
+                    //                         ),
+                    //                         const Padding(
+                    //                           padding: EdgeInsets.all(2.0),
+                    //                         ),
+                    //                         IconButton(
+                    //                           onPressed: () {},
+                    //                           icon: const Icon(Icons.edit),
+                    //                           iconSize: 24.0,
+                    //                           color: Colors.orange,
+                    //                         ),
+                    //                         const Padding(
+                    //                           padding: EdgeInsets.all(2.0),
+                    //                         ),
+                    //                       ],
+                    //                     ),
+                    //                   ),
+                    //                 ],
+                    //               );
+                    //             }),
+                    //           ),
+                    //         ),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
+                    Flexible(child: Container(child :Center(child: Text("Tableau d'outil à venir"),)),flex: 5,),
+                    SizedBox(height: 40,),
+                    Align(alignment: AlignmentGeometry.centerLeft, child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text("Aller chercher :",style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20 ),),
+                    )),
+                    SizedBox(height: 20,),
+                    Flexible(flex: 5,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                      NeumorphicButton(child: Text("T1",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                        API_Manager().sendGcodeCommand("T1");
+                      },),
+                      NeumorphicButton(child: Text("T2",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                        API_Manager().sendGcodeCommand("T2");
+                      },),
+                      NeumorphicButton(child: Text("T3",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                        API_Manager().sendGcodeCommand("T3");
+                      },),
+                      NeumorphicButton(child: Text("T4",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                        API_Manager().sendGcodeCommand("T4");
+                      },),
+                      NeumorphicButton(child: Text("T5",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                        API_Manager().sendGcodeCommand("T5");
+                      },),
+                    ],),),
                     Flexible(
                       flex: 4,
                       child: Container(

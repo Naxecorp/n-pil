@@ -217,12 +217,32 @@ void testRepetabilitePalpeur(BuildContext context) async {
                           ),
                         ),
                       );
-                      await API_Manager().sendGcodeCommand('M98 P"palper1.g"');
-                      await API_Manager().waitUntilMachineIsStill(
-                        stableDuration: Duration(seconds: 3),
-                        maxWait: Duration(seconds: 60),
-                      );
+                      if(global.machineObjectModel.result?.sensors?.gpIn?[1]?.value==1) {// if clamped with tool 
+                        await API_Manager().sendGcodeCommand('M98 P"palper1.g"');
+                        await API_Manager().waitUntilMachineIsStill(
+                          stableDuration: Duration(seconds: 3),
+                          maxWait: Duration(seconds: 60),
+                        );
+                      }
+                      else {
+                        Navigator.of(context).pop();
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => const AlertDialog(
+                            title: Text('Aucun outil'),
+                            content: Row(
+                              children: [
+                                Text('vous devez metre un outil avant de palper'),
+                              ],
+                            ),
+                          ),
+                        );
+                      await Future.delayed(Duration(seconds: 2));
                       Navigator.of(context).pop();
+                      }
+                      
+                      
                     },
                     child: const Icon(Icons.looks_one_outlined, color: Color(0xFF707585)),
                   ),

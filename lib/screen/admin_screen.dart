@@ -94,7 +94,7 @@ class AdminScreenState extends State<AdminScreen>
                               await API_Manager().sendGcodeCommand(
                                   "M581 T1 P-1"); // on desactive toutes les pauses
                               await API_Manager()
-                                  .sendGcodeCommand('M98 P"alarmdriver.g"');
+                                  .sendGcodeCommand('M98 P"alarmdriver.g"'); //Mais on garde celle des erreurs Driver
                               Navigator.pop(context, '/admin');
                             }
                           },
