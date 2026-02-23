@@ -19,9 +19,9 @@ jobs:
 
       - name: Push release to public repository
         env:
-          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_PAT }}
         run: |
-          git clone https://${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/Naxecorp/n-pil.git
+          git clone https://${{ secrets.PUBLIC_REPO_PAT }}@github.com/Naxecorp/n-pil.git
           cd n-pil
 
           # Configurer l'identité Git (nom et e-mail)
@@ -38,7 +38,7 @@ jobs:
 
       - name: Create release on public repository (with specific file)
         env:
-          GH_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.PUBLIC_REPO_PAT }}
         run: |
           # Créer la release et attacher uniquement le fichier N-pil.exe
           gh release create ${{ github.event.release.tag_name }} \
