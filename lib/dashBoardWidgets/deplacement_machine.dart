@@ -80,9 +80,9 @@ class _DeplacementMachine extends State<DeplacementMachine> {
 
   @override
   Widget build(BuildContext context) {
-
+    final gpOut = global.machineObjectModel.result?.state?.gpOut;
     final isDoorOpenSignal =
-      (global.machineObjectModel.result?.state?.gpOut?[2]?.pwm ?? 0) > 0;
+        ((gpOut != null && gpOut.length > 2) ? (gpOut[2]?.pwm ?? 0) : 0) > 0;
 
     return Container(
       color: const Color(0xFFF0F0F3),
