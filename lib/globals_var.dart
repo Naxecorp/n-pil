@@ -18,7 +18,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.8.54";
+String version = "Version 1.8.55";
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -110,6 +110,8 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
     HasHeatBed: 0,
     HasFanOnEnclosure: 0,
     HasLedOnEnclosure: 0,
+    HasLockOnEnclosure :0,
+    HasWebAcess :0,
     HasACT: 0,
     VitesseBroche: 24000,
     VitesseDefaut: 6400,
@@ -139,6 +141,8 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     HasHeatBed: 0,
     HasFanOnEnclosure: 0,
     HasLedOnEnclosure: 0,
+    HasLockOnEnclosure : 0,
+    HasWebAcess :0,
     HasACT: 0,
     VitesseBroche: 24000,
     VitesseDefaut: 6400,

@@ -22,6 +22,8 @@ class ParametreScreenState extends State<ParametreScreen> {
   bool _hasHeatbed = global.MyMachineN02Config.HasHeatBed == 1;
   bool _hasFanOnEnclosure = global.MyMachineN02Config.HasFanOnEnclosure == 1;
   bool _hasLedOnEnclosure = global.MyMachineN02Config.HasLedOnEnclosure == 1;
+  bool _hasLockOnEnclosure = global.MyMachineN02Config.HasLockOnEnclosure == 1;
+  bool _hasWebAcess = global.MyMachineN02Config.HasWebAcess == 1;
   bool _hasACT = global.MyMachineN02Config.HasACT == 1;
 
   // Fonction pour noter la date
@@ -624,6 +626,44 @@ class ParametreScreenState extends State<ParametreScreen> {
                               Row(
                                 children: [
                                   Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
+                                    width: 200,
+                                    child: Text(
+                                      'Verrou de porte',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Switch(
+                                      value: _hasLockOnEnclosure,
+                                      thumbIcon: thumbIcon,
+                                      activeColor: Color(0xFF20917F),
+                                      inactiveThumbColor:
+                                          Color.fromARGB(255, 15, 19, 18),
+                                      inactiveTrackColor:
+                                          Color.fromARGB(255, 237, 237, 237),
+                                      onChanged: ((value) {
+                                        setState(() {
+                                          _hasLockOnEnclosure = value;
+                                          if (_hasLockOnEnclosure)
+                                            global.MyMachineN02Config
+                                                .HasLockOnEnclosure = 1;
+                                          else
+                                            global.MyMachineN02Config
+                                                .HasLockOnEnclosure = 0;
+                                        });
+                                      }))
+                                ],
+                              ),
+                              
+                              Row(
+                                children: [
+                                  Container(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 10),
                                     margin: const EdgeInsets.only(right: 15.0),
@@ -897,6 +937,44 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       child: Text("Charger position actuelle"))
                                   : Container(),
                             ),
+                          Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    margin: const EdgeInsets.only(right: 15.0),
+                                    width: 200,
+                                    child: Text(
+                                      'Web access',
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  Switch(
+                                      value: _hasWebAcess,
+                                      thumbIcon: thumbIcon,
+                                      activeColor: Color(0xFF20917F),
+                                      inactiveThumbColor:
+                                          Color.fromARGB(255, 15, 19, 18),
+                                      inactiveTrackColor:
+                                          Color.fromARGB(255, 237, 237, 237),
+                                      onChanged: global.AdminLogged ?((value) {
+                                        setState(() {
+                                          _hasWebAcess = value;
+                                          if (_hasWebAcess)
+                                            global.MyMachineN02Config
+                                                .HasWebAcess = 1;
+                                          else
+                                            global.MyMachineN02Config
+                                                .HasWebAcess = 0;
+                                        });
+                                      }):null)
+                                ],
+                              ),
+                              
                           ],
                         ),
                       ),

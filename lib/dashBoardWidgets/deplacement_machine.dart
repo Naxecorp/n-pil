@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nweb/widgetUtils/ArretUrgence.dart';
 import '../../globals_var.dart' as global;
@@ -21,6 +23,34 @@ class _DeplacementMachine extends State<DeplacementMachine> {
   bool zCapteur = false;
   bool xCapteur = false;
   bool yCapteur = false;
+
+  static const int _doorSeconds = 5;
+  Timer? _doorTimer;
+  int _doorRemaining = 0; // 0 = pas de countdown
+
+  bool get _isDoorCountdown => _doorRemaining > 0;
+
+  void _startDoorCountdown() {
+    _doorTimer?.cancel();
+    setState(() => _doorRemaining = _doorSeconds);
+
+    _doorTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!mounted) return;
+      setState(() {
+        _doorRemaining--;
+        if (_doorRemaining <= 0) {
+          _doorRemaining = 0;
+          t.cancel();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _doorTimer?.cancel();
+    super.dispose();
+  }
 
   void setTemperaturePopUp(BuildContext context, String heaterToSet) {
     TextEditingController _controllerTempe = TextEditingController();
@@ -50,6 +80,10 @@ class _DeplacementMachine extends State<DeplacementMachine> {
 
   @override
   Widget build(BuildContext context) {
+
+    final isDoorOpenSignal =
+      (global.machineObjectModel.result?.state?.gpOut?[2]?.pwm ?? 0) > 0;
+
     return Container(
       color: const Color(0xFFF0F0F3),
       child: Column(
@@ -596,6 +630,88 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                     flex: 1,
                     child: ListView(
                       children: [
+                        global.MyMachineN02Config.HasLockOnEnclosure == 1
+                            ? Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: AspectRatio(
+                                  aspectRatio: 1,
+                                  child: NeumorphicButton(
+                                    style: const NeumorphicStyle(
+                                      color: Color(0xFFF0F0F3),
+                                    ),
+                                    onPressed: _isDoorCountdown ? null:(() async {
+                                      if(global.AdminLogged){
+                                        _startDoorCountdown();
+                                        await API_Manager()
+                                            .sendGcodeCommand('M42 P5 S1');
+                                            await API_Manager()
+                                            .sendGcodeCommand('M42 P5 S0.2');
+                                            await Future.delayed(Duration(seconds: 5));
+                                            await API_Manager()
+                                            .sendGcodeCommand('M42 P5 S1');
+                                            await API_Manager()
+                                            .sendGcodeCommand('M42 P5 S0s');
+                                            
+                                      }
+                                      else if((global.machineObjectModel.result?.spindles?[0].current??0) > 0) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text("La broche doit être éteinte pour ouvrir la porte"),
+                                            );
+                                          },
+                                        );
+                                      }
+                                      else if( await API_Manager().canUnlockDoorSafely() == true ){
+                                        await API_Manager()
+                                            .sendGcodeCommand('M98 P"opendoor.g"');
+                                            _startDoorCountdown();
+                                      }
+                                      
+                                      
+                                    }),
+                                    
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(_isDoorCountdown ? "Portes dévérouillées" : "Porte"),
+                                        SizedBox(
+                                          height: 34,
+                                          width: 34,
+                                          child: AnimatedSwitcher(
+                                            duration: const Duration(milliseconds: 200),
+                                            child: _isDoorCountdown
+                                                ? Stack(
+                                                    key: const ValueKey('loader'),
+                                                    alignment: Alignment.center,
+                                                    children: [
+                                                      CircularProgressIndicator(
+                                                        strokeWidth: 3,
+                                                        value: _doorRemaining / _doorSeconds, // 1 -> 0
+                                                        color: Colors.green,
+                                                      ),
+                                                      Text(
+                                                        '$_doorRemaining',
+                                                        style: const TextStyle(fontSize: 12),
+                                                      ),
+                                                    ],
+                                                  )
+                                                : Icon(
+                                                    Icons.sensor_door_rounded,
+                                                    key: const ValueKey('icon'),
+                                                    color: isDoorOpenSignal ? Colors.green : Colors.black,
+                                                  ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                        
                         Padding(
                           padding: const EdgeInsets.all(5.0),
                           child: AspectRatio(
@@ -680,6 +796,7 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                             ),
                           ),
                         ),
+                        
                         global.MyMachineN02Config.HasFanOnEnclosure == 1
                             ? Padding(
                                 padding: const EdgeInsets.all(5.0),
@@ -728,22 +845,21 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                       color: Color(0xFFF0F0F3),
                                     ),
                                     onPressed: (() {
+                                      if (((global.machineObjectModel.result?.state?.gpOut?[4]?.pwm) ?? 0)>0){
+                                        API_Manager()
+                                          .sendGcodeCommand("M42 P4 S0");
+                                      }
+                                      else
                                       API_Manager()
                                           .sendGcodeCommand("M42 P4 S1");
                                     }),
-                                    child: GestureDetector(
-                                      onLongPress: () {
-                                        API_Manager()
-                                            .sendGcodeCommand("M42 P4 S0");
-                                      },
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text("Eclaira."),
-                                          Icon(Icons.light)
-                                        ],
-                                      ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text("Eclaira."),
+                                        Icon(Icons.light)
+                                      ],
                                     ),
                                   ),
                                 ),

@@ -616,21 +616,307 @@ class OriginScreenState extends State<OriginScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                      NeumorphicButton(child: Text("T1",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                      NeumorphicButton(child: Text("T1",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
                         API_Manager().sendGcodeCommand("T1");
+                        showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (context) => AlertDialog(
+                          content: Row(
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 20),
+                              Expanded(child: Text("Changement d'outil en cours")),
+                            ],
+                          ),
+                        ),
+                      );
+                      bool MachineSuccessToBeStable = false;
+                      try {
+                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
+                          stableDuration: Duration(seconds: 3),
+                          maxWait: Duration(minutes: 4),
+                        );
+                      } catch (e) {
+                        print("Erreur pendant le changement d'outil : \$e");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
+                        );
+                      } finally {
+                        Navigator.of(context).pop();
+                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                              ],
+                            ),
+                          ),
+                        );
+                      } 
+                      else {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
+                      );
+                      
                       },),
-                      NeumorphicButton(child: Text("T2",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                      NeumorphicButton(child: Text("T2",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
                         API_Manager().sendGcodeCommand("T2");
+                        showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (context) => AlertDialog(
+                          content: Row(
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 20),
+                              Expanded(child: Text("Changement d'outil en cours")),
+                            ],
+                          ),
+                        ),
+                      );
+                      bool MachineSuccessToBeStable = false;
+                      try {
+                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
+                          stableDuration: Duration(seconds: 3),
+                          maxWait: Duration(minutes: 4),
+                        );
+                      } catch (e) {
+                        print("Erreur pendant le changement d'outil : \$e");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
+                        );
+                      } finally {
+                        Navigator.of(context).pop();
+                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                              ],
+                            ),
+                          ),
+                        );
+                      } 
+                      else {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
+                      );
+                      
                       },),
-                      NeumorphicButton(child: Text("T3",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                      NeumorphicButton(child: Text("T3",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
                         API_Manager().sendGcodeCommand("T3");
+                        showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (context) => AlertDialog(
+                          content: Row(
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 20),
+                              Expanded(child: Text("Changement d'outil en cours")),
+                            ],
+                          ),
+                        ),
+                      );
+                      bool MachineSuccessToBeStable = false;
+                      try {
+                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
+                          stableDuration: Duration(seconds: 3),
+                          maxWait: Duration(minutes: 4),
+                        );
+                      } catch (e) {
+                        print("Erreur pendant le changement d'outil : \$e");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
+                        );
+                      } finally {
+                        Navigator.of(context).pop();
+                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                              ],
+                            ),
+                          ),
+                        );
+                      } 
+                      else {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
+                      );
+                      
                       },),
-                      NeumorphicButton(child: Text("T4",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                      NeumorphicButton(child: Text("T4",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
                         API_Manager().sendGcodeCommand("T4");
+                        showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (context) => AlertDialog(
+                          content: Row(
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 20),
+                              Expanded(child: Text("Changement d'outil en cours")),
+                            ],
+                          ),
+                        ),
+                      );
+                      bool MachineSuccessToBeStable = false;
+                      try {
+                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
+                          stableDuration: Duration(seconds: 3),
+                          maxWait: Duration(minutes: 4),
+                        );
+                      } catch (e) {
+                        print("Erreur pendant le changement d'outil : \$e");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
+                        );
+                      } finally {
+                        Navigator.of(context).pop();
+                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                              ],
+                            ),
+                          ),
+                        );
+                      } 
+                      else {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
+                      );
+                      
                       },),
-                      NeumorphicButton(child: Text("T5",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: () {
+                      NeumorphicButton(child: Text("T5",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
                         API_Manager().sendGcodeCommand("T5");
+                        showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (context) => AlertDialog(
+                          content: Row(
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 20),
+                              Expanded(child: Text("Changement d'outil en cours")),
+                            ],
+                          ),
+                        ),
+                      );
+                      bool MachineSuccessToBeStable = false;
+                      try {
+                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
+                          stableDuration: Duration(seconds: 3),
+                          maxWait: Duration(minutes: 4),
+                        );
+                      } catch (e) {
+                        print("Erreur pendant le changement d'outil : \$e");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
+                        );
+                      } finally {
+                        Navigator.of(context).pop();
+                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                              ],
+                            ),
+                          ),
+                        );
+                      } 
+                      else {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: const [
+                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
+                      );
+                      
                       },),
+                      
                     ],),),
                     Flexible(
                       flex: 4,

@@ -196,6 +196,82 @@ Future<bool> waitUntilMachineIsStill({
   return false; // Timeout
 }
 
+Future<bool> canUnlockDoorSafely({
+  Duration stableDuration = const Duration(milliseconds: 200),
+  Duration maxWait = const Duration(seconds: 5),
+  double positionTolerance = 0.01,
+}) async {
+  DateTime? stableSince;
+  final startTime = DateTime.now();
+  List<double>? lastPositions;
+
+  while (DateTime.now().difference(startTime) < maxWait) {
+    await Future.delayed(const Duration(milliseconds: 20));
+
+    final model = global.machineObjectModel.result;
+    if (model == null) continue;
+
+    // 1️⃣ Etat machine
+    final status = model.state?.status;
+    if (status != 'idle' && status != 'paused') {
+      stableSince = null;
+      continue;
+    }
+
+    // 2️⃣ Spindle OFF (sécurité)
+    final spindleCurrent = model.spindles?[0].current ?? 0;
+    if (spindleCurrent > 0) {
+      print(spindleCurrent);
+      stableSince = null;
+      continue;
+    }
+
+    // 3️⃣ Mouvement en cours (Duet)
+    final move = model.move;
+    if ( (move?.currentMove?.requestedSpeed ?? 0) > 0) {
+      print("requestedSpeed: ${move?.currentMove?.requestedSpeed}");
+      stableSince = null;
+      continue;
+    }
+
+    // 4️⃣ Vérification position axes
+    final axes = move?.axes;
+    if (axes == null || axes.length < 3) continue;
+
+    final currentPos = [
+      double.tryParse(axes[0].machinePosition?.toString() ?? '') ?? 0.0,
+      double.tryParse(axes[1].machinePosition?.toString() ?? '') ?? 0.0,
+      double.tryParse(axes[2].machinePosition?.toString() ?? '') ?? 0.0,
+    ];
+
+    if (lastPositions == null) {
+      lastPositions = currentPos;
+      stableSince = DateTime.now();
+      continue;
+    }
+
+    final hasMoved = List.generate(
+      3,
+      (i) => (currentPos[i] - lastPositions![i]).abs() > positionTolerance,
+    ).any((v) => v);
+
+    if (hasMoved) {
+      lastPositions = currentPos;
+      stableSince = DateTime.now();
+      continue;
+    }
+
+    // 5️⃣ Stable assez longtemps
+    if (stableSince != null &&
+        DateTime.now().difference(stableSince) >= stableDuration) {
+      return true; // ✅ Safe to unlock
+    }
+  }
+
+  return false; // ❌ Timeout ou condition non remplie
+}
+
+
 
 
 
@@ -667,22 +743,28 @@ Future<bool> waitUntilMachineIsStill({
       "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
       "Connection": "keep-alive",
     };
-
+    if (global.MyMachineN02Config.HasWebAcess==1){
     var uri = Uri.parse(
-        'http://naxe.fr/naxen02/post.php?serie=${serie}&action=${action}');
-    try {
-      var response = await http
-          .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 10));
+            'http://naxe.fr/naxen02/post.php?serie=${serie}&action=${action}');
+        try {
+          var response = await http
+              .get(uri, headers: requestHeaders)
+              .timeout(Duration(seconds: 10));
 
-      if (response.statusCode == 200) {
-        return 'ok';
-      } else {
-        return 'nok';
-      }
-    } catch (e) {
-      return 'nok';
+          if (response.statusCode == 200) {
+            return 'ok';
+          } else {
+            return 'nok';
+          }
+        } catch (e) {
+          return 'nok';
+        }
     }
+    else {
+      return 'no web access';
+    }
+      
+    
   }
 
   Future<String> sendGcodeToServer({
@@ -695,8 +777,8 @@ Future<bool> waitUntilMachineIsStill({
     final baseUrl = 'https://naxe.fr/naxen02/reception.php';
 
     // Joindre les caractères en une seule chaîne
-
-    final uri = Uri.parse(
+if(global.MyMachineN02Config.HasWebAcess==1){
+final uri = Uri.parse(
         '$baseUrl?filename=$filename&overwrite=${overwrite.toString()}&serial=$serial');
 
     try {
@@ -728,6 +810,11 @@ Future<bool> waitUntilMachineIsStill({
       print("⚠️ Erreur lors de l’envoi : $e");
       return "404";
     }
+}
+else {
+  return 'no web access';
+}
+    
   }
 
   Future<void> showUploadProgressDialog({
@@ -844,22 +931,29 @@ Future<bool> waitUntilMachineIsStill({
 
   Future<List<Map<String, dynamic>>> getUpdatedFiles(
       String serial, int since) async {
-    final uri = Uri.parse(
-        'https://naxe.fr/naxen02/get_updated_files.php?serial=$serial&since=$since');
+    if(global.MyMachineN02Config.HasWebAcess==1){
+      final uri = Uri.parse(
+          'https://naxe.fr/naxen02/get_updated_files.php?serial=$serial&since=$since');
 
-    final response = await http.get(uri, headers: {
-      'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
-    });
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      print(response.body);
-      final json = jsonDecode(response.body);
-      if (json['success'] == true) {
-        return List<Map<String, dynamic>>.from(json['files']);
+      final response = await http.get(uri, headers: {
+        'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
+      });
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        print(response.body);
+        final json = jsonDecode(response.body);
+        if (json['success'] == true) {
+          return List<Map<String, dynamic>>.from(json['files']);
+        }
       }
-    }
 
-    throw Exception('Erreur lors de la récupération des fichiers mis à jour');
+      throw Exception('Erreur lors de la récupération des fichiers mis à jour');
+    }
+    else {
+      throw Exception('no web access');
+    }
+    
+    
   }
 
   /// Fonction principale de synchronisation
@@ -1126,60 +1220,72 @@ Future<bool> waitUntilMachineIsStill({
 
   /// Appelle le serveur pour récupérer tous les fichiers du répertoire du serial
   Future<List<Map<String, dynamic>>> getAllFilesOnServer(String serial) async {
-    final uri =
-        Uri.parse('https://naxe.fr/naxen02/file_list.php?serial=$serial');
-    final response = await http.get(uri, headers: {
-      'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
-    });
+    if(global.MyMachineN02Config.HasWebAcess==1){
+        final uri =
+          Uri.parse('https://naxe.fr/naxen02/file_list.php?serial=$serial');
+      final response = await http.get(uri, headers: {
+        'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
+      });
 
-    if (response.statusCode == 200) {
-      print(response.body);
-      final json = jsonDecode(response.body);
-      if (json['success'] == true) {
-        return List<Map<String, dynamic>>.from(json['files']);
-      } else {
-        throw Exception('Erreur du serveur : ${json['message']}');
+      if (response.statusCode == 200) {
+        print(response.body);
+        final json = jsonDecode(response.body);
+        if (json['success'] == true) {
+          return List<Map<String, dynamic>>.from(json['files']);
+        } else {
+          throw Exception('Erreur du serveur : ${json['message']}');
+        }
       }
+      throw Exception('Erreur lors de la récupération des fichiers ${response.statusCode}');
     }
-
-    throw Exception('Erreur lors de la récupération des fichiers ${response.statusCode}');
+    throw Exception('no web access');
   }
 
   Future<String> sendLogFileToServer(
       String serial, String logContent, String filename) async {
-    final uri = Uri.parse('https://naxe.fr/naxen02/upload_log.php');
-    final response = await http.post(
-      uri,
-      headers: {
-        'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'serial': serial,
-        'filename': filename,
-        'content': logContent,
-      }),
-    );
+    if(global.MyMachineN02Config.HasWebAcess==1){
+        final uri = Uri.parse('https://naxe.fr/naxen02/upload_log.php');
+      final response = await http.post(
+        uri,
+        headers: {
+          'Authorization': 'Bearer 9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'serial': serial,
+          'filename': filename,
+          'content': logContent,
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      return 'ok';
-    } else {
-      return 'nok';
+      if (response.statusCode == 200) {
+        return 'ok';
+      } else {
+        return 'nok';
+      }
+      
     }
+    return 'no web access';
   }
 
   /// Télécharger un fichier individuel
   Future<String> downloadFileFromServer(String serial, String filename) async {
-    final uri = Uri.parse(
-        'https://naxe.fr/naxen02/get_file.php?serial=$serial&filename=${Uri.encodeComponent(filename)}');
-    final response = await http.get(uri, headers: {
-      'Authorization': 'Bearer $_token'
-    }).timeout(Duration(seconds: 3));
+    if (global.MyMachineN02Config.HasWebAcess==1){
+        final uri = Uri.parse(
+          'https://naxe.fr/naxen02/get_file.php?serial=$serial&filename=${Uri.encodeComponent(filename)}');
+      final response = await http.get(uri, headers: {
+        'Authorization': 'Bearer $_token'
+      }).timeout(Duration(seconds: 3));
 
-    if (response.statusCode == 200) {
-      return response.body;
-    } else {
-      throw Exception('Erreur téléchargement $filename');
+      if (response.statusCode == 200) {
+        return response.body;
+      } else {
+        throw Exception('Erreur téléchargement $filename');
+      }
     }
+    else{
+      return 'no web acess';
+    } 
+    
   }
 }

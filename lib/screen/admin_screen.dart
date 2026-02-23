@@ -959,7 +959,7 @@ class AdminScreenState extends State<AdminScreen>
                             } else if (value.value == 0) {
                               color = Colors.blue;
                             } else {
-                              color = Colors.grey;
+                              color = Colors.purple;
                             }
 
                             return Container(

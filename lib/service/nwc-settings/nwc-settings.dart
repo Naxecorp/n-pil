@@ -27,6 +27,8 @@ class MachineN02Config {
   int? HasHeatBed;
   int? HasFanOnEnclosure;
   int? HasLedOnEnclosure;
+  int? HasLockOnEnclosure;
+  int? HasWebAcess;
   int? HasACT;
   int? VitesseBroche;
   int? VitesseDefaut;
@@ -47,6 +49,8 @@ class MachineN02Config {
       HasHeatBed,
       HasFanOnEnclosure,
       HasLedOnEnclosure,
+      HasLockOnEnclosure,
+      HasWebAcess,
       HasACT,
       VitesseBroche,
       VitesseDefaut,
@@ -72,6 +76,8 @@ class MachineN02Config {
       this.HasHeatBed,
       this.HasFanOnEnclosure,
       this.HasLedOnEnclosure,
+      this.HasLockOnEnclosure,
+      this.HasWebAcess,
       this.HasACT,
       this.VitesseBroche,
       this.VitesseDefaut,
@@ -100,6 +106,8 @@ class MachineN02Config {
         HasHeatBed: json["HasHeatBed"],
         HasFanOnEnclosure: json["HasFanOnEnclosure"],
         HasLedOnEnclosure: json["HasLedOnEnclosure"],
+        HasLockOnEnclosure: json["HasLockOnEnclosure"],
+        HasWebAcess: json["HasWebAcess"],
         HasACT: json["HasACT"],
         VitesseBroche: json["VitesseBroche"],
         VitesseDefaut: json["VitesseDefaut"],
@@ -134,6 +142,8 @@ class MachineN02Config {
         "HasHeatBed": HasHeatBed,
         "HasFanOnEnclosure": HasFanOnEnclosure,
         "HasLedOnEnclosure": HasLedOnEnclosure,
+        "HasLockOnEnclosure": HasLockOnEnclosure,
+        "HasWebAcess": HasWebAcess,
         "HasACT": HasACT,
         "VitesseBroche": VitesseBroche,
         "VitesseDefaut": VitesseDefaut,

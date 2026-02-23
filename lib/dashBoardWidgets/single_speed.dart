@@ -234,7 +234,7 @@ class SpindleSpeedState extends State<SpindleSpeed> {
           depth: depthCondition ? -5 : 5,
           color: const Color(0xFFF0F0F3),
         ),
-        onPressed: onPressed,
+        onPressed: global.machineObjectModel.result?.state?.status == "busy" ? null:onPressed,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -292,16 +292,18 @@ class SpindleSpeedState extends State<SpindleSpeed> {
                               .pwm ??
                           0) >
                       0) {
-                    API_Manager().sendGcodeCommand("M42 P2 S0").then((value) {
-                      API_Manager().sendGcodeCommand("M42 P1 S1"); // Souffler
+                    API_Manager().sendGcodeCommand("M42 P1 S0").then((value) async { // stop souffler
+                      await API_Manager().sendGcodeCommand("M42 P2 S0"); // fermer le piston
                       setState(() {});
                       Navigator.of(context).pop();
                     });
                   } else {
-                    API_Manager().sendGcodeCommand("M42 P1 S0").then((value) {// stop Souffler
-                      API_Manager().sendGcodeCommand("M42 P2 S1"); //  puis piston clamping
-                      setState(() {});
+                    API_Manager().sendGcodeCommand("M42 P2 S1").then((value) async { // ouvrir le piston
+                      await API_Manager().sendGcodeCommand("M42 P1 S1"); //  souffler
                       Navigator.of(context).pop();
+                      await Future.delayed(Duration(seconds: 2));
+                      await API_Manager().sendGcodeCommand("M42 P1 S0");
+                      setState(() {});
                     });
                   }
                 }

@@ -160,21 +160,29 @@ void didChangeDependencies() {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Choisissez l'outil ACTUELLEMENT en broche"),
-          content: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(5, (index) {
-              return Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    API_Manager().sendGcodeCommand("T${index + 1} P0");
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("T${index + 1}"),
-                ),
-              );
-            }),
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [ 
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: 
+                List.generate(5, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        API_Manager().sendGcodeCommand("T${index + 1} P0");
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("T${index + 1}"),
+                    ),
+                  );
+                }),
+              ),
+            SizedBox(height: 20,),
+            Center(child: ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Pas d'outil")))
+            ],
           ),
         );
       },
