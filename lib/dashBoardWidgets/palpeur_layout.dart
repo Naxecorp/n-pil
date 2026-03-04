@@ -424,7 +424,7 @@ void testRepetabilitePalpeur(BuildContext context) async {
                         await API_Manager().sendGcodeCommand("G38.2 Z-200 F100");
                         MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
                           stableDuration: Duration(seconds: 3),
-                          maxWait: Duration(seconds: 50),
+                          maxWait: Duration(seconds: 70),
                         );
                         if (MachineSuccessToBeStable) await API_Manager().sendGcodeCommand("G10 L20 P1 Z${global.MyMachineN02Config.Palpeur?.Height ?? 33}");
                         if (MachineSuccessToBeStable) await API_Manager().sendGcodeCommand("G91 \n G54 \n G91 \n G1 Z5 F3700 \n G90");
