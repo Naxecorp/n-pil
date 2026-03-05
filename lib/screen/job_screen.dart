@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nweb/dashBoardWidgets/laser_power.dart';
 import 'package:nweb/dashBoardWidgets/print_tool.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
+import 'package:path_provider/path_provider.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -17,6 +20,30 @@ import '../widgetUtils/ArretUrgence.dart';
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
+class _RemoteJobFileRef {
+  _RemoteJobFileRef({
+    required this.directory,
+    required this.fileName,
+  });
+
+  final String directory;
+  final String fileName;
+
+  String get cacheKey => '$directory/$fileName';
+}
+
+class _GcodeLineView {
+  _GcodeLineView({
+    required this.lineNumber,
+    required this.content,
+    required this.isCursorLine,
+  });
+
+  final int lineNumber;
+  final String content;
+  final bool isCursorLine;
+}
+
 class JobScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -25,16 +52,37 @@ class JobScreen extends StatefulWidget {
 }
 
 class JobScreenState extends State<JobScreen> {
+  static const int _contextLinesAroundCursor = 30;
+  static const double _gcodeLineHeight = 22.0;
+
   double sliderValue = 0;
   double sliderValueSpeedFactor = 0;
   double? SpindleSpeedBeforePause = 0;
+  StreamSubscription? _machineModelSubscription;
+  Timer? _gcodeRefreshTimer;
+  final ScrollController _gcodeScrollController = ScrollController();
+  bool _isManagingGcodeCache = false;
+  bool _isDownloadingGcode = false;
+  bool _isSimulationMode = false;
+  File? _cachedJobFile;
+  String? _cachedJobRemoteKey;
+  String _cachedJobLabel = "";
+  String _gcodeStatusMessage = "Aucun job actif.";
+  int _cachedFileLengthBytes = 0;
+  int _cursorLineIndex = -1;
+  int _lastRenderedCursorLine = -1;
+  int _simulatedCursorLine = _contextLinesAroundCursor;
+  int _simulationTicks = 0;
+  List<int> _lineStartOffsets = <int>[];
+  List<_GcodeLineView> _visibleGcodeLines = <_GcodeLineView>[];
 
 
   @override
   void initState() {
     pageToShow = 4;
     super.initState();
-    global.streamMachineObjectModel.listen((value) {
+    _machineModelSubscription = global.streamMachineObjectModel.listen((value) {
+      if (!mounted) return;
       setState(() {});
     });
     global.checkAndShowDialog(context);
@@ -49,6 +97,607 @@ class JobScreenState extends State<JobScreen> {
     sliderValueSpeedFactor =
         global.objectModelMove.result?.speedFactor?.toDouble() ?? 2;
     sliderValueSpeedFactor = sliderValueSpeedFactor / 2;
+
+    _gcodeRefreshTimer = Timer.periodic(const Duration(milliseconds: 600), (_) {
+      _handleGcodeCacheLifecycle();
+    });
+    Future.microtask(() => _handleGcodeCacheLifecycle(forceWindowRefresh: true));
+  }
+
+  @override
+  void dispose() {
+    _machineModelSubscription?.cancel();
+    _gcodeRefreshTimer?.cancel();
+    _gcodeScrollController.dispose();
+    _deleteCachedJobFile();
+    super.dispose();
+  }
+
+  Future<void> _handleGcodeCacheLifecycle({bool forceWindowRefresh = false}) async {
+    if (_isManagingGcodeCache || !mounted) return;
+    _isManagingGcodeCache = true;
+
+    try {
+      if (_isSimulationMode) {
+        _simulationTicks++;
+        if (_simulationTicks % 2 == 0 &&
+            _simulatedCursorLine < _lineStartOffsets.length - 1) {
+          _simulatedCursorLine++;
+        }
+        await _refreshVisibleGcodeWindow(force: true);
+        return;
+      }
+
+      final bool isJobActive = _isJobActive();
+
+      if (!isJobActive) {
+        await _clearCachedJobData();
+        return;
+      }
+
+      final bool cacheReady = await _ensureCachedFileReady();
+      if (!cacheReady) return;
+
+      await _refreshVisibleGcodeWindow(force: forceWindowRefresh);
+    } finally {
+      _isManagingGcodeCache = false;
+    }
+  }
+
+  bool _isJobActive() {
+    if (_isSimulationMode) return true;
+
+    final String status =
+        global.machineObjectModel.result?.state?.status?.toString() ?? "";
+    final int filePosition =
+        (global.machineObjectModel.result?.job?.filePosition ?? 0).toInt();
+
+    if (status == "processing" ||
+        status == "paused" ||
+        status == "pausing" ||
+        status == "resuming") {
+      return true;
+    }
+
+    return status != "idle" && filePosition > 0;
+  }
+
+  Future<void> _clearCachedJobData() async {
+    final bool hadCache = _cachedJobFile != null ||
+        _cachedJobRemoteKey != null ||
+        _visibleGcodeLines.isNotEmpty;
+
+    await _deleteCachedJobFile();
+
+    if (!mounted) return;
+    if (!hadCache && _gcodeStatusMessage == "Aucun job actif.") return;
+
+    setState(() {
+      _cachedJobFile = null;
+      _cachedJobRemoteKey = null;
+      _cachedJobLabel = "";
+      _cachedFileLengthBytes = 0;
+      _lineStartOffsets = <int>[];
+      _visibleGcodeLines = <_GcodeLineView>[];
+      _cursorLineIndex = -1;
+      _lastRenderedCursorLine = -1;
+      _simulatedCursorLine = _contextLinesAroundCursor;
+      _simulationTicks = 0;
+      _gcodeStatusMessage = "Aucun job actif.";
+    });
+  }
+
+  Future<void> _deleteCachedJobFile() async {
+    try {
+      final Directory tempDir = await getTemporaryDirectory();
+      final File tempFile = File('${tempDir.path}/job.g');
+      if (await tempFile.exists()) {
+        await tempFile.delete();
+      }
+    } catch (_) {}
+  }
+
+  Future<bool> _ensureCachedFileReady() async {
+    final _RemoteJobFileRef? fileRef = await _resolveRunningJobFileRef();
+    if (fileRef == null) {
+      _updateStatusMessage(
+          "Job actif mais nom de fichier indisponible pour le moment.");
+      return false;
+    }
+
+    if (_cachedJobRemoteKey == fileRef.cacheKey &&
+        _cachedJobFile != null &&
+        await _cachedJobFile!.exists() &&
+        _lineStartOffsets.isNotEmpty) {
+      return true;
+    }
+
+    if (_isDownloadingGcode) return false;
+    _isDownloadingGcode = true;
+
+    try {
+      _updateStatusMessage("Téléchargement du G-code en cours...");
+      final bool downloaded =
+          await API_Manager().dlFileToTempDir(fileRef.directory, fileRef.fileName);
+      if (!downloaded) {
+        _updateStatusMessage("Impossible de télécharger le G-code en cours.");
+        return false;
+      }
+
+      final Directory tempDir = await getTemporaryDirectory();
+      final File localFile = File('${tempDir.path}/job.g');
+      if (!await localFile.exists()) {
+        _updateStatusMessage("Le cache local du G-code est introuvable.");
+        return false;
+      }
+
+      await _buildLineOffsetIndex(localFile);
+      if (!mounted) return false;
+
+      setState(() {
+        _cachedJobFile = localFile;
+        _cachedJobRemoteKey = fileRef.cacheKey;
+        _cachedJobLabel = fileRef.fileName;
+        _lastRenderedCursorLine = -1;
+        _gcodeStatusMessage = "G-code chargé. Suivi en direct actif.";
+      });
+      return true;
+    } finally {
+      _isDownloadingGcode = false;
+    }
+  }
+
+  Future<_RemoteJobFileRef?> _resolveRunningJobFileRef() async {
+    String? rawPath = global.objectModelJob.result?.file?.fileName;
+
+    if (rawPath == null || rawPath.trim().isEmpty) {
+      try {
+        final job = await API_Manager().getMachineJobObjectModel();
+        global.objectModelJob = job;
+        rawPath = job.result?.file?.fileName;
+      } catch (_) {}
+    }
+
+    if ((rawPath == null || rawPath.trim().isEmpty) && global.progName.isNotEmpty) {
+      rawPath = 'gcodes/${global.progName}';
+    }
+
+    if (rawPath == null || rawPath.trim().isEmpty) {
+      return null;
+    }
+
+    String normalized = rawPath.trim().replaceAll("\\", "/");
+    normalized = normalized.replaceFirst(RegExp(r"^0:/"), "");
+    normalized = normalized.replaceFirst(RegExp(r"^/+"), "");
+    if (normalized.isEmpty) return null;
+
+    final List<String> parts = normalized
+        .split("/")
+        .where((String e) => e.trim().isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return null;
+
+    final String fileName = parts.removeLast();
+    final String directory = parts.isEmpty ? "gcodes" : parts.join("/");
+    return _RemoteJobFileRef(directory: directory, fileName: fileName);
+  }
+
+  Future<void> _buildLineOffsetIndex(File file) async {
+    final List<int> lineStarts = <int>[0];
+    int offset = 0;
+
+    await for (final List<int> chunk in file.openRead()) {
+      for (final int byte in chunk) {
+        offset++;
+        if (byte == 10) {
+          lineStarts.add(offset);
+        }
+      }
+    }
+
+    if (lineStarts.length > 1 && lineStarts.last == offset) {
+      lineStarts.removeLast();
+    }
+
+    _lineStartOffsets = lineStarts;
+    _cachedFileLengthBytes = offset;
+  }
+
+  Future<void> _refreshVisibleGcodeWindow({bool force = false}) async {
+    if (_cachedJobFile == null || _lineStartOffsets.isEmpty) return;
+
+    final int cursorByte = _currentCursorByte();
+    final int cursorLine = _lineIndexForBytePosition(cursorByte);
+    if (!force && cursorLine == _lastRenderedCursorLine) return;
+
+    final List<_GcodeLineView> lines = await _readLinesAroundCursor(cursorLine);
+    if (!mounted) return;
+
+    setState(() {
+      _cursorLineIndex = cursorLine;
+      _lastRenderedCursorLine = cursorLine;
+      _visibleGcodeLines = lines;
+      if (lines.isEmpty) {
+        _gcodeStatusMessage = "Aucune ligne à afficher.";
+      } else {
+        _gcodeStatusMessage =
+            "Lignes ${lines.first.lineNumber}-${lines.last.lineNumber} / ${_lineStartOffsets.length}";
+      }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _centerCursorLineInView();
+    });
+  }
+
+  int _currentCursorByte() {
+    if (_isSimulationMode && _lineStartOffsets.isNotEmpty) {
+      final int safeIndex =
+          _simulatedCursorLine.clamp(0, _lineStartOffsets.length - 1);
+      return _lineStartOffsets[safeIndex];
+    }
+
+    return (global.machineObjectModel.result?.job?.filePosition ?? 0).toInt();
+  }
+
+  void _centerCursorLineInView() {
+    if (!_gcodeScrollController.hasClients || _visibleGcodeLines.isEmpty) return;
+
+    final int cursorIndex =
+        _visibleGcodeLines.indexWhere((line) => line.isCursorLine);
+    if (cursorIndex < 0) return;
+
+    final ScrollPosition position = _gcodeScrollController.position;
+    final double rawOffset = (cursorIndex * _gcodeLineHeight) -
+        (position.viewportDimension / 2) +
+        (_gcodeLineHeight / 2);
+
+    final double targetOffset =
+        rawOffset.clamp(0.0, position.maxScrollExtent).toDouble();
+
+    if ((position.pixels - targetOffset).abs() > 1.0) {
+      _gcodeScrollController.jumpTo(targetOffset);
+    }
+  }
+
+  int _lineIndexForBytePosition(int bytePosition) {
+    if (_lineStartOffsets.isEmpty) return 0;
+    if (_cachedFileLengthBytes <= 0) return 0;
+
+    final int clampedByte = bytePosition.clamp(0, _cachedFileLengthBytes - 1);
+    int low = 0;
+    int high = _lineStartOffsets.length - 1;
+    int result = 0;
+
+    while (low <= high) {
+      final int mid = (low + high) >> 1;
+      if (_lineStartOffsets[mid] <= clampedByte) {
+        result = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    return result;
+  }
+
+  Future<List<_GcodeLineView>> _readLinesAroundCursor(int cursorLineIndex) async {
+    if (_cachedJobFile == null || _lineStartOffsets.isEmpty) return <_GcodeLineView>[];
+
+    final int totalLines = _lineStartOffsets.length;
+    final int safeCursor = cursorLineIndex.clamp(0, totalLines - 1);
+    final int startLine =
+        (safeCursor - _contextLinesAroundCursor).clamp(0, totalLines - 1);
+    final int endLine =
+        (safeCursor + _contextLinesAroundCursor).clamp(0, totalLines - 1);
+
+    final int startByte = _lineStartOffsets[startLine];
+    final int endByteExclusive = (endLine + 1 < totalLines)
+        ? _lineStartOffsets[endLine + 1]
+        : _cachedFileLengthBytes;
+
+    if (endByteExclusive <= startByte) return <_GcodeLineView>[];
+
+    final RandomAccessFile raf = await _cachedJobFile!.open();
+    try {
+      await raf.setPosition(startByte);
+      final List<int> bytes = await raf.read(endByteExclusive - startByte);
+      final String chunk = utf8.decode(bytes, allowMalformed: true);
+      final List<String> lines = const LineSplitter().convert(chunk);
+
+      final List<_GcodeLineView> result = <_GcodeLineView>[];
+      for (int i = 0; i < lines.length; i++) {
+        final int lineNumber = startLine + i + 1;
+        if (lineNumber > endLine + 1) break;
+        result.add(
+          _GcodeLineView(
+            lineNumber: lineNumber,
+            content: lines[i].replaceAll("\r", ""),
+            isCursorLine: (lineNumber - 1) == safeCursor,
+          ),
+        );
+      }
+      return result;
+    } finally {
+      await raf.close();
+    }
+  }
+
+  void _updateStatusMessage(String message) {
+    if (!mounted || _gcodeStatusMessage == message) return;
+    setState(() {
+      _gcodeStatusMessage = message;
+    });
+  }
+
+  Future<void> _toggleSimulationMode() async {
+    if (_isSimulationMode) {
+      await _stopSimulationMode();
+    } else {
+      await _startSimulationMode();
+    }
+  }
+
+  Future<void> _startSimulationMode() async {
+    if (_isDownloadingGcode) return;
+    _isDownloadingGcode = true;
+
+    try {
+      final File simulatedFile = await _createSimulationFile();
+      await _buildLineOffsetIndex(simulatedFile);
+      if (!mounted) return;
+
+      setState(() {
+        _isSimulationMode = true;
+        _simulatedCursorLine = _contextLinesAroundCursor;
+        _simulationTicks = 0;
+        _cachedJobFile = simulatedFile;
+        _cachedJobRemoteKey = "__simulation__/job.g";
+        _cachedJobLabel = "job.g (SIMU)";
+        _lastRenderedCursorLine = -1;
+        _gcodeStatusMessage = "Mode simulation actif.";
+      });
+
+      await _refreshVisibleGcodeWindow(force: true);
+    } catch (_) {
+      _updateStatusMessage("Impossible de lancer la simulation.");
+    } finally {
+      _isDownloadingGcode = false;
+    }
+  }
+
+  Future<void> _stopSimulationMode() async {
+    if (!mounted) return;
+    setState(() {
+      _isSimulationMode = false;
+    });
+    await _clearCachedJobData();
+  }
+
+  Future<File> _createSimulationFile() async {
+    final Directory tempDir = await getTemporaryDirectory();
+    final File file = File('${tempDir.path}/job.g');
+    final StringBuffer buffer = StringBuffer();
+
+    buffer.writeln("; SIMULATION - JOB EN COURS");
+    buffer.writeln("G90");
+    buffer.writeln("G21");
+    buffer.writeln("M3 S12000");
+    for (int i = 1; i <= 1500; i++) {
+      final double x = (i % 320).toDouble();
+      final double y = ((i * 2) % 420).toDouble();
+      final double z = (i % 15 == 0) ? -0.2 : -0.1;
+      buffer.writeln(
+          "N${i.toString().padLeft(5, '0')} G1 X${x.toStringAsFixed(3)} Y${y.toStringAsFixed(3)} Z${z.toStringAsFixed(3)} F2500");
+      if (i % 120 == 0) {
+        buffer.writeln(
+            "N${(i + 1).toString().padLeft(5, '0')} G4 P0.2 ; pause simulation");
+      }
+    }
+    buffer.writeln("M5");
+    buffer.writeln("M30");
+
+    await file.writeAsString(buffer.toString(), flush: true);
+    return file;
+  }
+
+  Widget _buildLiveGcodePanel() {
+    final int cursorByte = _currentCursorByte();
+    final String machineStatus =
+        _isSimulationMode
+            ? "simulation"
+            : (global.machineObjectModel.result?.state?.status?.toString() ??
+                "unknown");
+    final int totalLines = _lineStartOffsets.length;
+
+    return Container(
+      margin: const EdgeInsets.all(8),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEAF4F2),
+              border: Border.all(color: const Color(0xFFB8D7D1)),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        "Suivi G-code en direct",
+                        style: TextStyle(
+                          color: Color(0xFF1F5E53),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 28,
+                      child: OutlinedButton.icon(
+                        onPressed: _toggleSimulationMode,
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFF20917F)),
+                          foregroundColor: const Color(0xFF1F5E53),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          textStyle: const TextStyle(fontSize: 11),
+                        ),
+                        icon: Icon(
+                          _isSimulationMode
+                              ? Icons.stop_circle_outlined
+                              : Icons.play_circle_outline,
+                          size: 14,
+                        ),
+                        label: Text(_isSimulationMode ? "Stop Simu" : "Simu"),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  _cachedJobLabel.isEmpty ? "Fichier : --" : "Fichier : $_cachedJobLabel",
+                  style: const TextStyle(
+                    color: Color(0xFF355E56),
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 4,
+                  children: [
+                    Text(
+                      "Status : $machineStatus",
+                      style: const TextStyle(color: Color(0xFF4A6F68)),
+                    ),
+                    Text(
+                      "Byte : $cursorByte",
+                      style: const TextStyle(color: Color(0xFF4A6F68)),
+                    ),
+                    Text(
+                      "Ligne : ${_cursorLineIndex >= 0 ? _cursorLineIndex + 1 : '--'} / ${totalLines > 0 ? totalLines : '--'}",
+                      style: const TextStyle(color: Color(0xFF4A6F68)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 1, color: Colors.black26),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF5F7FB),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      "Fenetre locale centree : 30 lignes avant / 30 lignes apres | $_gcodeStatusMessage",
+                      style: const TextStyle(
+                        color: Color(0xFF5D6170),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildGcodeWindow(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGcodeWindow() {
+    if (_isDownloadingGcode) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_visibleGcodeLines.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            _gcodeStatusMessage,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Color(0xFF707585)),
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      controller: _gcodeScrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      itemExtent: _gcodeLineHeight,
+      itemCount: _visibleGcodeLines.length,
+      itemBuilder: (BuildContext context, int index) {
+        final _GcodeLineView line = _visibleGcodeLines[index];
+        final bool isCursorLine = line.isCursorLine;
+
+        return Container(
+          color: isCursorLine ? const Color(0x5520917F) : Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 52,
+                child: Text(
+                  line.lineNumber.toString(),
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontFamily: "monospace",
+                    color: isCursorLine
+                        ? const Color(0xFF1F8A76)
+                        : const Color(0xFF8A8D99),
+                    fontWeight:
+                        isCursorLine ? FontWeight.bold : FontWeight.normal,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  line.content.isEmpty ? " " : line.content,
+                  style: const TextStyle(
+                    fontFamily: "monospace",
+                    fontSize: 12,
+                    color: Color(0xFF2E3240),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -138,40 +787,7 @@ class JobScreenState extends State<JobScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Flexible(
-                flex: 4,
-                child: Container(
-                  child: Column(
-                    children: [
-                      Flexible(
-                          flex: 2,
-                          child: Container(
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                                //color: Colors.white,
-                                border:
-                                    Border.all(width: 1, color: Colors.black38),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(
-                              child: Text("${global.machineObjectModel.result?.job?.filePosition}"),
-                            ),
-                          )),
-                      Flexible(
-                          flex: 1,
-                          child: Container(
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                                //color: Colors.white,
-                                border:
-                                    Border.all(width: 1, color: Colors.black38),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(
-                              child: Text("Visualisation bientôt disponible"),
-                            ),
-                          )),
-                    ],
-                  ),
-                )),
+            Flexible(flex: 4, child: _buildLiveGcodePanel()),
             Flexible(
               flex: 6,
               child: Container(

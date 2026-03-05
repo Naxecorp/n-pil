@@ -579,58 +579,7 @@ Future<bool> canUnlockDoorSafely({
     }
   } // Pour obtenir le répertoire temporaire
 
-  Future<String> downLoadPartOfFile(
-      String path, String fileName, int startLine, int endLine) async {
-    Map<String, String> requestHeaders = {
-      "Access-Control-Allow-Headers": "*",
-      "Content-Type": "application/json",
-      "Accept": "*/*",
-      "Accept-Encoding": "gzip, deflate",
-      "Access-Control-Allow-Origin": "*",
-      "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
-      "Connection": "keep-alive",
-    };
-
-    var uri = Uri.parse(
-        'http://${global.MyMachineN02Config.IP}/rr_download?name=0:/$path/$fileName');
-
-    try {
-      var response = await http
-          .get(uri, headers: requestHeaders)
-          .timeout(Duration(seconds: 50));
-
-      if (response.statusCode == 200) {
-        // Obtenir le répertoire temporaire
-        Directory tempDir = await getTemporaryDirectory();
-        String tempPath = '${tempDir.path}/$fileName';
-
-        // Écrire le fichier téléchargé dans le répertoire temporaire
-        File tempFile = File(tempPath);
-
-        // Lire le fichier
-        List<String> lines = await tempFile.readAsLines();
-
-        // Valider les paramètres startLine et endLine
-        if (startLine < 0) startLine = 0;
-        if (endLine > lines.length) endLine = lines.length;
-        if (startLine > endLine) startLine = endLine;
-
-        // Extraire les lignes spécifiques
-        List<String> selectedLines = lines.sublist(startLine, endLine);
-
-        print(selectedLines.join('\n'));
-        return selectedLines.join('\n');
-      } else {
-        print(
-            'Fail to Send command, error : ' + response.statusCode.toString());
-        return 'nok';
-      }
-    } catch (e) {
-      print(e.toString());
-      return 'NOK';
-    }
-  }
-
+  
   Future<bool> dlFileToTempDir(String path, String fileName) async {
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
