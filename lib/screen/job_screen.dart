@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:ditredi/ditredi.dart';
 import 'package:flutter/material.dart';
 import 'package:nweb/dashBoardWidgets/laser_power.dart';
 import 'package:nweb/dashBoardWidgets/print_tool.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:vector_math/vector_math_64.dart' as vector;
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -44,6 +46,12 @@ class _GcodeLineView {
   final bool isCursorLine;
 }
 
+enum _JobPanelMode {
+  gcode,
+  mode3d,
+  hybrid,
+}
+
 class JobScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -52,7 +60,7 @@ class JobScreen extends StatefulWidget {
 }
 
 class JobScreenState extends State<JobScreen> {
-  static const int _contextLinesAroundCursor = 30;
+  static const int _contextLinesAroundCursor = 70;
   static const double _gcodeLineHeight = 22.0;
 
   double sliderValue = 0;
@@ -61,9 +69,12 @@ class JobScreenState extends State<JobScreen> {
   StreamSubscription? _machineModelSubscription;
   Timer? _gcodeRefreshTimer;
   final ScrollController _gcodeScrollController = ScrollController();
+  final DiTreDiController _diTreDiController =
+      DiTreDiController(light: vector.Vector3(-0.5, -0.5, 0.5));
   bool _isManagingGcodeCache = false;
   bool _isDownloadingGcode = false;
   bool _isSimulationMode = false;
+  _JobPanelMode _jobPanelMode = _JobPanelMode.hybrid;
   File? _cachedJobFile;
   String? _cachedJobRemoteKey;
   String _cachedJobLabel = "";
@@ -73,8 +84,13 @@ class JobScreenState extends State<JobScreen> {
   int _lastRenderedCursorLine = -1;
   int _simulatedCursorLine = _contextLinesAroundCursor;
   int _simulationTicks = 0;
+  int _lastParsedTrajectoryLine = -1;
+  bool _isAbsoluteCoordinates = true;
+  double _unitFactor = 1.0;
+  vector.Vector3 _currentToolPosition = vector.Vector3.zero();
   List<int> _lineStartOffsets = <int>[];
   List<_GcodeLineView> _visibleGcodeLines = <_GcodeLineView>[];
+  final List<Line3D> _executedTrajectoryLines = <Line3D>[];
 
 
   @override
@@ -184,6 +200,7 @@ class JobScreenState extends State<JobScreen> {
       _simulatedCursorLine = _contextLinesAroundCursor;
       _simulationTicks = 0;
       _gcodeStatusMessage = "Aucun job actif.";
+      _resetTrajectoryState();
     });
   }
 
@@ -239,6 +256,7 @@ class JobScreenState extends State<JobScreen> {
         _cachedJobRemoteKey = fileRef.cacheKey;
         _cachedJobLabel = fileRef.fileName;
         _lastRenderedCursorLine = -1;
+        _resetTrajectoryState();
         _gcodeStatusMessage = "G-code chargé. Suivi en direct actif.";
       });
       return true;
@@ -303,6 +321,159 @@ class JobScreenState extends State<JobScreen> {
     _cachedFileLengthBytes = offset;
   }
 
+  void _resetTrajectoryState() {
+    _executedTrajectoryLines.clear();
+    _lastParsedTrajectoryLine = -1;
+    _isAbsoluteCoordinates = true;
+    _unitFactor = 1.0;
+    _currentToolPosition = vector.Vector3.zero();
+  }
+
+  Future<void> _updateTrajectoryUntilCursor(int cursorLine) async {
+    if (_cachedJobFile == null || _lineStartOffsets.isEmpty) return;
+
+    if (cursorLine < _lastParsedTrajectoryLine) {
+      _resetTrajectoryState();
+    }
+
+    final int startLine = _lastParsedTrajectoryLine + 1;
+    if (cursorLine < startLine) return;
+
+    final List<String> lines = await _readRawLinesRange(startLine, cursorLine);
+    if (lines.isEmpty) return;
+
+    _appendTrajectoryFromLines(lines);
+    _lastParsedTrajectoryLine = cursorLine;
+  }
+
+  Future<List<String>> _readRawLinesRange(int startLine, int endLine) async {
+    if (_cachedJobFile == null ||
+        _lineStartOffsets.isEmpty ||
+        startLine > endLine) {
+      return <String>[];
+    }
+
+    final int totalLines = _lineStartOffsets.length;
+    final int safeStart = startLine.clamp(0, totalLines - 1);
+    final int safeEnd = endLine.clamp(safeStart, totalLines - 1);
+
+    final int startByte = _lineStartOffsets[safeStart];
+    final int endByteExclusive = (safeEnd + 1 < totalLines)
+        ? _lineStartOffsets[safeEnd + 1]
+        : _cachedFileLengthBytes;
+
+    if (endByteExclusive <= startByte) return <String>[];
+
+    final RandomAccessFile raf = await _cachedJobFile!.open();
+    try {
+      await raf.setPosition(startByte);
+      final List<int> bytes = await raf.read(endByteExclusive - startByte);
+      final String chunk = utf8.decode(bytes, allowMalformed: true);
+      final List<String> lines = const LineSplitter().convert(chunk);
+      final int expectedCount = safeEnd - safeStart + 1;
+      if (lines.length <= expectedCount) return lines;
+      return lines.sublist(0, expectedCount);
+    } finally {
+      await raf.close();
+    }
+  }
+
+  void _appendTrajectoryFromLines(List<String> lines) {
+    for (final String rawLine in lines) {
+      final String line = rawLine.split(";").first.trim();
+      if (line.isEmpty) continue;
+
+      final List<String> parts = line
+          .toUpperCase()
+          .split(RegExp(r"\s+"))
+          .where((String e) => e.isNotEmpty)
+          .toList();
+      if (parts.isEmpty) continue;
+
+      final String cmd = parts.first;
+      if (cmd == "G90") {
+        _isAbsoluteCoordinates = true;
+        continue;
+      }
+      if (cmd == "G91") {
+        _isAbsoluteCoordinates = false;
+        continue;
+      }
+      if (cmd == "G20") {
+        _unitFactor = 25.4;
+        continue;
+      }
+      if (cmd == "G21") {
+        _unitFactor = 1.0;
+        continue;
+      }
+
+      if (cmd == "G0" ||
+          cmd == "G00" ||
+          cmd == "G1" ||
+          cmd == "G01" ||
+          cmd == "G2" ||
+          cmd == "G02" ||
+          cmd == "G3" ||
+          cmd == "G03") {
+        final Map<String, double> axes = _extractAxisValues(parts.skip(1));
+        if (axes.isEmpty) continue;
+
+        final vector.Vector3 start = vector.Vector3.copy(_currentToolPosition);
+        final vector.Vector3 end = vector.Vector3.copy(_currentToolPosition);
+
+        if (axes.containsKey("X")) {
+          final double xValue = axes["X"]! * _unitFactor;
+          end.x = _isAbsoluteCoordinates ? xValue : end.x + xValue;
+        }
+        if (axes.containsKey("Y")) {
+          final double yValue = axes["Y"]! * _unitFactor;
+          end.y = _isAbsoluteCoordinates ? yValue : end.y + yValue;
+        }
+        if (axes.containsKey("Z")) {
+          final double zValue = axes["Z"]! * _unitFactor;
+          end.z = _isAbsoluteCoordinates ? zValue : end.z + zValue;
+        }
+
+        final Color color = (cmd == "G0" || cmd == "G00")
+            ? Colors.orange.shade300
+            : (cmd == "G2" || cmd == "G02" || cmd == "G3" || cmd == "G03")
+                ? Colors.purple.shade300
+                : Colors.blueGrey.shade700;
+
+        if ((end - start).length2 > 0) {
+          _executedTrajectoryLines.add(
+            Line3D(
+              _toViewerPoint(start),
+              _toViewerPoint(end),
+              width: 2,
+              color: color,
+            ),
+          );
+        }
+        _currentToolPosition = end;
+      }
+    }
+  }
+
+  Map<String, double> _extractAxisValues(Iterable<String> tokens) {
+    final Map<String, double> axes = <String, double>{};
+    for (final String token in tokens) {
+      if (token.length < 2) continue;
+      final String axis = token[0];
+      if (axis != "X" && axis != "Y" && axis != "Z") continue;
+      final double? value = double.tryParse(token.substring(1).replaceAll(",", "."));
+      if (value != null) {
+        axes[axis] = value;
+      }
+    }
+    return axes;
+  }
+
+  vector.Vector3 _toViewerPoint(vector.Vector3 machinePoint) {
+    return vector.Vector3(machinePoint.x, machinePoint.z, machinePoint.y);
+  }
+
   Future<void> _refreshVisibleGcodeWindow({bool force = false}) async {
     if (_cachedJobFile == null || _lineStartOffsets.isEmpty) return;
 
@@ -310,6 +481,7 @@ class JobScreenState extends State<JobScreen> {
     final int cursorLine = _lineIndexForBytePosition(cursorByte);
     if (!force && cursorLine == _lastRenderedCursorLine) return;
 
+    await _updateTrajectoryUntilCursor(cursorLine);
     final List<_GcodeLineView> lines = await _readLinesAroundCursor(cursorLine);
     if (!mounted) return;
 
@@ -456,6 +628,7 @@ class JobScreenState extends State<JobScreen> {
         _cachedJobRemoteKey = "__simulation__/job.g";
         _cachedJobLabel = "job.g (SIMU)";
         _lastRenderedCursorLine = -1;
+        _resetTrajectoryState();
         _gcodeStatusMessage = "Mode simulation actif.";
       });
 
@@ -500,6 +673,116 @@ class JobScreenState extends State<JobScreen> {
 
     await file.writeAsString(buffer.toString(), flush: true);
     return file;
+  }
+
+  String _panelModeLabel(_JobPanelMode mode) {
+    switch (mode) {
+      case _JobPanelMode.gcode:
+        return "Gcode";
+      case _JobPanelMode.mode3d:
+        return "3D";
+      case _JobPanelMode.hybrid:
+        return "Hybride";
+    }
+  }
+
+  Widget _buildModeSelector() {
+    return Wrap(
+      spacing: 6,
+      children: _JobPanelMode.values.map((_JobPanelMode mode) {
+        return ChoiceChip(
+          label: Text(_panelModeLabel(mode)),
+          selected: _jobPanelMode == mode,
+          onSelected: (bool selected) {
+            if (!selected) return;
+            setState(() {
+              _jobPanelMode = mode;
+            });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _centerCursorLineInView();
+            });
+          },
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildPanelContent() {
+    switch (_jobPanelMode) {
+      case _JobPanelMode.gcode:
+        return _buildGcodeWindow();
+      case _JobPanelMode.mode3d:
+        return _build3DWindow();
+      case _JobPanelMode.hybrid:
+        return Column(
+          children: [
+            Expanded(
+              flex: 5,
+              child: _build3DWindow(),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              flex: 6,
+              child: _buildGcodeWindow(),
+            ),
+          ],
+        );
+    }
+  }
+
+  List<Line3D> _build3DFigures() {
+    final List<Line3D> figures = <Line3D>[
+      Line3D(
+        vector.Vector3(0, 0, 0),
+        vector.Vector3(40, 0, 0),
+        width: 3,
+        color: Colors.red,
+      ),
+      Line3D(
+        vector.Vector3(0, 0, 0),
+        vector.Vector3(0, 40, 0),
+        width: 3,
+        color: Colors.green,
+      ),
+      Line3D(
+        vector.Vector3(0, 0, 0),
+        vector.Vector3(0, 0, 40),
+        width: 3,
+        color: Colors.blue,
+      ),
+    ];
+
+    figures.addAll(_executedTrajectoryLines);
+    return figures;
+  }
+
+  Widget _build3DWindow() {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Container(
+            color: const Color(0xFFF8FAFB),
+            child: DiTreDiDraggable(
+              controller: _diTreDiController,
+              child: DiTreDi(
+                figures: _build3DFigures(),
+                controller: _diTreDiController,
+                config: const DiTreDiConfig(
+                  supportZIndex: true,
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (_executedTrajectoryLines.isEmpty)
+          const Center(
+            child: Text(
+              "Aucune trajectoire executee pour le moment.",
+              style: TextStyle(color: Color(0xFF707585)),
+            ),
+          ),
+      ],
+    );
   }
 
   Widget _buildLiveGcodePanel() {
@@ -569,6 +852,8 @@ class JobScreenState extends State<JobScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 6),
+                _buildModeSelector(),
+                const SizedBox(height: 6),
                 Wrap(
                   spacing: 12,
                   runSpacing: 4,
@@ -613,7 +898,7 @@ class JobScreenState extends State<JobScreen> {
                       ),
                     ),
                     child: Text(
-                      "Fenetre locale centree : 30 lignes avant / 30 lignes apres | $_gcodeStatusMessage",
+                      "Fenetre locale centree : 70 lignes avant / 70 lignes apres | $_gcodeStatusMessage",
                       style: const TextStyle(
                         color: Color(0xFF5D6170),
                         fontSize: 12,
@@ -621,7 +906,7 @@ class JobScreenState extends State<JobScreen> {
                     ),
                   ),
                   Expanded(
-                    child: _buildGcodeWindow(),
+                    child: _buildPanelContent(),
                   ),
                 ],
               ),
