@@ -644,13 +644,14 @@ class _DeplacementMachine extends State<DeplacementMachine> {
                                         _startDoorCountdown();
                                         await API_Manager()
                                             .sendGcodeCommand('M42 P5 S1');
+                                            await Future.delayed(Duration(seconds: 1));
                                             await API_Manager()
-                                            .sendGcodeCommand('M42 P5 S0.2');
+                                            .sendGcodeCommand('M42 P5 S0.5');
                                             await Future.delayed(Duration(seconds: 5));
                                             await API_Manager()
                                             .sendGcodeCommand('M42 P5 S1');
                                             await API_Manager()
-                                            .sendGcodeCommand('M42 P5 S0s');
+                                            .sendGcodeCommand('M42 P5 S0');
                                             
                                       }
                                       else if((global.machineObjectModel.result?.spindles?[0].current??0) > 0) {

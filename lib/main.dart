@@ -78,7 +78,14 @@ void main() async {
 runApp(LoadingScreen(message: dateTime,));
   await Future.delayed(Duration(seconds: 3));
 
-  await API_Manager().downLoadNwcSettings().then((value)  {
+  actualiserMachineObjectModel();
+  actualiserMoveObjectModel();
+
+if (global.machineObjectModel.result?.state?.status=="processing"){
+
+}
+else {
+await API_Manager().downLoadNwcSettings().then((value)  {
     if (value.hasAnyNull()){
       var prov = value.Serie;
       global.MyMachineN02Config = global.MyMachineN02ConfigDeflaut;
@@ -131,18 +138,22 @@ runApp(LoadingScreen(message: dateTime,));
   
   runApp(const LoadingScreen(message: "File SYS List is get",));
   
+
   await API_Manager().sendGcodeCommand('M98 P"config.g"');
-  
   runApp(const LoadingScreen(message: "config.g is sent",));
 
   if ((global.MyMachineN02Config.Serie ?? "NUMSTD") == "DEFAULT") {
   } else
     await API_Manager()
         .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "Start");
-
-  actualiserMachineObjectModel();
-  actualiserMoveObjectModel();
+  
   actualiserMachineUsedTime();
+
+}
+  
+
+
+  
 
   Timer.periodic(const Duration(minutes: 10), (timer) async {
     await API_Manager()
