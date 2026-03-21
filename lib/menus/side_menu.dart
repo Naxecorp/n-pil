@@ -205,6 +205,35 @@ class _SideMenu extends State<SideMenu> {
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              color: pageToShow == 9 ? Color(0xFF9A9A9A) : Colors.white,
+              child: ListTile(
+                enabled: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                onTap: () {
+                  pageToShow = 9;
+                  Navigator.pushNamed(context, '/levelCalibration');
+                },
+                leading: Icon(
+                  Icons.grid_view_rounded,
+                  color: pageToShow == 9 ? Colors.white : Color(0xFF9A9A9A),
+                ),
+                title: Text(
+                  "Calib niveau",
+                  style: TextStyle(
+                      color: pageToShow == 9 ? Colors.white : Color(0xFF9A9A9A),
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
           Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),

@@ -8,6 +8,7 @@ import 'screen/admin_screen.dart';
 import 'screen/dashboard_screen.dart';
 import 'screen/editor_screen.dart';
 import 'screen/job_screen.dart';
+import 'screen/level_calibration_screen.dart';
 import 'screen/origin_screen.dart';
 import 'screen/parametre_screen.dart';
 import 'screen/programme_screen.dart';
@@ -182,6 +183,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: global.appNavigatorKey,
       initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
@@ -193,6 +195,7 @@ class MyApp extends StatelessWidget {
         '/conversationel': (context) => ConversationelScreen(),
         '/programmes': (context) => ProgrammeScreen(),
         '/jobStatus': (context) => JobScreen(),
+        '/levelCalibration': (context) => const LevelCalibrationScreen(),
         '/origin': (context) => OriginScreen(notifyParent: () {}),
         '/parameters': (context) => ParametreScreen(),
         '/admin': (context) => AdminScreen(),

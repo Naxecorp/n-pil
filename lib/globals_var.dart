@@ -18,7 +18,9 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.9.3";
+String version = "Version 1.9.4";
+final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
+bool zSafetyPopupIsShown = false;
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
@@ -187,6 +189,48 @@ ValueNotifier<int> cursorNotifier = ValueNotifier<int>(0);
 
 Timer? timer;
 bool timerStarted = false;
+
+void showZSafetyPopup(String message) {
+  final BuildContext? context = appNavigatorKey.currentContext;
+  if (context == null || zSafetyPopupIsShown) {
+    return;
+  }
+
+  zSafetyPopupIsShown = true;
+  showDialog<void>(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext dialogContext) {
+      return AlertDialog(
+        title: const Text(
+          "Alerte securite Z",
+          style: TextStyle(color: Colors.black),
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.black),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              textStyle: const TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+            },
+            child: const Text(
+              "OK",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      );
+    },
+  ).whenComplete(() {
+    zSafetyPopupIsShown = false;
+  });
+}
 
 void checkAndShowDialog(context) async {
   Timer.periodic(

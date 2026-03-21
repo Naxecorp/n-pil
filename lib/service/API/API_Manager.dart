@@ -18,9 +18,82 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../nwc-settings/nwc-settings.dart';
 import '../system/SystemsFilesElement.dart';
 
+class _HeightmapData {
+  const _HeightmapData({
+    required this.minX,
+    required this.maxX,
+    required this.minY,
+    required this.maxY,
+    required this.pointsX,
+    required this.pointsY,
+    required this.values,
+  });
+
+  final double minX;
+  final double maxX;
+  final double minY;
+  final double maxY;
+  final int pointsX;
+  final int pointsY;
+  final List<double> values;
+
+  double get _stepX => pointsX > 1 ? (maxX - minX) / (pointsX - 1) : 0;
+  double get _stepY => pointsY > 1 ? (maxY - minY) / (pointsY - 1) : 0;
+
+  double _valueAt(int col, int row) {
+    final int safeCol = col.clamp(0, pointsX - 1);
+    final int safeRow = row.clamp(0, pointsY - 1);
+    return values[(safeRow * pointsX) + safeCol];
+  }
+
+  double compensationAt(double xMachine, double yMachine) {
+    if (pointsX < 2 || pointsY < 2 || values.isEmpty) {
+      return 0;
+    }
+
+    final double stepX = _stepX;
+    final double stepY = _stepY;
+    if (stepX.abs() < 1e-9 || stepY.abs() < 1e-9) {
+      return _valueAt(0, 0);
+    }
+
+    final double fxRaw = (xMachine - minX) / stepX;
+    final double fyRaw = (yMachine - minY) / stepY;
+    final double fx = fxRaw.clamp(0.0, (pointsX - 1).toDouble());
+    final double fy = fyRaw.clamp(0.0, (pointsY - 1).toDouble());
+
+    final int x0 = fx.floor().clamp(0, pointsX - 1);
+    final int y0 = fy.floor().clamp(0, pointsY - 1);
+    final int x1 = (x0 + 1).clamp(0, pointsX - 1);
+    final int y1 = (y0 + 1).clamp(0, pointsY - 1);
+    final double tx = fx - x0;
+    final double ty = fy - y0;
+
+    final double z00 = _valueAt(x0, y0);
+    final double z10 = _valueAt(x1, y0);
+    final double z01 = _valueAt(x0, y1);
+    final double z11 = _valueAt(x1, y1);
+    final double zx0 = z00 + ((z10 - z00) * tx);
+    final double zx1 = z01 + ((z11 - z01) * tx);
+    return zx0 + ((zx1 - zx0) * ty);
+  }
+}
+
 class API_Manager {
   static const _token = '9fa98b3c-2c4e-4cb3-86b3-c3f5f8e10825';
   static const _lastSyncKey = 'last_sync_timestamp';
+  static final RegExp _gCodeRegex =
+      RegExp(r'(^|\s)G\s*([0-9]+)(?=\s|$|[A-Z])', caseSensitive: false);
+  static final RegExp _mCodeRegex =
+      RegExp(r'(^|\s)M\s*([0-9]+)(?=\s|$|[A-Z])', caseSensitive: false);
+  static final RegExp _axisValueRegexTemplate =
+      RegExp(r'([XYZ])\s*([+\-]?(?:\d+(?:\.\d+)?|\.\d+))', caseSensitive: false);
+  static final RegExp _axisPresenceRegexTemplate =
+      RegExp(r'([XYZ])(?=\s|[+\-]|\d|\.)', caseSensitive: false);
+  static const Duration _heightmapCacheTtl = Duration(seconds: 3);
+  _HeightmapData? _cachedHeightmap;
+  String? _cachedHeightmapKey;
+  DateTime? _cachedHeightmapTimestamp;
 
   Future<MachineObjectModel> getdataMachineObjectModel() async {
     Map<String, String> requestHeaders = {
@@ -60,6 +133,15 @@ class API_Manager {
 
 
   Future<String> sendGcodeCommand(String command) async {
+    if (await _shouldBlockGcodeForZEndstopSafety(command)) {
+      const String warning =
+          "SECURITE Z: montee Z interdite (endstop Z detecte). Mouvement bloque, verifier la machine puis refaire un homing Z.";
+      global.ReplyListFiFo.addItem(warning);
+      global.showZSafetyPopup(warning);
+      debugPrint(warning);
+      return 'nok';
+    }
+
     Map<String, String> requestHeaders = {
       "Access-Control-Allow-Headers": "*",
       "Content-Type": "application/json",
@@ -87,6 +169,355 @@ class API_Manager {
       print(e.toString());
       return 'nok';
     }
+  }
+
+  bool _isZEndstopTriggered() {
+    final List<Endstop>? endstops = global.machineObjectModel.result?.sensors?.endstops;
+    if (endstops == null || endstops.length <= 2) {
+      return false;
+    }
+    return endstops[2].triggered == true;
+  }
+
+  bool _isCompensationActive() {
+    final String type =
+        global.objectModelMove.result?.compensation?.type?.toString().toLowerCase() ??
+            "none";
+    return type != "none" && type != "nil" && type.isNotEmpty;
+  }
+
+  String _stripComment(String line) {
+    final int semicolonIndex = line.indexOf(";");
+    if (semicolonIndex < 0) {
+      return line;
+    }
+    return line.substring(0, semicolonIndex);
+  }
+
+  bool _lineHasGCode(String lineUpper, int code) {
+    final Iterable<Match> matches = _gCodeRegex.allMatches(lineUpper);
+    for (final Match match in matches) {
+      final int? value = int.tryParse(match.group(2) ?? "");
+      if (value == code) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool _lineHasMoveGCode(String lineUpper) {
+    final Iterable<Match> matches = _gCodeRegex.allMatches(lineUpper);
+    for (final Match match in matches) {
+      final int? value = int.tryParse(match.group(2) ?? "");
+      if (value != null && value >= 0 && value <= 3) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool _lineHasMCode(String lineUpper, int code) {
+    final Iterable<Match> matches = _mCodeRegex.allMatches(lineUpper);
+    for (final Match match in matches) {
+      final int? value = int.tryParse(match.group(2) ?? "");
+      if (value == code) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool _lineHasAxis(String lineUpper, String axis) {
+    final RegExp axisRegex = RegExp(
+      _axisPresenceRegexTemplate.pattern.replaceFirst("[XYZ]", axis),
+      caseSensitive: false,
+    );
+    return axisRegex.hasMatch(lineUpper);
+  }
+
+  double? _extractAxisValue(String lineUpper, String axis) {
+    final RegExp axisRegex = RegExp(
+      _axisValueRegexTemplate.pattern.replaceFirst("[XYZ]", axis),
+      caseSensitive: false,
+    );
+    final Match? match = axisRegex.firstMatch(lineUpper);
+    if (match == null) {
+      return null;
+    }
+    return double.tryParse(match.group(2) ?? "");
+  }
+
+  MapEntry<String, String>? _resolveCompensationPath(String rawPath) {
+    String value = rawPath.trim();
+    if (value.isEmpty || value == "-" || value.toLowerCase() == "none") {
+      return null;
+    }
+    value = value.replaceAll('"', '').replaceAll("\\", "/");
+
+    final int sdPrefixIndex = value.indexOf(":/");
+    if (sdPrefixIndex >= 0) {
+      value = value.substring(sdPrefixIndex + 2);
+    }
+    if (value.startsWith("/")) {
+      value = value.substring(1);
+    }
+    if (value.isEmpty) {
+      return null;
+    }
+
+    final List<String> parts =
+        value.split("/").where((segment) => segment.isNotEmpty).toList();
+    if (parts.isEmpty) {
+      return null;
+    }
+    final String fileName = parts.last;
+    final String path = parts.length > 1 ? parts.sublist(0, parts.length - 1).join("/") : "sys";
+    return MapEntry<String, String>(path, fileName);
+  }
+
+  _HeightmapData? _parseHeightmapCsv(String content) {
+    final List<String> lines = content
+        .split(RegExp(r"\r?\n"))
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .toList();
+    if (lines.length < 4) {
+      return null;
+    }
+
+    int descriptorLineIndex = -1;
+    List<String> descriptor = <String>[];
+    for (int i = 0; i < lines.length; i++) {
+      final List<String> values = lines[i].split(",").map((e) => e.trim()).toList();
+      if (values.length >= 11 &&
+          values[0].toUpperCase() == "X" &&
+          values[1].toUpperCase() == "Y") {
+        descriptorLineIndex = i;
+        descriptor = values;
+        break;
+      }
+    }
+    if (descriptorLineIndex < 0) {
+      return null;
+    }
+
+    final double? minX = double.tryParse(descriptor[2].replaceAll(",", "."));
+    final double? maxX = double.tryParse(descriptor[3].replaceAll(",", "."));
+    final double? minY = double.tryParse(descriptor[4].replaceAll(",", "."));
+    final double? maxY = double.tryParse(descriptor[5].replaceAll(",", "."));
+    final int? pointsX = int.tryParse(descriptor[9]);
+    final int? pointsY = int.tryParse(descriptor[10]);
+    if (minX == null ||
+        maxX == null ||
+        minY == null ||
+        maxY == null ||
+        pointsX == null ||
+        pointsY == null ||
+        pointsX < 2 ||
+        pointsY < 2) {
+      return null;
+    }
+
+    final int firstDataLine = descriptorLineIndex + 1;
+    if (lines.length < firstDataLine + pointsY) {
+      return null;
+    }
+
+    final List<double> values = <double>[];
+    for (int row = 0; row < pointsY; row++) {
+      final List<String> rowValues =
+          lines[firstDataLine + row].split(",").map((e) => e.trim()).toList();
+      if (rowValues.length < pointsX) {
+        return null;
+      }
+      for (int col = 0; col < pointsX; col++) {
+        final double parsed = double.tryParse(rowValues[col].replaceAll(",", ".")) ?? 0;
+        values.add(parsed);
+      }
+    }
+
+    return _HeightmapData(
+      minX: minX,
+      maxX: maxX,
+      minY: minY,
+      maxY: maxY,
+      pointsX: pointsX,
+      pointsY: pointsY,
+      values: values,
+    );
+  }
+
+  Future<_HeightmapData?> _getActiveHeightmapData() async {
+    final String compensationFileRaw =
+        global.objectModelMove.result?.compensation?.file?.toString() ?? "";
+    final MapEntry<String, String>? resolved = _resolveCompensationPath(compensationFileRaw);
+    if (resolved == null) {
+      return null;
+    }
+
+    final String cacheKey = "${resolved.key}/${resolved.value}";
+    if (_cachedHeightmap != null &&
+        _cachedHeightmapKey == cacheKey &&
+        _cachedHeightmapTimestamp != null &&
+        DateTime.now().difference(_cachedHeightmapTimestamp!) < _heightmapCacheTtl) {
+      return _cachedHeightmap;
+    }
+
+    final String content = await downLoadAFile(resolved.key, resolved.value);
+    if (content.toLowerCase() == "nok") {
+      return null;
+    }
+
+    final _HeightmapData? parsed = _parseHeightmapCsv(content);
+    if (parsed == null) {
+      return null;
+    }
+
+    _cachedHeightmap = parsed;
+    _cachedHeightmapKey = cacheKey;
+    _cachedHeightmapTimestamp = DateTime.now();
+    return parsed;
+  }
+
+  Future<bool> _wouldXYMoveRaiseZ({
+    required String lineUpper,
+    required bool isRelativeMode,
+  }) async {
+    if (!_isCompensationActive()) {
+      return false;
+    }
+    if (!_lineHasAxis(lineUpper, "X") && !_lineHasAxis(lineUpper, "Y")) {
+      return false;
+    }
+
+    final axes = global.machineObjectModel.result?.move?.axes;
+    if (axes == null || axes.length <= 1) {
+      return false;
+    }
+    final double? currentMachineX =
+        double.tryParse(axes.elementAt(0).machinePosition?.toString() ?? "");
+    final double? currentMachineY =
+        double.tryParse(axes.elementAt(1).machinePosition?.toString() ?? "");
+    final double? currentUserX =
+        double.tryParse(axes.elementAt(0).userPosition?.toString() ?? "");
+    final double? currentUserY =
+        double.tryParse(axes.elementAt(1).userPosition?.toString() ?? "");
+    if (currentMachineX == null || currentMachineY == null) {
+      return false;
+    }
+
+    double targetMachineX = currentMachineX;
+    double targetMachineY = currentMachineY;
+    final double? xValue = _extractAxisValue(lineUpper, "X");
+    final double? yValue = _extractAxisValue(lineUpper, "Y");
+    final bool isG53 = _lineHasGCode(lineUpper, 53);
+
+    if (xValue != null) {
+      if (isG53) {
+        targetMachineX = isRelativeMode ? currentMachineX + xValue : xValue;
+      } else if (isRelativeMode) {
+        targetMachineX = currentMachineX + xValue;
+      } else if (currentUserX != null) {
+        targetMachineX = (xValue + (currentMachineX - currentUserX));
+      }
+    }
+    if (yValue != null) {
+      if (isG53) {
+        targetMachineY = isRelativeMode ? currentMachineY + yValue : yValue;
+      } else if (isRelativeMode) {
+        targetMachineY = currentMachineY + yValue;
+      } else if (currentUserY != null) {
+        targetMachineY = (yValue + (currentMachineY - currentUserY));
+      }
+    }
+
+    final _HeightmapData? map = await _getActiveHeightmapData();
+    if (map == null) {
+      return false;
+    }
+
+    final double currentComp = map.compensationAt(currentMachineX, currentMachineY);
+    final double targetComp = map.compensationAt(targetMachineX, targetMachineY);
+    return targetComp > (currentComp + 1e-6);
+  }
+
+  bool _isPositiveZMove({
+    required String lineUpper,
+    required bool isRelativeMode,
+  }) {
+    final bool hasZ = _lineHasAxis(lineUpper, "Z");
+    if (!hasZ) {
+      return false;
+    }
+
+    final double? parsedZ = _extractAxisValue(lineUpper, "Z");
+    if (parsedZ == null) {
+      // Z present but non-numeric expression => block for safety.
+      return true;
+    }
+
+    if (isRelativeMode) {
+      return parsedZ > 0.000001;
+    }
+
+    final double? currentMachineZ = double.tryParse(
+      global.machineObjectModel.result?.move?.axes?[2].machinePosition?.toString() ?? "",
+    );
+    if (currentMachineZ == null) {
+      return parsedZ > 0.000001;
+    }
+    return parsedZ > (currentMachineZ + 0.000001);
+  }
+
+  Future<bool> _shouldBlockGcodeForZEndstopSafety(String command) async {
+    if (!_isZEndstopTriggered()) {
+      return false;
+    }
+
+    final List<String> lines = command.split(RegExp(r"\r?\n"));
+    final bool hasAllowedSafetyCommand = lines.any((rawLine) {
+      final String line = _stripComment(rawLine).trim();
+      if (line.isEmpty) return false;
+      final String lineUpper = line.toUpperCase();
+      return _lineHasMoveGCode(lineUpper) || _lineHasMCode(lineUpper, 120);
+    });
+    if (!hasAllowedSafetyCommand) {
+      return false;
+    }
+
+    bool isRelativeMode = false; // Default machine mode in most GCode streams is absolute.
+
+    for (final String rawLine in lines) {
+      final String line = _stripComment(rawLine).trim();
+      if (line.isEmpty) {
+        continue;
+      }
+
+      final String lineUpper = line.toUpperCase();
+      if (_lineHasGCode(lineUpper, 91)) {
+        isRelativeMode = true;
+      }
+      if (_lineHasGCode(lineUpper, 90)) {
+        isRelativeMode = false;
+      }
+
+      if (!_lineHasMoveGCode(lineUpper)) {
+        continue;
+      }
+
+      if (_isPositiveZMove(lineUpper: lineUpper, isRelativeMode: isRelativeMode)) {
+        return true;
+      }
+
+      if (await _wouldXYMoveRaiseZ(
+        lineUpper: lineUpper,
+        isRelativeMode: isRelativeMode,
+      )) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
 Future<bool> moveToPositionAndConfirm({
