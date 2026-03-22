@@ -18,7 +18,7 @@ import 'service/system/replyListFiFO.dart';
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.10.0";
+String version = "Version 1.10.1";
 final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 bool zSafetyPopupIsShown = false;
 bool AdminLogged = false;

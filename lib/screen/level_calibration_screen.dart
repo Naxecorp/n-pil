@@ -250,11 +250,11 @@ class _TopView3DPainter extends CustomPainter {
     final double y1 =
         (centeredX * math.sin(cameraYaw)) + (centeredY * math.cos(cameraYaw));
     final double y2 =
-        (y1 * math.cos(cameraPitch)) - (scaledZ * math.sin(cameraPitch));
+        (y1 * math.cos(cameraPitch)) + (scaledZ * math.sin(cameraPitch));
 
     final double effectiveScale = scale * cameraZoom;
     final double sx = (size.width / 2.0) + (x1 * effectiveScale) + cameraPan.dx;
-    final double sy = (size.height * 0.60) + (y2 * effectiveScale) + cameraPan.dy;
+    final double sy = (size.height / 2.0) - (y2 * effectiveScale) + cameraPan.dy;
     return Offset(sx, sy);
   }
 
@@ -320,6 +320,52 @@ class _TopView3DPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.2
         ..color = const Color(0xFF7D8898),
+    );
+
+    final Offset origin = _project(
+      xMm: 0,
+      yMm: 0,
+      zMm: 0,
+      size: size,
+      scale: scale,
+      zExaggeration: 1,
+    );
+    final Offset xAxisEnd = _project(
+      xMm: math.min(180, bedWidthMm),
+      yMm: 0,
+      zMm: 0,
+      size: size,
+      scale: scale,
+      zExaggeration: 1,
+    );
+    final Offset yAxisEnd = _project(
+      xMm: 0,
+      yMm: math.min(180, bedDepthMm),
+      zMm: 0,
+      size: size,
+      scale: scale,
+      zExaggeration: 1,
+    );
+    canvas.drawLine(
+      origin,
+      xAxisEnd,
+      Paint()
+        ..color = const Color(0xFFC74A4A)
+        ..strokeWidth = 2.0,
+    );
+    canvas.drawLine(
+      origin,
+      yAxisEnd,
+      Paint()
+        ..color = const Color(0xFF336FC7)
+        ..strokeWidth = 2.0,
+    );
+    canvas.drawCircle(
+      origin,
+      3.2,
+      Paint()
+        ..color = const Color(0xFF1F8A76)
+        ..style = PaintingStyle.fill,
     );
 
     if (points.isNotEmpty) {
@@ -519,8 +565,8 @@ class LevelCalibrationScreen extends StatefulWidget {
 class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
   static const double _machineBedWidthMm = 800.0;
   static const double _machineBedDepthMm = 1230.0;
-  static const double _default3DYaw = -math.pi / 4;
-  static const double _default3DPitch = math.pi / 5.8;
+  static const double _default3DYaw = 0.0;
+  static const double _default3DPitch = math.pi / 7;
   static const double _min3DPitch = 0.25;
   static const double _max3DPitch = 1.30;
   static const double _min3DZoom = 0.45;
@@ -647,7 +693,7 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
     }
 
     setState(() {
-      _cameraYaw -= details.focalPointDelta.dx * 0.0085;
+      _cameraYaw += details.focalPointDelta.dx * 0.0085;
       _cameraPitch =
           (_cameraPitch - (details.focalPointDelta.dy * 0.0065)).clamp(_min3DPitch, _max3DPitch);
       if ((details.scale - 1.0).abs() > 0.0001) {
@@ -2037,7 +2083,7 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
               Expanded(
                 child: Text(
                   "Plateau ${_machineBedWidthMm.toStringAsFixed(0)} x ${_machineBedDepthMm.toStringAsFixed(0)} mm"
-                  "${_showSchematic3D ? " | Piece: plan issu de la grille" : ""}",
+                  "${_showSchematic3D ? " | Repere machine: X+ droite, Y+ haut, origine bas-gauche" : ""}",
                   style: const TextStyle(
                     color: Color(0xFF5D6170),
                     fontSize: 12,
