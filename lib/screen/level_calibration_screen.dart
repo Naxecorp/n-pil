@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -167,6 +168,347 @@ class _TopViewPainter extends CustomPainter {
   }
 }
 
+class _SchematicPoint {
+  const _SchematicPoint({
+    required this.index,
+    required this.xMachine,
+    required this.yMachine,
+    required this.deltaZ,
+    required this.hasMeasurement,
+  });
+
+  final int index;
+  final double xMachine;
+  final double yMachine;
+  final double deltaZ;
+  final bool hasMeasurement;
+}
+
+class _TopView3DPainter extends CustomPainter {
+  _TopView3DPainter({
+    required this.points,
+    required this.pointsX,
+    required this.pointsY,
+    required this.minDelta,
+    required this.maxDelta,
+    required this.selectedIndex,
+    required this.bedWidthMm,
+    required this.bedDepthMm,
+    required this.cameraYaw,
+    required this.cameraPitch,
+    required this.cameraZoom,
+    required this.cameraPan,
+  });
+
+  final List<_SchematicPoint> points;
+  final int pointsX;
+  final int pointsY;
+  final double? minDelta;
+  final double? maxDelta;
+  final int selectedIndex;
+  final double bedWidthMm;
+  final double bedDepthMm;
+  final double cameraYaw;
+  final double cameraPitch;
+  final double cameraZoom;
+  final Offset cameraPan;
+
+  double _norm(double value, double min, double max) {
+    final double range = max - min;
+    if (range.abs() < 0.000001) return 0.5;
+    return (value - min) / range;
+  }
+
+  Color _colorForDelta(double delta) {
+    if (minDelta == null || maxDelta == null) {
+      return const Color(0x669AA1AE);
+    }
+    final double t = _norm(delta, minDelta!, maxDelta!).clamp(0.0, 1.0);
+    final Color base = Color.lerp(
+          const Color(0xFF6CA8FF),
+          const Color(0xFFE85A4F),
+          t,
+        ) ??
+        const Color(0xFF20917F);
+    return base.withValues(alpha: 0.70);
+  }
+
+  Offset _project({
+    required double xMm,
+    required double yMm,
+    required double zMm,
+    required Size size,
+    required double scale,
+    required double zExaggeration,
+  }) {
+    final double centeredX = xMm - (bedWidthMm / 2.0);
+    final double centeredY = yMm - (bedDepthMm / 2.0);
+    final double scaledZ = zMm * zExaggeration;
+
+    final double x1 =
+        (centeredX * math.cos(cameraYaw)) - (centeredY * math.sin(cameraYaw));
+    final double y1 =
+        (centeredX * math.sin(cameraYaw)) + (centeredY * math.cos(cameraYaw));
+    final double y2 =
+        (y1 * math.cos(cameraPitch)) - (scaledZ * math.sin(cameraPitch));
+
+    final double effectiveScale = scale * cameraZoom;
+    final double sx = (size.width / 2.0) + (x1 * effectiveScale) + cameraPan.dx;
+    final double sy = (size.height * 0.60) + (y2 * effectiveScale) + cameraPan.dy;
+    return Offset(sx, sy);
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Rect frame = Rect.fromLTWH(8, 8, size.width - 16, size.height - 16);
+    canvas.clipRect(frame);
+
+    final double bedScaleX = frame.width / (bedWidthMm * 1.75);
+    final double bedScaleY = frame.height / (bedDepthMm * 0.95);
+    final double scale = math.min(bedScaleX, bedScaleY).clamp(0.15, 1.0);
+
+    final List<Offset> bedCorners = <Offset>[
+      _project(
+        xMm: 0,
+        yMm: 0,
+        zMm: 0,
+        size: size,
+        scale: scale,
+        zExaggeration: 1,
+      ),
+      _project(
+        xMm: bedWidthMm,
+        yMm: 0,
+        zMm: 0,
+        size: size,
+        scale: scale,
+        zExaggeration: 1,
+      ),
+      _project(
+        xMm: bedWidthMm,
+        yMm: bedDepthMm,
+        zMm: 0,
+        size: size,
+        scale: scale,
+        zExaggeration: 1,
+      ),
+      _project(
+        xMm: 0,
+        yMm: bedDepthMm,
+        zMm: 0,
+        size: size,
+        scale: scale,
+        zExaggeration: 1,
+      ),
+    ];
+
+    final Path bedPath = Path()
+      ..moveTo(bedCorners[0].dx, bedCorners[0].dy)
+      ..lineTo(bedCorners[1].dx, bedCorners[1].dy)
+      ..lineTo(bedCorners[2].dx, bedCorners[2].dy)
+      ..lineTo(bedCorners[3].dx, bedCorners[3].dy)
+      ..close();
+    canvas.drawPath(
+      bedPath,
+      Paint()
+        ..style = PaintingStyle.fill
+        ..color = const Color(0x1E8A95A8),
+    );
+    canvas.drawPath(
+      bedPath,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..color = const Color(0xFF7D8898),
+    );
+
+    if (points.isNotEmpty) {
+      double pieceMinX = points.first.xMachine;
+      double pieceMaxX = points.first.xMachine;
+      double pieceMinY = points.first.yMachine;
+      double pieceMaxY = points.first.yMachine;
+      for (final _SchematicPoint p in points) {
+        if (p.xMachine < pieceMinX) pieceMinX = p.xMachine;
+        if (p.xMachine > pieceMaxX) pieceMaxX = p.xMachine;
+        if (p.yMachine < pieceMinY) pieceMinY = p.yMachine;
+        if (p.yMachine > pieceMaxY) pieceMaxY = p.yMachine;
+      }
+      final List<Offset> pieceCorners = <Offset>[
+        _project(
+          xMm: pieceMinX,
+          yMm: pieceMinY,
+          zMm: 0,
+          size: size,
+          scale: scale,
+          zExaggeration: 1,
+        ),
+        _project(
+          xMm: pieceMaxX,
+          yMm: pieceMinY,
+          zMm: 0,
+          size: size,
+          scale: scale,
+          zExaggeration: 1,
+        ),
+        _project(
+          xMm: pieceMaxX,
+          yMm: pieceMaxY,
+          zMm: 0,
+          size: size,
+          scale: scale,
+          zExaggeration: 1,
+        ),
+        _project(
+          xMm: pieceMinX,
+          yMm: pieceMaxY,
+          zMm: 0,
+          size: size,
+          scale: scale,
+          zExaggeration: 1,
+        ),
+      ];
+
+      final Path piecePath = Path()
+        ..moveTo(pieceCorners[0].dx, pieceCorners[0].dy)
+        ..lineTo(pieceCorners[1].dx, pieceCorners[1].dy)
+        ..lineTo(pieceCorners[2].dx, pieceCorners[2].dy)
+        ..lineTo(pieceCorners[3].dx, pieceCorners[3].dy)
+        ..close();
+      canvas.drawPath(
+        piecePath,
+        Paint()
+          ..style = PaintingStyle.fill
+          ..color = const Color(0x2A5AAE6B),
+      );
+      canvas.drawPath(
+        piecePath,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.0
+          ..color = const Color(0xFF4F9360),
+      );
+    }
+
+    if (points.isEmpty || pointsX < 2 || pointsY < 2 || points.length < pointsX * pointsY) {
+      return;
+    }
+
+    final List<_SchematicPoint> validPoints =
+        points.where((p) => p.hasMeasurement).toList();
+    final double zRange = validPoints.isEmpty
+        ? 1
+        : ((maxDelta ?? 0) - (minDelta ?? 0)).abs().clamp(0.1, 4.0);
+    final double zExaggeration = (35.0 / zRange).clamp(8.0, 45.0);
+
+    for (int row = 0; row < pointsY - 1; row++) {
+      for (int col = 0; col < pointsX - 1; col++) {
+        final _SchematicPoint p00 = points[(row * pointsX) + col];
+        final _SchematicPoint p10 = points[(row * pointsX) + col + 1];
+        final _SchematicPoint p11 = points[((row + 1) * pointsX) + col + 1];
+        final _SchematicPoint p01 = points[((row + 1) * pointsX) + col];
+        if (!p00.hasMeasurement ||
+            !p10.hasMeasurement ||
+            !p11.hasMeasurement ||
+            !p01.hasMeasurement) {
+          continue;
+        }
+
+        final Offset v00 = _project(
+          xMm: p00.xMachine,
+          yMm: p00.yMachine,
+          zMm: p00.deltaZ,
+          size: size,
+          scale: scale,
+          zExaggeration: zExaggeration,
+        );
+        final Offset v10 = _project(
+          xMm: p10.xMachine,
+          yMm: p10.yMachine,
+          zMm: p10.deltaZ,
+          size: size,
+          scale: scale,
+          zExaggeration: zExaggeration,
+        );
+        final Offset v11 = _project(
+          xMm: p11.xMachine,
+          yMm: p11.yMachine,
+          zMm: p11.deltaZ,
+          size: size,
+          scale: scale,
+          zExaggeration: zExaggeration,
+        );
+        final Offset v01 = _project(
+          xMm: p01.xMachine,
+          yMm: p01.yMachine,
+          zMm: p01.deltaZ,
+          size: size,
+          scale: scale,
+          zExaggeration: zExaggeration,
+        );
+
+        final double avgDelta = (p00.deltaZ + p10.deltaZ + p11.deltaZ + p01.deltaZ) / 4;
+        final Path cell = Path()
+          ..moveTo(v00.dx, v00.dy)
+          ..lineTo(v10.dx, v10.dy)
+          ..lineTo(v11.dx, v11.dy)
+          ..lineTo(v01.dx, v01.dy)
+          ..close();
+        canvas.drawPath(
+          cell,
+          Paint()
+            ..style = PaintingStyle.fill
+            ..color = _colorForDelta(avgDelta),
+        );
+        canvas.drawPath(
+          cell,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 0.6
+            ..color = const Color(0x55778293),
+        );
+      }
+    }
+
+    for (final _SchematicPoint point in points) {
+      if (!point.hasMeasurement) {
+        continue;
+      }
+      final Offset projected = _project(
+        xMm: point.xMachine,
+        yMm: point.yMachine,
+        zMm: point.deltaZ,
+        size: size,
+        scale: scale,
+        zExaggeration: zExaggeration,
+      );
+      final bool isSelected = point.index == selectedIndex;
+      canvas.drawCircle(
+        projected,
+        isSelected ? 5.4 : 3.4,
+        Paint()
+          ..style = PaintingStyle.fill
+          ..color = isSelected ? const Color(0xFF1F8A76) : const Color(0xFF243044),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _TopView3DPainter oldDelegate) {
+    return oldDelegate.points != points ||
+        oldDelegate.pointsX != pointsX ||
+        oldDelegate.pointsY != pointsY ||
+        oldDelegate.minDelta != minDelta ||
+        oldDelegate.maxDelta != maxDelta ||
+        oldDelegate.selectedIndex != selectedIndex ||
+        oldDelegate.bedWidthMm != bedWidthMm ||
+        oldDelegate.bedDepthMm != bedDepthMm ||
+        oldDelegate.cameraYaw != cameraYaw ||
+        oldDelegate.cameraPitch != cameraPitch ||
+        oldDelegate.cameraZoom != cameraZoom ||
+        oldDelegate.cameraPan != cameraPan;
+  }
+}
+
 class LevelCalibrationScreen extends StatefulWidget {
   const LevelCalibrationScreen({super.key});
 
@@ -175,6 +517,15 @@ class LevelCalibrationScreen extends StatefulWidget {
 }
 
 class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
+  static const double _machineBedWidthMm = 800.0;
+  static const double _machineBedDepthMm = 1230.0;
+  static const double _default3DYaw = -math.pi / 4;
+  static const double _default3DPitch = math.pi / 5.8;
+  static const double _min3DPitch = 0.25;
+  static const double _max3DPitch = 1.30;
+  static const double _min3DZoom = 0.45;
+  static const double _max3DZoom = 4.50;
+
   final TextEditingController _minXController = TextEditingController(text: "20");
   final TextEditingController _maxXController = TextEditingController(text: "180");
   final TextEditingController _minYController = TextEditingController(text: "20");
@@ -205,6 +556,17 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
   double _offsetZMachineMinusUser = 0;
   bool _hasUserToMachineTransform = false;
   bool _clipCompensationEnabled = false;
+  bool _showSchematic3D = false;
+  double _cameraYaw = _default3DYaw;
+  double _cameraPitch = _default3DPitch;
+  double _cameraZoom = 1.0;
+  Offset _cameraPan = Offset.zero;
+  double _gestureStartYaw = _default3DYaw;
+  double _gestureStartZoom = 1.0;
+  Offset _gestureStartPan = Offset.zero;
+  Offset _gestureStartFocalPoint = Offset.zero;
+  int _activePointerCount = 0;
+  bool _isInMultiTouchGesture = false;
   bool _hasShownBetaWarning = false;
   static const List<String> _zJogStepOptions = <String>["10", "1", "0.1", "0.01"];
   String _selectedZJogStep = "1";
@@ -233,6 +595,81 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
         global.checkCaissonOpen(context);
       }
     });
+  }
+
+  void _reset3DCamera() {
+    setState(() {
+      _cameraYaw = _default3DYaw;
+      _cameraPitch = _default3DPitch;
+      _cameraZoom = 1.0;
+      _cameraPan = Offset.zero;
+    });
+  }
+
+  void _on3DPointerDown(PointerDownEvent _) {
+    _activePointerCount++;
+  }
+
+  void _on3DPointerUpOrCancel(PointerEvent _) {
+    _activePointerCount = (_activePointerCount - 1).clamp(0, 10).toInt();
+    if (_activePointerCount < 2) {
+      _isInMultiTouchGesture = false;
+    }
+  }
+
+  void _on3DScaleStart(ScaleStartDetails details) {
+    _gestureStartYaw = _cameraYaw;
+    _gestureStartZoom = _cameraZoom;
+    _gestureStartPan = _cameraPan;
+    _gestureStartFocalPoint = details.focalPoint;
+    _isInMultiTouchGesture = _activePointerCount >= 2;
+  }
+
+  void _on3DScaleUpdate(ScaleUpdateDetails details) {
+    final bool multiTouch = _activePointerCount >= 2;
+    if (multiTouch && !_isInMultiTouchGesture) {
+      _gestureStartYaw = _cameraYaw;
+      _gestureStartZoom = _cameraZoom;
+      _gestureStartPan = _cameraPan;
+      _gestureStartFocalPoint = details.focalPoint;
+      _isInMultiTouchGesture = true;
+    } else if (!multiTouch) {
+      _isInMultiTouchGesture = false;
+    }
+
+    if (multiTouch) {
+      setState(() {
+        _cameraZoom = (_gestureStartZoom * details.scale).clamp(_min3DZoom, _max3DZoom);
+        _cameraYaw = _gestureStartYaw + details.rotation;
+        _cameraPan = _gestureStartPan + (_gestureStartFocalPoint - details.focalPoint);
+      });
+      return;
+    }
+
+    setState(() {
+      _cameraYaw -= details.focalPointDelta.dx * 0.0085;
+      _cameraPitch =
+          (_cameraPitch - (details.focalPointDelta.dy * 0.0065)).clamp(_min3DPitch, _max3DPitch);
+      if ((details.scale - 1.0).abs() > 0.0001) {
+        _cameraZoom = (_cameraZoom * details.scale).clamp(_min3DZoom, _max3DZoom);
+      }
+    });
+  }
+
+  void _on3DPointerSignal(dynamic event) {
+    try {
+      final dynamic scrollDelta = event.scrollDelta;
+      if (scrollDelta == null) {
+        return;
+      }
+      setState(() {
+        final double dy = (scrollDelta.dy as num?)?.toDouble() ?? 0.0;
+        final double factor = dy > 0 ? 0.92 : 1.08;
+        _cameraZoom = (_cameraZoom * factor).clamp(_min3DZoom, _max3DZoom);
+      });
+    } catch (_) {
+      return;
+    }
   }
 
   Future<void> _showBetaWarningIfNeeded() async {
@@ -1417,6 +1854,121 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
     );
   }
 
+  List<_SchematicPoint> _buildMachineSchematicPoints() {
+    final bool hasTransform = _hasUserToMachineTransform;
+    return _points
+        .map(
+          (_LevelPoint p) => _SchematicPoint(
+            index: p.index,
+            xMachine: hasTransform ? _userToMachine(0, p.x) : p.x,
+            yMachine: hasTransform ? _userToMachine(1, p.y) : p.y,
+            deltaZ: p.deltaZ ?? 0,
+            hasMeasurement: p.hasMeasurement,
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  Widget _buildInteractive3DSchematic({
+    required List<_SchematicPoint> machinePoints,
+    required _DeltaRange range,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        color: const Color(0xFFF4F7FB),
+        child: Stack(
+          children: [
+            Listener(
+              onPointerDown: _on3DPointerDown,
+              onPointerUp: _on3DPointerUpOrCancel,
+              onPointerCancel: _on3DPointerUpOrCancel,
+              onPointerSignal: _on3DPointerSignal,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onScaleStart: _on3DScaleStart,
+                onScaleUpdate: _on3DScaleUpdate,
+                child: CustomPaint(
+                  painter: _TopView3DPainter(
+                    points: machinePoints,
+                    pointsX: _pointsX,
+                    pointsY: _pointsY,
+                    minDelta: range.min,
+                    maxDelta: range.max,
+                    selectedIndex: _selectedIndex,
+                    bedWidthMm: _machineBedWidthMm,
+                    bedDepthMm: _machineBedDepthMm,
+                    cameraYaw: _cameraYaw,
+                    cameraPitch: _cameraPitch,
+                    cameraZoom: _cameraZoom,
+                    cameraPan: _cameraPan,
+                  ),
+                  child: const SizedBox.expand(),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Material(
+                color: const Color(0xDDF3F6FA),
+                borderRadius: BorderRadius.circular(8),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: _reset3DCamera,
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.restart_alt_rounded,
+                          size: 16,
+                          color: Color(0xFF3E4C63),
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          "Reset vue",
+                          style: TextStyle(
+                            color: Color(0xFF3E4C63),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 8,
+              right: 8,
+              bottom: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xDDF3F6FA),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFCAD3E0)),
+                ),
+                child: const Text(
+                  "1 doigt: rotation | 2 doigts: zoom + pan + rotation | molette/pad: zoom",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF4E596C),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildTopViewPanel() {
     if (_points.isEmpty) {
       return const Center(
@@ -1431,25 +1983,95 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
     final _DeltaRange range = _deltaRange();
     final int measuredCount = _points.where((p) => p.hasMeasurement).length;
     final int undefinedCount = _points.length - measuredCount;
+    final List<_SchematicPoint> machinePoints = _buildMachineSchematicPoints();
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE9EEF5),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFD0D8E4)),
+                ),
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    const Text(
+                      "Vue",
+                      style: TextStyle(
+                        color: Color(0xFF4E596C),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    ChoiceChip(
+                      label: const Text("2D"),
+                      selected: !_showSchematic3D,
+                      onSelected: (bool selected) {
+                        if (!selected) return;
+                        setState(() {
+                          _showSchematic3D = false;
+                        });
+                      },
+                    ),
+                    ChoiceChip(
+                      label: const Text("3D"),
+                      selected: _showSchematic3D,
+                      onSelected: (bool selected) {
+                        if (!selected) return;
+                        setState(() {
+                          _showSchematic3D = true;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  "Plateau ${_machineBedWidthMm.toStringAsFixed(0)} x ${_machineBedDepthMm.toStringAsFixed(0)} mm"
+                  "${_showSchematic3D ? " | Piece: plan issu de la grille" : ""}",
+                  style: const TextStyle(
+                    color: Color(0xFF5D6170),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: CustomPaint(
-              painter: _TopViewPainter(
-                points: _points,
-                minX: _minX,
-                maxX: _maxX,
-                minY: _minY,
-                maxY: _maxY,
-                minDelta: range.min,
-                maxDelta: range.max,
-                selectedIndex: _selectedIndex,
-              ),
-              child: const SizedBox.expand(),
-            ),
+            child: _showSchematic3D
+                ? _buildInteractive3DSchematic(
+                    machinePoints: machinePoints,
+                    range: range,
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: CustomPaint(
+                      painter: _TopViewPainter(
+                        points: _points,
+                        minX: _minX,
+                        maxX: _maxX,
+                        minY: _minY,
+                        maxY: _maxY,
+                        minDelta: range.min,
+                        maxDelta: range.max,
+                        selectedIndex: _selectedIndex,
+                      ),
+                      child: const SizedBox.expand(),
+                    ),
+                  ),
           ),
         ),
         Padding(
