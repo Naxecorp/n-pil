@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nweb/globals_var.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
@@ -70,6 +71,10 @@ class DashboardScreenState extends State<DashboardScreen> {
   DashboardScreenState(this.notifyParent);
 
   final Function() notifyParent;
+  final FocusNode _dashboardKeyboardFocusNode =
+      FocusNode(debugLabel: 'dashboard_keyboard_focus');
+  DateTime? _lastKeyboardZDownAt;
+  static const Duration _keyboardZDownCooldown = Duration(seconds: 5);
 
   @override
   void initState() {
@@ -81,8 +86,99 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
 
     if(global.machineObjectModel.result?.tools?[0].state == "active" && global.MyMachineN02Config.HasACT ==1)_onFraiseMustbeSelected();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _dashboardKeyboardFocusNode.requestFocus();
+    });
 
     
+  }
+
+  @override
+  void dispose() {
+    _dashboardKeyboardFocusNode.dispose();
+    super.dispose();
+  }
+
+  bool _isTextInputFocused() {
+    final BuildContext? focusedContext = FocusManager.instance.primaryFocus?.context;
+    if (focusedContext == null) return false;
+    return focusedContext.widget is EditableText;
+  }
+
+  Future<void> _sendKeyboardJog({
+    required String axis,
+    required double deltaMm,
+  }) async {
+    final String deltaText = deltaMm.toStringAsFixed(deltaMm.abs() >= 1 ? 0 : 3);
+    final String command =
+        "M120\nG91\nG1 $axis$deltaText F${global.SpeedValue}\nM121\n";
+    await API_Manager().sendGcodeCommand(command);
+    await API_Manager().sendrr_reply();
+  }
+
+  KeyEventResult _handleDashboardKeyboard(FocusNode node, RawKeyEvent event) {
+    if (!mounted || pageToShow != 1) return KeyEventResult.ignored;
+
+    final LogicalKeyboardKey key = event.logicalKey;
+    final bool isArrow = key == LogicalKeyboardKey.arrowLeft ||
+        key == LogicalKeyboardKey.arrowRight ||
+        key == LogicalKeyboardKey.arrowUp ||
+        key == LogicalKeyboardKey.arrowDown;
+    if (!isArrow) return KeyEventResult.ignored;
+    if (_isTextInputFocused()) return KeyEventResult.ignored;
+
+    if (event is! RawKeyDownEvent) {
+      return KeyEventResult.handled;
+    }
+
+    final bool ctrlPressed = HardwareKeyboard.instance.isControlPressed;
+    final bool altPressed = HardwareKeyboard.instance.isAltPressed;
+    final bool shiftPressed = HardwareKeyboard.instance.isShiftPressed;
+
+    String? axis;
+    double? delta;
+
+    final bool isZShortcut = ctrlPressed &&
+        altPressed &&
+        (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.arrowDown);
+    if (isZShortcut) {
+      final bool isZDown = key == LogicalKeyboardKey.arrowDown;
+      final double zStep = shiftPressed ? 10.0 : 1.0;
+
+      // Cooldown only on fast Z-down movements.
+      if (isZDown && shiftPressed) {
+        final DateTime now = DateTime.now();
+        if (_lastKeyboardZDownAt != null &&
+            now.difference(_lastKeyboardZDownAt!) < _keyboardZDownCooldown) {
+          return KeyEventResult.handled;
+        }
+        _lastKeyboardZDownAt = now;
+      }
+      axis = "Z";
+      delta = isZDown ? -zStep : zStep;
+    } else if (!altPressed) {
+      final double stepMm = ctrlPressed ? 10.0 : 1.0;
+      if (key == LogicalKeyboardKey.arrowLeft) {
+        axis = "X";
+        delta = -stepMm;
+      } else if (key == LogicalKeyboardKey.arrowRight) {
+        axis = "X";
+        delta = stepMm;
+      } else if (key == LogicalKeyboardKey.arrowUp) {
+        axis = "Y";
+        delta = stepMm;
+      } else if (key == LogicalKeyboardKey.arrowDown) {
+        axis = "Y";
+        delta = -stepMm;
+      }
+    }
+
+    if (axis == null || delta == null) {
+      return KeyEventResult.handled;
+    }
+    _sendKeyboardJog(axis: axis, deltaMm: delta);
+    return KeyEventResult.handled;
   }
 
   @override
@@ -316,6 +412,7 @@ void didChangeDependencies() {
                                 API_Manager().sendGcodeCommand(Commande).then(
                                     (value) => API_Manager().sendrr_reply());
                               });
+                              _dashboardKeyboardFocusNode.requestFocus();
                             },
                           ),
                           PopupMenuButton<String>(
@@ -353,6 +450,7 @@ void didChangeDependencies() {
                                 .then((value) => API_Manager().sendrr_reply());
                                 ManualGcodeComand.clear();
                           });
+                          _dashboardKeyboardFocusNode.requestFocus();
                         },
                         child: const Icon(Icons.send,color: Color(0xFF20917F),)),
                     Spacer(),
@@ -435,7 +533,16 @@ void didChangeDependencies() {
           ],
         ),
       ),
-      body: Container(
+      body: Focus(
+        focusNode: _dashboardKeyboardFocusNode,
+        autofocus: true,
+        onKey: _handleDashboardKeyboard,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            _dashboardKeyboardFocusNode.requestFocus();
+          },
+          child: Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -526,6 +633,8 @@ void didChangeDependencies() {
               ),
             ),
           ],
+        ),
+      ),
         ),
       ),
     );

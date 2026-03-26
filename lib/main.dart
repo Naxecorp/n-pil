@@ -88,10 +88,11 @@ runApp(LoadingScreen(message: dateTime,));
       if(global.machineObjectModel.result?.job?.filePosition?.toInt()!=null)global.cursorNotifier.value=global.machineObjectModel.result?.job?.filePosition?.toInt()??0;
     });
 
-if (global.machineObjectModel.result?.state?.status=="processing"){
-
+if (global.machineObjectModel.result?.state?.status=="processing"||global.machineObjectModel.result?.state?.status=="paused"||global.machineObjectModel.result?.state?.status=="pausing"){
+API_Manager().getMachineMode().then((value) => global.machineMode = value);
 }
 else {
+
 await API_Manager().downLoadNwcSettings().then((value)  {
     if (value.hasAnyNull()){
       var prov = value.Serie;
