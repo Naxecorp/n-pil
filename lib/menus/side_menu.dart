@@ -234,6 +234,36 @@ class _SideMenu extends State<SideMenu> {
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              color: pageToShow == 10 ? Color(0xFF9A9A9A) : Colors.white,
+              child: ListTile(
+                enabled: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                onTap: () {
+                  pageToShow = 10;
+                  Navigator.pushNamed(context, '/maintenance');
+                },
+                leading: Icon(
+                  Icons.build_circle_outlined,
+                  color: pageToShow == 10 ? Colors.white : Color(0xFF9A9A9A),
+                ),
+                title: Text(
+                  "Maintenance",
+                  style: TextStyle(
+                      color:
+                          pageToShow == 10 ? Colors.white : Color(0xFF9A9A9A),
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
           Spacer(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),

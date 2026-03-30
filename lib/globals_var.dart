@@ -1,7 +1,9 @@
 library my_prj.globals;
+
 import 'dart:async';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nweb/service/API/API_Manager.dart';
+import 'package:nweb/service/logging/action_log_config.dart';
 import 'package:nweb/service/nwc-settings/magasinOutils.dart';
 import 'package:nweb/service/nwc-settings/position.dart';
 import 'package:nweb/service/nwc-settings/offset.dart';
@@ -10,22 +12,25 @@ import 'service/ObjectModelManager.dart';
 import 'service/ObjectModelMoveManager.dart';
 import 'service/ObjectModelJobManager.dart';
 import 'service/gCode/gCodeProgram.dart';
+import 'service/maintenance/maintenance_config.dart';
 import 'service/nwc-settings/PalperOutil.dart';
 import 'service/nwc-settings/nwc-settings.dart';
+import 'service/security/user_accounts_config.dart';
 import 'service/system/SystemsFilesElement.dart';
 import 'service/system/replyListFiFO.dart';
 
 String pwd = "douzil";
 String Title = DefaultTitle;
 String DefaultTitle = version;
-String version = "Version 1.10.2";
+String version = "Version 1.10.3";
 final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 bool zSafetyPopupIsShown = false;
 bool AdminLogged = false;
 String bottomMenuToShow = "Menu1";
 bool viewListOfOperation = true;
 int positions = 4;
-int secondsElapsedSinceBeginning =0; // Temps écoulé depuis le début en secondes
+int secondsElapsedSinceBeginning =
+    0; // Temps écoulé depuis le début en secondes
 String globalTimeValue = "00:00:00";
 double pourcentageComplet = 0.0; // Pourcentage complet de la tâche
 bool isJobStartedByUser = false; // Si le programme a bien été lancé par le User
@@ -34,19 +39,25 @@ bool popUpCaissonIsShown = false;
 bool isRestarting = false;
 double compensation = 0; // BabyStep Z
 double sliderValueSpeedFactor = 0;
-bool isJobPausedByUser =false; // Si le programme a bien été mis en pause par le User
+bool isJobPausedByUser =
+    false; // Si le programme a bien été mis en pause par le User
 bool isErrorDriver = false;
 List<String> commandHistory = []; // Historique cmd gcode
 int maxLineOfProg = 0;
 var selectedGcodeFileIndex = 0;
 bool DefaultConfigWasLoaded = false;
-bool isModeDegrade=false;
+bool isModeDegrade = false;
 
-bool programmEndUpByUser = false; 
+bool programmEndUpByUser = false;
 
 MachineObjectModel machineObjectModel = MachineObjectModel();
 ObjectModelMove objectModelMove = ObjectModelMove();
 ObjectModelJob objectModelJob = ObjectModelJob();
+MaintenanceConfig maintenanceConfig = MaintenanceConfig.defaults();
+UserAccountsConfig userAccountsConfig = UserAccountsConfig.defaults();
+ActionLogConfig actionLogConfig = ActionLogConfig.defaults();
+String currentUserId = "";
+String currentUserName = "";
 
 enum MachineMode { cnc, fff, laser, unknow }
 
@@ -112,8 +123,8 @@ MachineN02Config MyMachineN02Config = MachineN02Config(
     HasHeatBed: 0,
     HasFanOnEnclosure: 0,
     HasLedOnEnclosure: 0,
-    HasLockOnEnclosure :0,
-    HasWebAcess :0,
+    HasLockOnEnclosure: 0,
+    HasWebAcess: 0,
     HasACT: 0,
     VitesseBroche: 24000,
     VitesseDefaut: 6400,
@@ -143,8 +154,8 @@ MachineN02Config MyMachineN02ConfigDeflaut = MachineN02Config(
     HasHeatBed: 0,
     HasFanOnEnclosure: 0,
     HasLedOnEnclosure: 0,
-    HasLockOnEnclosure : 0,
-    HasWebAcess :0,
+    HasLockOnEnclosure: 0,
+    HasWebAcess: 0,
     HasACT: 0,
     VitesseBroche: 24000,
     VitesseDefaut: 6400,
@@ -183,7 +194,6 @@ StreamController<List<String>> controllerContentGcodeToDisplay =
     StreamController<List<String>>.broadcast();
 Stream streamcontrollerContentGcodeToDisplay =
     controllerContentGcodeToDisplay.stream;
-
 
 ValueNotifier<int> cursorNotifier = ValueNotifier<int>(0);
 
@@ -297,7 +307,7 @@ void checkAndShowDialog(context) async {
 void checkCaissonOpen(BuildContext context) {
   popUpCaissonIsShown = false;
   Timer.periodic(const Duration(milliseconds: 600), (timer) {
-    if (AdminLogged == false && isModeDegrade==false) {
+    if (AdminLogged == false && isModeDegrade == false) {
       if ((machineObjectModel.result?.sensors?.gpIn?[10]?.value ?? 1) == 0) {
         if (popUpCaissonIsShown == false) {
           popUpCaissonIsShown = true;

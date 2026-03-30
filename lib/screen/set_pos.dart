@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
+import 'package:nweb/service/logging/action_logger.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:nweb/service/nwc-settings/position.dart';
 import '../menus/side_menu.dart';
+import '../widgetUtils/account_toolbar_button.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -73,7 +75,8 @@ class _SetPositionState extends State<SetPosition> {
     pageToShow = 8;
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
+      if (global.MyMachineN02Config.HasFanOnEnclosure == 1)
+        global.checkCaissonOpen(context);
     });
   }
 
@@ -406,6 +409,15 @@ class SetPosState extends State<SetPos> {
         global.MyMachineN02Config.toJson().length.toString(),
         Uint8List.fromList(
             machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
+    unawaited(
+      ActionLogger.log(
+        category: 'settings',
+        action: 'save_positions',
+        target: 'nwc-settings.json',
+        details: 'Sauvegarde des positions utilisateur',
+        result: 'ok',
+      ),
+    );
   }
 
   @override
@@ -420,6 +432,9 @@ class SetPosState extends State<SetPos> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Color(0xFF20917F)),
         backgroundColor: Color(0xFFF0F0F3),
+        actions: const <Widget>[
+          AccountToolbarButton(),
+        ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/menus/side_menu.dart';
 import 'package:nweb/service/API/API_Manager.dart';
+import 'package:nweb/widgetUtils/account_toolbar_button.dart';
 import 'package:nweb/widgetUtils/window.dart';
 
 import '../globals_var.dart' as global;
@@ -254,7 +255,8 @@ class _TopView3DPainter extends CustomPainter {
 
     final double effectiveScale = scale * cameraZoom;
     final double sx = (size.width / 2.0) + (x1 * effectiveScale) + cameraPan.dx;
-    final double sy = (size.height / 2.0) - (y2 * effectiveScale) + cameraPan.dy;
+    final double sy =
+        (size.height / 2.0) - (y2 * effectiveScale) + cameraPan.dy;
     return Offset(sx, sy);
   }
 
@@ -435,7 +437,10 @@ class _TopView3DPainter extends CustomPainter {
       );
     }
 
-    if (points.isEmpty || pointsX < 2 || pointsY < 2 || points.length < pointsX * pointsY) {
+    if (points.isEmpty ||
+        pointsX < 2 ||
+        pointsY < 2 ||
+        points.length < pointsX * pointsY) {
       return;
     }
 
@@ -492,7 +497,8 @@ class _TopView3DPainter extends CustomPainter {
           zExaggeration: zExaggeration,
         );
 
-        final double avgDelta = (p00.deltaZ + p10.deltaZ + p11.deltaZ + p01.deltaZ) / 4;
+        final double avgDelta =
+            (p00.deltaZ + p10.deltaZ + p11.deltaZ + p01.deltaZ) / 4;
         final Path cell = Path()
           ..moveTo(v00.dx, v00.dy)
           ..lineTo(v10.dx, v10.dy)
@@ -533,7 +539,8 @@ class _TopView3DPainter extends CustomPainter {
         isSelected ? 5.4 : 3.4,
         Paint()
           ..style = PaintingStyle.fill
-          ..color = isSelected ? const Color(0xFF1F8A76) : const Color(0xFF243044),
+          ..color =
+              isSelected ? const Color(0xFF1F8A76) : const Color(0xFF243044),
       );
     }
   }
@@ -572,13 +579,20 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
   static const double _min3DZoom = 0.45;
   static const double _max3DZoom = 4.50;
 
-  final TextEditingController _minXController = TextEditingController(text: "20");
-  final TextEditingController _maxXController = TextEditingController(text: "180");
-  final TextEditingController _minYController = TextEditingController(text: "20");
-  final TextEditingController _maxYController = TextEditingController(text: "180");
-  final TextEditingController _pointsXController = TextEditingController(text: "5");
-  final TextEditingController _pointsYController = TextEditingController(text: "5");
-  final TextEditingController _safeZController = TextEditingController(text: "189");
+  final TextEditingController _minXController =
+      TextEditingController(text: "20");
+  final TextEditingController _maxXController =
+      TextEditingController(text: "180");
+  final TextEditingController _minYController =
+      TextEditingController(text: "20");
+  final TextEditingController _maxYController =
+      TextEditingController(text: "180");
+  final TextEditingController _pointsXController =
+      TextEditingController(text: "5");
+  final TextEditingController _pointsYController =
+      TextEditingController(text: "5");
+  final TextEditingController _safeZController =
+      TextEditingController(text: "189");
   final TextEditingController _manualZController = TextEditingController();
   final TextEditingController _mapFileNameController =
       TextEditingController(text: "heightmap_piece.csv");
@@ -614,7 +628,12 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
   int _activePointerCount = 0;
   bool _isInMultiTouchGesture = false;
   bool _hasShownBetaWarning = false;
-  static const List<String> _zJogStepOptions = <String>["10", "1", "0.1", "0.01"];
+  static const List<String> _zJogStepOptions = <String>[
+    "10",
+    "1",
+    "0.1",
+    "0.01"
+  ];
   String _selectedZJogStep = "1";
   double? _referenceZ;
   bool _isBusy = false;
@@ -685,19 +704,22 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
 
     if (multiTouch) {
       setState(() {
-        _cameraZoom = (_gestureStartZoom * details.scale).clamp(_min3DZoom, _max3DZoom);
+        _cameraZoom =
+            (_gestureStartZoom * details.scale).clamp(_min3DZoom, _max3DZoom);
         _cameraYaw = _gestureStartYaw + details.rotation;
-        _cameraPan = _gestureStartPan + (_gestureStartFocalPoint - details.focalPoint);
+        _cameraPan =
+            _gestureStartPan + (_gestureStartFocalPoint - details.focalPoint);
       });
       return;
     }
 
     setState(() {
       _cameraYaw += details.focalPointDelta.dx * 0.0085;
-      _cameraPitch =
-          (_cameraPitch - (details.focalPointDelta.dy * 0.0065)).clamp(_min3DPitch, _max3DPitch);
+      _cameraPitch = (_cameraPitch - (details.focalPointDelta.dy * 0.0065))
+          .clamp(_min3DPitch, _max3DPitch);
       if ((details.scale - 1.0).abs() > 0.0001) {
-        _cameraZoom = (_cameraZoom * details.scale).clamp(_min3DZoom, _max3DZoom);
+        _cameraZoom =
+            (_cameraZoom * details.scale).clamp(_min3DZoom, _max3DZoom);
       }
     });
   }
@@ -837,7 +859,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
   }
 
   bool _machineCanCalibrate() {
-    final String status = global.machineObjectModel.result?.state?.status?.toString() ?? "";
+    final String status =
+        global.machineObjectModel.result?.state?.status?.toString() ?? "";
     return status == "idle" || status == "paused";
   }
 
@@ -869,7 +892,12 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
     final int? pointsX = _parseInt(_pointsXController.text);
     final int? pointsY = _parseInt(_pointsYController.text);
 
-    if (minX == null || maxX == null || minY == null || maxY == null || pointsX == null || pointsY == null) {
+    if (minX == null ||
+        maxX == null ||
+        minY == null ||
+        maxY == null ||
+        pointsX == null ||
+        pointsY == null) {
       setState(() {
         _status = "Valeurs invalides dans la configuration de grille.";
       });
@@ -1127,7 +1155,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
       return null;
     }
     final String fileName = parts.last;
-    final String path = parts.length > 1 ? parts.sublist(0, parts.length - 1).join("/") : "sys";
+    final String path =
+        parts.length > 1 ? parts.sublist(0, parts.length - 1).join("/") : "sys";
     return MapEntry<String, String>(path, fileName);
   }
 
@@ -1144,7 +1173,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
     int descriptorLineIndex = -1;
     List<String> descriptor = <String>[];
     for (int i = 0; i < lines.length; i++) {
-      final List<String> values = lines[i].split(",").map((e) => e.trim()).toList();
+      final List<String> values =
+          lines[i].split(",").map((e) => e.trim()).toList();
       if (values.length >= 11 &&
           values[0].toUpperCase() == "X" &&
           values[1].toUpperCase() == "Y") {
@@ -1205,7 +1235,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
   Future<void> _loadAndVisualizeActiveMap() async {
     final String compensationFileRaw =
         global.objectModelMove.result?.compensation?.file?.toString() ?? "";
-    MapEntry<String, String>? target = _resolveCompensationPath(compensationFileRaw);
+    MapEntry<String, String>? target =
+        _resolveCompensationPath(compensationFileRaw);
     if (target == null) {
       final String fallbackFile = _normalizeMapFileName();
       target = MapEntry<String, String>("sys", fallbackFile);
@@ -1213,8 +1244,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
     final MapEntry<String, String> resolvedTarget = target;
 
     await _runBusyTask(() async {
-      final String content =
-          await API_Manager().downLoadAFile(resolvedTarget.key, resolvedTarget.value);
+      final String content = await API_Manager()
+          .downLoadAFile(resolvedTarget.key, resolvedTarget.value);
       if (content.toLowerCase() == "nok") {
         if (!mounted) return;
         setState(() {
@@ -1238,10 +1269,12 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
         _captureUserToMachineTransform();
       }
       final bool hasTransform = _hasUserToMachineTransform;
-      final double stepX =
-          parsed.pointsX > 1 ? (parsed.maxX - parsed.minX) / (parsed.pointsX - 1) : 0;
-      final double stepY =
-          parsed.pointsY > 1 ? (parsed.maxY - parsed.minY) / (parsed.pointsY - 1) : 0;
+      final double stepX = parsed.pointsX > 1
+          ? (parsed.maxX - parsed.minX) / (parsed.pointsX - 1)
+          : 0;
+      final double stepY = parsed.pointsY > 1
+          ? (parsed.maxY - parsed.minY) / (parsed.pointsY - 1)
+          : 0;
 
       final List<_LevelPoint> loaded = <_LevelPoint>[];
       int index = 0;
@@ -1275,10 +1308,14 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
         _selectedIndex = 0;
         _pointsX = parsed.pointsX;
         _pointsY = parsed.pointsY;
-        _minX = hasTransform ? parsed.minX - _offsetXMachineMinusUser : parsed.minX;
-        _maxX = hasTransform ? parsed.maxX - _offsetXMachineMinusUser : parsed.maxX;
-        _minY = hasTransform ? parsed.minY - _offsetYMachineMinusUser : parsed.minY;
-        _maxY = hasTransform ? parsed.maxY - _offsetYMachineMinusUser : parsed.maxY;
+        _minX =
+            hasTransform ? parsed.minX - _offsetXMachineMinusUser : parsed.minX;
+        _maxX =
+            hasTransform ? parsed.maxX - _offsetXMachineMinusUser : parsed.maxX;
+        _minY =
+            hasTransform ? parsed.minY - _offsetYMachineMinusUser : parsed.minY;
+        _maxY =
+            hasTransform ? parsed.maxY - _offsetYMachineMinusUser : parsed.maxY;
         _referenceZ = 0;
         _mapFileNameController.text = resolvedTarget.value;
         _status =
@@ -1340,7 +1377,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
     int measuredPoints = 0;
     final StringBuffer buffer = StringBuffer();
     buffer.writeln("RepRapFirmware height map file v2 generated by nweb");
-    buffer.writeln("axis0,axis1,min0,max0,min1,max1,radius,spacing0,spacing1,num0,num1");
+    buffer.writeln(
+        "axis0,axis1,min0,max0,min1,max1,radius,spacing0,spacing1,num0,num1");
     buffer.writeln(
       "X,Y,${minXMachine.toStringAsFixed(2)},${maxXMachine.toStringAsFixed(2)},${minYMachine.toStringAsFixed(2)},${maxYMachine.toStringAsFixed(2)},-1.00,${spacingX.toStringAsFixed(2)},${spacingY.toStringAsFixed(2)},$_pointsX,$_pointsY",
     );
@@ -1411,7 +1449,10 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
     if (_clipCompensationEnabled) {
       final double? positive = _parseDouble(_clipPositiveController.text);
       final double? negative = _parseDouble(_clipNegativeController.text);
-      if (positive == null || negative == null || positive <= 0 || negative <= 0) {
+      if (positive == null ||
+          negative == null ||
+          positive <= 0 ||
+          negative <= 0) {
         setState(() {
           _status =
               "Renseigner des limites d'ecretage valides (> 0) pour Z+ et Z-.";
@@ -1544,9 +1585,10 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
   }
 
   bool _isCompensationEnabled() {
-    final String type =
-        global.objectModelMove.result?.compensation?.type?.toString().toLowerCase() ??
-            "none";
+    final String type = global.objectModelMove.result?.compensation?.type
+            ?.toString()
+            .toLowerCase() ??
+        "none";
     return type != "none" && type != "nil" && type.isNotEmpty;
   }
 
@@ -1859,10 +1901,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
   }
 
   _DeltaRange _deltaRange() {
-    final List<double> values = _points
-        .where((p) => p.hasMeasurement)
-        .map((p) => p.deltaZ!)
-        .toList();
+    final List<double> values =
+        _points.where((p) => p.hasMeasurement).map((p) => p.deltaZ!).toList();
     if (values.isEmpty) {
       return const _DeltaRange(min: null, max: null);
     }
@@ -1992,7 +2032,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
               right: 8,
               bottom: 8,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: const Color(0xDDF3F6FA),
                   borderRadius: BorderRadius.circular(8),
@@ -2127,7 +2168,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
             runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              _buildLegendChip(const Color(0x55A0A4AF), "Non defini ($undefinedCount)"),
+              _buildLegendChip(
+                  const Color(0x55A0A4AF), "Non defini ($undefinedCount)"),
               _buildLegendChip(const Color(0xAA6CA8FF), "Z faible"),
               _buildLegendChip(const Color(0xCCE85A4F), "Z eleve"),
             ],
@@ -2190,7 +2232,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
             Text(
               enabled ? "ON" : "OFF",
               style: TextStyle(
-                color: enabled ? const Color(0xFF1F8A76) : const Color(0xFF7A818D),
+                color:
+                    enabled ? const Color(0xFF1F8A76) : const Color(0xFF7A818D),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -2216,9 +2259,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
       itemBuilder: (BuildContext context, int index) {
         final _LevelPoint point = _points[index];
         final bool isSelected = index == _selectedIndex;
-        final Color rowBorder = isSelected
-            ? const Color(0xFF1F8A76)
-            : const Color(0xFFD5DAE3);
+        final Color rowBorder =
+            isSelected ? const Color(0xFF1F8A76) : const Color(0xFFD5DAE3);
         final Color rowBg = isSelected
             ? const Color(0x1A20917F)
             : (index.isEven ? const Color(0xFFF7F9FC) : Colors.white);
@@ -2230,7 +2272,7 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                     ? const Color(0xFF4C9A63)
                     : point.source == "map active"
                         ? const Color(0xFF7A4BC0)
-                    : const Color(0xFF8A94A7);
+                        : const Color(0xFF8A94A7);
         return InkWell(
           onTap: () {
             setState(() {
@@ -2255,7 +2297,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                       color: isSelected
                           ? const Color(0xFF1F8A76)
                           : const Color(0xFF707585),
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                 ),
@@ -2295,14 +2338,18 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: sourceColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: sourceColor.withValues(alpha: 0.35)),
+                        border: Border.all(
+                            color: sourceColor.withValues(alpha: 0.35)),
                       ),
                       child: Text(
-                        point.source.isEmpty ? "source: -" : "source: ${point.source}",
+                        point.source.isEmpty
+                            ? "source: -"
+                            : "source: ${point.source}",
                         style: TextStyle(
                           color: sourceColor,
                           fontWeight: FontWeight.w600,
@@ -2327,7 +2374,9 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
         global.objectModelMove.result?.compensation?.file?.toString() ?? "-";
     final bool compensationEnabled = _isCompensationEnabled();
     final double commandPanelHeight =
-        (MediaQuery.of(context).size.height * 0.42).clamp(340.0, 520.0).toDouble();
+        (MediaQuery.of(context).size.height * 0.42)
+            .clamp(340.0, 520.0)
+            .toDouble();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F3),
@@ -2339,6 +2388,9 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Color(0xFF20917F)),
         backgroundColor: const Color(0xFFF0F0F3),
+        actions: const <Widget>[
+          AccountToolbarButton(),
+        ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -2363,7 +2415,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                             hintText: "Gcode",
                             border: OutlineInputBorder(
                               borderSide: BorderSide(),
-                              borderRadius: BorderRadius.all(Radius.circular(5)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
                               gapPadding: 5.0,
                             ),
                           ),
@@ -2420,10 +2473,12 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: LayoutBuilder(
-                    builder: (BuildContext context, BoxConstraints constraints) {
+                    builder:
+                        (BuildContext context, BoxConstraints constraints) {
                       return SingleChildScrollView(
                         child: ConstrainedBox(
-                          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                          constraints:
+                              BoxConstraints(minHeight: constraints.maxHeight),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -2439,11 +2494,14 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                                   _buildNumericField(_maxXController, "Max X"),
                                   _buildNumericField(_minYController, "Min Y"),
                                   _buildNumericField(_maxYController, "Max Y"),
-                                  _buildNumericField(_pointsXController, "Pts X",
+                                  _buildNumericField(
+                                      _pointsXController, "Pts X",
                                       integerOnly: true),
-                                  _buildNumericField(_pointsYController, "Pts Y",
+                                  _buildNumericField(
+                                      _pointsYController, "Pts Y",
                                       integerOnly: true),
-                                  _buildNumericField(_safeZController, "Zsafe M"),
+                                  _buildNumericField(
+                                      _safeZController, "Zsafe M"),
                                   SizedBox(
                                     width: 180,
                                     child: TextFormField(
@@ -2479,7 +2537,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                                     label: "Point -",
                                     tooltipMessage:
                                         "Selectionne le point precedent (aucune commande G-code).",
-                                    onPressed: _isBusy ? null : _selectPreviousPoint,
+                                    onPressed:
+                                        _isBusy ? null : _selectPreviousPoint,
                                     icon: Icons.arrow_back_ios_new_rounded,
                                     backgroundColor: const Color(0xFFE6EBF3),
                                     foregroundColor: const Color(0xFF425067),
@@ -2488,7 +2547,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                                     label: "Point +",
                                     tooltipMessage:
                                         "Selectionne le point suivant (aucune commande G-code).",
-                                    onPressed: _isBusy ? null : _selectNextPoint,
+                                    onPressed:
+                                        _isBusy ? null : _selectNextPoint,
                                     icon: Icons.arrow_forward_ios_rounded,
                                     backgroundColor: const Color(0xFFE6EBF3),
                                     foregroundColor: const Color(0xFF425067),
@@ -2555,8 +2615,9 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                                     label: "Palper (G30 S-1)",
                                     tooltipMessage:
                                         "Palpe au point courant. Envoie G-code: G30 S-1.",
-                                    onPressed:
-                                        _isBusy || _points.isEmpty ? null : _captureProbeZ,
+                                    onPressed: _isBusy || _points.isEmpty
+                                        ? null
+                                        : _captureProbeZ,
                                     icon: Icons.track_changes_rounded,
                                     backgroundColor: const Color(0xFF755CBE),
                                     foregroundColor: Colors.white,
@@ -2585,7 +2646,8 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                                             _saveHeightmapFile(
                                                 activateAfterSave: true);
                                           },
-                                    icon: Icons.playlist_add_check_circle_rounded,
+                                    icon:
+                                        Icons.playlist_add_check_circle_rounded,
                                     backgroundColor: const Color(0xFF1F8A76),
                                     foregroundColor: Colors.white,
                                   ),
@@ -2593,8 +2655,9 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                                     label: "Charger map active",
                                     tooltipMessage:
                                         "Telecharge le fichier de compensation actif (ou le fichier map si aucun actif), parse le CSV et l'affiche dans la vue schematique.",
-                                    onPressed:
-                                        _isBusy ? null : _loadAndVisualizeActiveMap,
+                                    onPressed: _isBusy
+                                        ? null
+                                        : _loadAndVisualizeActiveMap,
                                     icon: Icons.cloud_download_rounded,
                                     backgroundColor: const Color(0xFF2C5FA8),
                                     foregroundColor: Colors.white,
@@ -2604,7 +2667,9 @@ class _LevelCalibrationScreenState extends State<LevelCalibrationScreen> {
                                     label: "Supprimer map",
                                     tooltipMessage:
                                         "Desactive d'abord la compensation, demande le passage de Z en unhomed, puis supprime le fichier map. Envoie G-code: G29 S2 puis M18 Z.",
-                                    onPressed: _isBusy ? null : _deleteCompensationFile,
+                                    onPressed: _isBusy
+                                        ? null
+                                        : _deleteCompensationFile,
                                     icon: Icons.delete_outline_rounded,
                                     backgroundColor: const Color(0xFF9A3940),
                                     foregroundColor: Colors.white,

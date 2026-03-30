@@ -10,6 +10,7 @@ import 'package:nweb/service/API/API_Manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import '../widgetUtils/window.dart';
+import '../widgetUtils/account_toolbar_button.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import '../dashBoardWidgets/coord_machine.dart';
@@ -92,7 +93,6 @@ class JobScreenState extends State<JobScreen> {
   List<_GcodeLineView> _visibleGcodeLines = <_GcodeLineView>[];
   final List<Line3D> _executedTrajectoryLines = <Line3D>[];
 
-
   @override
   void initState() {
     pageToShow = 4;
@@ -103,7 +103,8 @@ class JobScreenState extends State<JobScreen> {
     });
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
+      if (global.MyMachineN02Config.HasFanOnEnclosure == 1)
+        global.checkCaissonOpen(context);
     });
 
     sliderValue =
@@ -117,7 +118,8 @@ class JobScreenState extends State<JobScreen> {
     _gcodeRefreshTimer = Timer.periodic(const Duration(milliseconds: 600), (_) {
       _handleGcodeCacheLifecycle();
     });
-    Future.microtask(() => _handleGcodeCacheLifecycle(forceWindowRefresh: true));
+    Future.microtask(
+        () => _handleGcodeCacheLifecycle(forceWindowRefresh: true));
   }
 
   @override
@@ -129,7 +131,8 @@ class JobScreenState extends State<JobScreen> {
     super.dispose();
   }
 
-  Future<void> _handleGcodeCacheLifecycle({bool forceWindowRefresh = false}) async {
+  Future<void> _handleGcodeCacheLifecycle(
+      {bool forceWindowRefresh = false}) async {
     if (_isManagingGcodeCache || !mounted) return;
     _isManagingGcodeCache = true;
 
@@ -234,8 +237,8 @@ class JobScreenState extends State<JobScreen> {
 
     try {
       _updateStatusMessage("Téléchargement du G-code en cours...");
-      final bool downloaded =
-          await API_Manager().dlFileToTempDir(fileRef.directory, fileRef.fileName);
+      final bool downloaded = await API_Manager()
+          .dlFileToTempDir(fileRef.directory, fileRef.fileName);
       if (!downloaded) {
         _updateStatusMessage("Impossible de télécharger le G-code en cours.");
         return false;
@@ -276,7 +279,8 @@ class JobScreenState extends State<JobScreen> {
       } catch (_) {}
     }
 
-    if ((rawPath == null || rawPath.trim().isEmpty) && global.progName.isNotEmpty) {
+    if ((rawPath == null || rawPath.trim().isEmpty) &&
+        global.progName.isNotEmpty) {
       rawPath = 'gcodes/${global.progName}';
     }
 
@@ -289,10 +293,8 @@ class JobScreenState extends State<JobScreen> {
     normalized = normalized.replaceFirst(RegExp(r"^/+"), "");
     if (normalized.isEmpty) return null;
 
-    final List<String> parts = normalized
-        .split("/")
-        .where((String e) => e.trim().isNotEmpty)
-        .toList();
+    final List<String> parts =
+        normalized.split("/").where((String e) => e.trim().isNotEmpty).toList();
     if (parts.isEmpty) return null;
 
     final String fileName = parts.removeLast();
@@ -462,7 +464,8 @@ class JobScreenState extends State<JobScreen> {
       if (token.length < 2) continue;
       final String axis = token[0];
       if (axis != "X" && axis != "Y" && axis != "Z") continue;
-      final double? value = double.tryParse(token.substring(1).replaceAll(",", "."));
+      final double? value =
+          double.tryParse(token.substring(1).replaceAll(",", "."));
       if (value != null) {
         axes[axis] = value;
       }
@@ -513,7 +516,8 @@ class JobScreenState extends State<JobScreen> {
   }
 
   void _centerCursorLineInView() {
-    if (!_gcodeScrollController.hasClients || _visibleGcodeLines.isEmpty) return;
+    if (!_gcodeScrollController.hasClients || _visibleGcodeLines.isEmpty)
+      return;
 
     final int cursorIndex =
         _visibleGcodeLines.indexWhere((line) => line.isCursorLine);
@@ -554,8 +558,10 @@ class JobScreenState extends State<JobScreen> {
     return result;
   }
 
-  Future<List<_GcodeLineView>> _readLinesAroundCursor(int cursorLineIndex) async {
-    if (_cachedJobFile == null || _lineStartOffsets.isEmpty) return <_GcodeLineView>[];
+  Future<List<_GcodeLineView>> _readLinesAroundCursor(
+      int cursorLineIndex) async {
+    if (_cachedJobFile == null || _lineStartOffsets.isEmpty)
+      return <_GcodeLineView>[];
 
     final int totalLines = _lineStartOffsets.length;
     final int safeCursor = cursorLineIndex.clamp(0, totalLines - 1);
@@ -787,11 +793,10 @@ class JobScreenState extends State<JobScreen> {
 
   Widget _buildLiveGcodePanel() {
     final int cursorByte = _currentCursorByte();
-    final String machineStatus =
-        _isSimulationMode
-            ? "simulation"
-            : (global.machineObjectModel.result?.state?.status?.toString() ??
-                "unknown");
+    final String machineStatus = _isSimulationMode
+        ? "simulation"
+        : (global.machineObjectModel.result?.state?.status?.toString() ??
+            "unknown");
     final int totalLines = _lineStartOffsets.length;
 
     return Container(
@@ -844,7 +849,9 @@ class JobScreenState extends State<JobScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  _cachedJobLabel.isEmpty ? "Fichier : --" : "Fichier : $_cachedJobLabel",
+                  _cachedJobLabel.isEmpty
+                      ? "Fichier : --"
+                      : "Fichier : $_cachedJobLabel",
                   style: const TextStyle(
                     color: Color(0xFF355E56),
                     fontWeight: FontWeight.w600,
@@ -996,6 +1003,9 @@ class JobScreenState extends State<JobScreen> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Color(0xFF20917F)),
         backgroundColor: Color(0xFFF0F0F3),
+        actions: const <Widget>[
+          AccountToolbarButton(),
+        ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -1587,11 +1597,15 @@ class JobScreenState extends State<JobScreen> {
                                               ?.state?.status
                                               .toString() ==
                                           "paused"
-                                      ? ()async {
-                                          await API_Manager().sendGcodeCommand("M0");
+                                      ? () async {
+                                          await API_Manager()
+                                              .sendGcodeCommand("M0");
                                           await API_Manager()
                                               .sendGcodeCommand("M106 P3 S0");
-                                          API_Manager().pushDataToDb(global.MyMachineN02Config.Serie.toString(), "PROGRAMM END UP BY USER");
+                                          API_Manager().pushDataToDb(
+                                              global.MyMachineN02Config.Serie
+                                                  .toString(),
+                                              "PROGRAMM END UP BY USER");
                                           global.programmEndUpByUser = true;
                                         }
                                       : null,

@@ -9,6 +9,7 @@ import '../menus/bottomMenu/bottomMenu.dart';
 import '../menus/family_menu.dart';
 import '../menus/side_menu.dart';
 import '../widgetUtils/ArretUrgence.dart';
+import '../widgetUtils/account_toolbar_button.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
@@ -26,7 +27,8 @@ class ConversationelScreenState extends State<ConversationelScreen> {
   void initState() {
     global.checkAndShowDialog(context);
     Future.delayed(const Duration(seconds: 2), () {
-      if(global.MyMachineN02Config.HasFanOnEnclosure==1)global.checkCaissonOpen(context);
+      if (global.MyMachineN02Config.HasFanOnEnclosure == 1)
+        global.checkCaissonOpen(context);
     });
   }
 
@@ -41,6 +43,9 @@ class ConversationelScreenState extends State<ConversationelScreen> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Color(0xFF20917F)),
         backgroundColor: Color(0xFFF0F0F3),
+        actions: const <Widget>[
+          AccountToolbarButton(),
+        ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -178,9 +183,7 @@ class ConversationelScreenState extends State<ConversationelScreen> {
                             padding: EdgeInsets.all(8.0),
                             child: BottomMenu(
                               onAnyTap: () {
-                                setState(() {
-                                  
-                                });
+                                setState(() {});
                               },
                             ),
                           ),

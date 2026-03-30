@@ -13,6 +13,7 @@ import '../dashBoardWidgets/mode_machine.dart';
 import '../dashBoardWidgets/print_tool.dart';
 import '../dashBoardWidgets/single_speed.dart';
 import '../menus/side_menu.dart';
+import '../widgetUtils/account_toolbar_button.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -78,20 +79,18 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void initState() {
-
     super.initState();
-    pageToShow=1;
+    pageToShow = 1;
     global.streamMachineObjectModel.listen((value) {
       setState(() {});
     });
 
-    if(global.machineObjectModel.result?.tools?[0].state == "active" && global.MyMachineN02Config.HasACT ==1)_onFraiseMustbeSelected();
+    if (global.machineObjectModel.result?.tools?[0].state == "active" &&
+        global.MyMachineN02Config.HasACT == 1) _onFraiseMustbeSelected();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _dashboardKeyboardFocusNode.requestFocus();
     });
-
-    
   }
 
   @override
@@ -101,7 +100,8 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   bool _isTextInputFocused() {
-    final BuildContext? focusedContext = FocusManager.instance.primaryFocus?.context;
+    final BuildContext? focusedContext =
+        FocusManager.instance.primaryFocus?.context;
     if (focusedContext == null) return false;
     return focusedContext.widget is EditableText;
   }
@@ -110,7 +110,8 @@ class DashboardScreenState extends State<DashboardScreen> {
     required String axis,
     required double deltaMm,
   }) async {
-    final String deltaText = deltaMm.toStringAsFixed(deltaMm.abs() >= 1 ? 0 : 3);
+    final String deltaText =
+        deltaMm.toStringAsFixed(deltaMm.abs() >= 1 ? 0 : 3);
     final String command =
         "M120\nG91\nG1 $axis$deltaText F${global.SpeedValue}\nM121\n";
     await API_Manager().sendGcodeCommand(command);
@@ -141,7 +142,8 @@ class DashboardScreenState extends State<DashboardScreen> {
 
     final bool isZShortcut = ctrlPressed &&
         altPressed &&
-        (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.arrowDown);
+        (key == LogicalKeyboardKey.arrowUp ||
+            key == LogicalKeyboardKey.arrowDown);
     if (isZShortcut) {
       final bool isZDown = key == LogicalKeyboardKey.arrowDown;
       final double zStep = shiftPressed ? 10.0 : 1.0;
@@ -182,29 +184,29 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   @override
-void didChangeDependencies() {
-  super.didChangeDependencies();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  // Exécuter les fonctions qui nécessitent `context` après l'initialisation complète.
-  Future.microtask(() {
-    if(global.MyMachineN02Config.HasFanOnEnclosure == 1) {
-      global.checkCaissonOpen(context);
-    }
-    global.checkAndShowDialog(context);
-    checkErrorDrive(context);
-
-    if(global.DefaultConfigWasLoaded) {
-      global.DefaultConfigWasLoaded = false;
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => const AlertDialog(title: Text("config standard")),
-        );
+    // Exécuter les fonctions qui nécessitent `context` après l'initialisation complète.
+    Future.microtask(() {
+      if (global.MyMachineN02Config.HasFanOnEnclosure == 1) {
+        global.checkCaissonOpen(context);
       }
-    }
-  });
-}
+      global.checkAndShowDialog(context);
+      checkErrorDrive(context);
 
+      if (global.DefaultConfigWasLoaded) {
+        global.DefaultConfigWasLoaded = false;
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) =>
+                const AlertDialog(title: Text("config standard")),
+          );
+        }
+      }
+    });
+  }
 
   // Fonction qui regarde si les 3 axes sont homes et va au dernières coordonées machines
   Future<void> actualiserHomeMachine() async {
@@ -245,7 +247,6 @@ void didChangeDependencies() {
             .then((value) => API_Manager().sendrr_reply());
 
         Navigator.of(context).pop();
-        
       }
     });
   }
@@ -258,12 +259,11 @@ void didChangeDependencies() {
           title: Text("Choisissez l'outil ACTUELLEMENT en broche"),
           content: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [ 
+            children: [
               Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: 
-                List.generate(5, (index) {
+                children: List.generate(5, (index) {
                   return Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: ElevatedButton(
@@ -276,8 +276,15 @@ void didChangeDependencies() {
                   );
                 }),
               ),
-            SizedBox(height: 20,),
-            Center(child: ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Pas d'outil")))
+              SizedBox(
+                height: 20,
+              ),
+              Center(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("Pas d'outil")))
             ],
           ),
         );
@@ -362,8 +369,6 @@ void didChangeDependencies() {
     });
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -375,6 +380,9 @@ void didChangeDependencies() {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Color(0xFF20917F)),
         backgroundColor: Color(0xFFF0F0F3),
+        actions: const <Widget>[
+          AccountToolbarButton(),
+        ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -444,15 +452,18 @@ void didChangeDependencies() {
                         onPressed: () {
                           setState(() {
                             global.commandHistory.add(ManualGcodeComand.text);
-                            
+
                             API_Manager()
                                 .sendGcodeCommand(ManualGcodeComand.text)
                                 .then((value) => API_Manager().sendrr_reply());
-                                ManualGcodeComand.clear();
+                            ManualGcodeComand.clear();
                           });
                           _dashboardKeyboardFocusNode.requestFocus();
                         },
-                        child: const Icon(Icons.send,color: Color(0xFF20917F),)),
+                        child: const Icon(
+                          Icons.send,
+                          color: Color(0xFF20917F),
+                        )),
                     Spacer(),
                     Text(
                       global.Title,
@@ -480,54 +491,76 @@ void didChangeDependencies() {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    SizedBox(width: 15,),
+                    SizedBox(
+                      width: 15,
+                    ),
                     Container(
                       width: 30,
                       height: 30,
-                      child: GestureDetector(onTap: () async {
-                        global.AdminLogged = !global.AdminLogged;
-                        if(global.AdminLogged==false) {
-                          API_Manager().sendGcodeCommand('M98 P"caissoncrea.g"');// reinitialiser les affectations du capteur de porte.
-                          global.Title = "$version";
-                         } 
-                        else {
-                          global.Title = "ADMIN MODE | $version";
+                      child: GestureDetector(
+                          onTap: () async {
+                            global.AdminLogged = !global.AdminLogged;
+                            if (global.AdminLogged == false) {
+                              API_Manager().sendGcodeCommand(
+                                  'M98 P"caissoncrea.g"'); // reinitialiser les affectations du capteur de porte.
+                              global.Title = "$version";
+                            } else {
+                              global.Title = "ADMIN MODE | $version";
                               await API_Manager().sendGcodeCommand(
                                   "M581 T1 P-1"); // on desactive toutes les pauses
-                              await API_Manager()
-                                  .sendGcodeCommand('M98 P"alarmdriver.g"'); //Mais on garde celle des erreurs Driver
-                        }
-                        setState(() {
-                          
-                        });
-                      },
-                        child: Container(color: global.AdminLogged==true ? Color(0x0020917F):Color(0x0020917F))),
+                              await API_Manager().sendGcodeCommand(
+                                  'M98 P"alarmdriver.g"'); //Mais on garde celle des erreurs Driver
+                            }
+                            setState(() {});
+                          },
+                          child: Container(
+                              color: global.AdminLogged == true
+                                  ? Color(0x0020917F)
+                                  : Color(0x0020917F))),
                     ),
-                    SizedBox(width: 15,),
-                    global.MyMachineN02Config.HasFanOnEnclosure == 1 ? Switch(value: global.isModeDegrade, onChanged: (value){
-                      if (!global.isModeDegrade) {
-                        showDialog(context: context, builder:((context) => AlertDialog(title: const Text("Mode Dégradé \nMDP: "),content:TextField(onSubmitted: (TextValue) {
-                        if (TextValue=="prudence"){
-                          global.isModeDegrade = true; 
-                          setState(() {
-                            
-                          }); 
-                          Navigator.of(context).pop();
-                          Navigator.pushNamed(context, '/dashboard');
-                        }
-                      },) ,))
-                      );}
-                      else {
-                        global.isModeDegrade = false;
-                        setState(() {
-                          
-                        });
-                        Navigator.pushNamed(context, '/dashboard');
-                      }
-                    }): Container(),
-                    SizedBox(width: 15,),
-                    global.MyMachineN02Config.HasFanOnEnclosure == 1 ?
-                    Container(width:10,height:10, color: global.isModeDegrade==true ? Colors.green:Colors.red): Container(),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    global.MyMachineN02Config.HasFanOnEnclosure == 1
+                        ? Switch(
+                            value: global.isModeDegrade,
+                            onChanged: (value) {
+                              if (!global.isModeDegrade) {
+                                showDialog(
+                                    context: context,
+                                    builder: ((context) => AlertDialog(
+                                          title: const Text(
+                                              "Mode Dégradé \nMDP: "),
+                                          content: TextField(
+                                            onSubmitted: (TextValue) {
+                                              if (TextValue == "prudence") {
+                                                global.isModeDegrade = true;
+                                                setState(() {});
+                                                Navigator.of(context).pop();
+                                                Navigator.pushNamed(
+                                                    context, '/dashboard');
+                                              }
+                                            },
+                                          ),
+                                        )));
+                              } else {
+                                global.isModeDegrade = false;
+                                setState(() {});
+                                Navigator.pushNamed(context, '/dashboard');
+                              }
+                            })
+                        : Container(),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    global.MyMachineN02Config.HasFanOnEnclosure == 1
+                        ? Container(
+                            width: 10,
+                            height: 10,
+                            color: global.isModeDegrade == true
+                                ? Colors.green
+                                : Colors.red)
+                        : Container(),
                   ],
                 ))),
           ],
@@ -543,98 +576,102 @@ void didChangeDependencies() {
             _dashboardKeyboardFocusNode.requestFocus();
           },
           child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Flexible(
-              flex: 4,
-              child: Row(
-                children: [
-                  Flexible(
-                      flex: 3,
-                      child: Column(
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                Flexible(
-                                    flex: 1,
-                                    child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Flexible(
+                  flex: 4,
+                  child: Row(
+                    children: [
+                      Flexible(
+                          flex: 3,
+                          child: Column(
+                            children: [
+                              Flexible(
+                                flex: 1,
+                                child: Column(
+                                  children: [
+                                    Flexible(
+                                        flex: 1,
+                                        child: Container(
+                                          child: Window(
+                                            title1: "Position ",
+                                            title2: " machine",
+                                            child: CoordoneesMachine(),
+                                          ),
+                                        )),
+                                    Flexible(
+                                        flex: 2,
+                                        child: Container(
+                                          child: Window(
+                                            title1: "Position ",
+                                            title2: " outil",
+                                            child: CoordoneesOutil(),
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                              ),
+                              Flexible(
+                                flex: 1,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
                                       child: Window(
-                                        title1: "Position ",
+                                        title1: "Info ",
+                                        title2: " System",
+                                        child: InfoSystem(),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      flex: 1,
+                                      child: Window(
+                                        title1: "Mode",
                                         title2: " machine",
-                                        child: CoordoneesMachine(),
+                                        child: ModeMachine(),
                                       ),
-                                    )),
-                                Flexible(
-                                    flex: 2,
-                                    child: Container(
+                                    ),
+                                    Flexible(
+                                      flex: 2,
                                       child: Window(
-                                        title1: "Position ",
-                                        title2: " outil",
-                                        child: CoordoneesOutil(),
-                                      ),
-                                    )),
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: Window(
-                                    title1: "Info ",
-                                    title2: " System",
-                                    child: InfoSystem(),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: Window(
-                                    title1: "Mode",
-                                    title2: " machine",
-                                    child: ModeMachine(),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 2,
-                                  child: Window(
-                                      title1: "Info. ",
-                                      title2: " Outil",
-                                    child: global.machineMode == MachineMode.cnc
-                                        ? SpindleSpeed()
-                                        : global.machineMode == MachineMode.fff
-                                            ? PrintToolsTemperature()
+                                        title1: "Info. ",
+                                        title2: " Outil",
+                                        child: global.machineMode ==
+                                                MachineMode.cnc
+                                            ? SpindleSpeed()
                                             : global.machineMode ==
-                                                    MachineMode.laser
-                                                ? LaserToolPower()
-                                                : Container(
-                                                    child: Text("unkown mode"),
-                                                  ),
-                                  ),
+                                                    MachineMode.fff
+                                                ? PrintToolsTemperature()
+                                                : global.machineMode ==
+                                                        MachineMode.laser
+                                                    ? LaserToolPower()
+                                                    : Container(
+                                                        child:
+                                                            Text("unkown mode"),
+                                                      ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )),
-                  Flexible(
-                      flex: 3,
-                      child: Window(
-                        title1: "Déplacement ",
-                        title2: " machine",
-                        child: DeplacementMachine(),
-                      )),
-                ],
-              ),
+                              ),
+                            ],
+                          )),
+                      Flexible(
+                          flex: 3,
+                          child: Window(
+                            title1: "Déplacement ",
+                            title2: " machine",
+                            child: DeplacementMachine(),
+                          )),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
         ),
       ),
     );

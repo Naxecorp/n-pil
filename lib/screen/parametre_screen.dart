@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
+import 'package:nweb/service/logging/action_logger.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:flutter/foundation.dart';
 import '../menus/side_menu.dart';
+import '../widgetUtils/account_toolbar_button.dart';
 import '../widgetUtils/window.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -79,9 +81,17 @@ class ParametreScreenState extends State<ParametreScreen> {
         content.length.toString(), Uint8List.fromList(utf8.encode(content)));
     await API_Manager().sendGcodeCommand('M98 P"CoordToolShop.g"');
 
-    await API_Manager().downLoadNwcSettings().then((value)  {
+    await API_Manager().downLoadNwcSettings().then((value) {
       global.MyMachineN02Config = value;
-  });
+    });
+
+    await ActionLogger.log(
+      category: 'settings',
+      action: 'save_machine_settings',
+      target: 'nwc-settings.json',
+      details: 'Parametres machine enregistres',
+      result: 'ok',
+    );
   }
 
   final MaterialStateProperty<Icon?> thumbIcon =
@@ -106,6 +116,9 @@ class ParametreScreenState extends State<ParametreScreen> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Color(0xFF20917F)),
         backgroundColor: Color(0xFFF0F0F3),
+        actions: const <Widget>[
+          AccountToolbarButton(),
+        ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -660,7 +673,6 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       }))
                                 ],
                               ),
-                              
                               Row(
                                 children: [
                                   Container(
@@ -937,44 +949,45 @@ class ParametreScreenState extends State<ParametreScreen> {
                                       child: Text("Charger position actuelle"))
                                   : Container(),
                             ),
-                          Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 10),
-                                    margin: const EdgeInsets.only(right: 15.0),
-                                    width: 200,
-                                    child: Text(
-                                      'Web access',
-                                      style: TextStyle(
-                                        color: Colors.black26,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 10),
+                                  margin: const EdgeInsets.only(right: 15.0),
+                                  width: 200,
+                                  child: Text(
+                                    'Web access',
+                                    style: TextStyle(
+                                      color: Colors.black26,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
                                     ),
                                   ),
-                                  Switch(
-                                      value: _hasWebAcess,
-                                      thumbIcon: thumbIcon,
-                                      activeColor: Color(0xFF20917F),
-                                      inactiveThumbColor:
-                                          Color.fromARGB(255, 15, 19, 18),
-                                      inactiveTrackColor:
-                                          Color.fromARGB(255, 237, 237, 237),
-                                      onChanged: global.AdminLogged ?((value) {
-                                        setState(() {
-                                          _hasWebAcess = value;
-                                          if (_hasWebAcess)
-                                            global.MyMachineN02Config
-                                                .HasWebAcess = 1;
-                                          else
-                                            global.MyMachineN02Config
-                                                .HasWebAcess = 0;
-                                        });
-                                      }):null)
-                                ],
-                              ),
-                              
+                                ),
+                                Switch(
+                                    value: _hasWebAcess,
+                                    thumbIcon: thumbIcon,
+                                    activeColor: Color(0xFF20917F),
+                                    inactiveThumbColor:
+                                        Color.fromARGB(255, 15, 19, 18),
+                                    inactiveTrackColor:
+                                        Color.fromARGB(255, 237, 237, 237),
+                                    onChanged: global.AdminLogged
+                                        ? ((value) {
+                                            setState(() {
+                                              _hasWebAcess = value;
+                                              if (_hasWebAcess)
+                                                global.MyMachineN02Config
+                                                    .HasWebAcess = 1;
+                                              else
+                                                global.MyMachineN02Config
+                                                    .HasWebAcess = 0;
+                                            });
+                                          })
+                                        : null)
+                              ],
+                            ),
                           ],
                         ),
                       ),

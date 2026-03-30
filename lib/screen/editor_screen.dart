@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
+import 'package:nweb/service/logging/action_logger.dart';
 import 'package:flutter/foundation.dart';
 import '../globals_var.dart' as global;
+import '../widgetUtils/account_toolbar_button.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 class EditorPage extends StatefulWidget {
@@ -27,11 +29,11 @@ class _EditorPageState extends State<EditorPage> {
   }
 
   @override
-void dispose() {
-  global.ContentofFileToEdit = '';
-  _editorController.dispose();
-  super.dispose();
-}
+  void dispose() {
+    global.ContentofFileToEdit = '';
+    _editorController.dispose();
+    super.dispose();
+  }
 
   // Fonction pour enregistrer le fichier modifié
   bool _isSaving = false;
@@ -86,7 +88,6 @@ void dispose() {
         Navigator.of(context, rootNavigator: true).pop(); // Ferme loading
     }
 
-
     if (mounted) {
       await showDialog(
         context: context,
@@ -112,8 +113,38 @@ void dispose() {
 
     if (result == "ok") {
       global.ContentofFileToEdit = _editorController.text;
+      if (pageToShow == 7) {
+        final String fileName = global.ListofSysFile!.isNotEmpty
+            ? global.ListofSysFile!
+                    .elementAt(global.selectedFileSysIndex)
+                    ?.name
+                    ?.toString() ??
+                "unknown"
+            : "unknown";
+        await ActionLogger.log(
+          category: 'sys_files',
+          action: 'edit_sys_file',
+          target: fileName,
+          details: 'Edition et sauvegarde de fichier /sys',
+          result: 'ok',
+        );
+      } else if (pageToShow == 3) {
+        final String fileName = global.ListofGcodeFile!.isNotEmpty
+            ? global.ListofGcodeFile!
+                    .elementAt(global.selectedGcodeFileIndex)
+                    ?.name
+                    ?.toString() ??
+                "unknown"
+            : "unknown";
+        await ActionLogger.log(
+          category: 'programme_files',
+          action: 'edit_gcode_file',
+          target: fileName,
+          details: 'Edition et sauvegarde de fichier gcode',
+          result: 'ok',
+        );
+      }
     }
-
   }
 
   @override
@@ -122,6 +153,7 @@ void dispose() {
       appBar: AppBar(
         title: Text("Éditeur de fichier"),
         actions: [
+          const AccountToolbarButton(),
           IconButton(
             icon: Icon(Icons.save),
             onPressed: saveFile, // Sauvegarder le fichier

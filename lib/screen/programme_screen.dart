@@ -8,11 +8,12 @@ import 'package:nweb/main.dart';
 import 'package:nweb/service/API/API_Manager.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:nweb/service/logging/action_logger.dart';
 import '../menus/side_menu.dart';
+import '../widgetUtils/account_toolbar_button.dart';
 import '../widgetUtils/gcodeViewer.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
@@ -272,15 +273,22 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
             ElevatedButton(
               child: const Text("Démarrer"),
               onPressed: () async {
+                final String selectedProgram = ListofGcodeFile!
+                    .elementAt(global.selectedGcodeFileIndex)!
+                    .name
+                    .toString();
                 global.secondsElapsedSinceBeginning = 0;
                 global.globalTimeValue = "00:00:00";
                 global.isJobStartedByUser = true;
-                await API_Manager().sendGcodeCommand('M32 "0:/gcodes/' +
-                    ListofGcodeFile!
-                        .elementAt(global.selectedGcodeFileIndex)!
-                        .name
-                        .toString() +
-                    '"');
+                final String startResult = await API_Manager()
+                    .sendGcodeCommand('M32 "0:/gcodes/$selectedProgram"');
+                await ActionLogger.log(
+                  category: 'programme',
+                  action: 'start_program',
+                  target: selectedProgram,
+                  details: 'Demarrage programme via M32',
+                  result: startResult,
+                );
                 await API_Manager().sendGcodeCommand('M106 P3 S255');
                 progName = ListofGcodeFile!
                     .elementAt(global.selectedGcodeFileIndex)!
@@ -321,47 +329,49 @@ class ProgrammeScreenState extends State<ProgrammeScreen>
     return ((part / total) * 100.0).toInt(); // Conversion implicite en double
   }
 
+  void analyzeGCode(String gcodeContent) {
+    List<String> lines = gcodeContent.split('\n');
 
-void analyzeGCode(String gcodeContent) {
-  List<String> lines = gcodeContent.split('\n');
+    double minZ = double.infinity;
+    double maxZ = -double.infinity;
+    Map<double, int> radiusOccurrences = {};
 
-  double minZ = double.infinity;
-  double maxZ = -double.infinity;
-  Map<double, int> radiusOccurrences = {};
+    RegExp zMove = RegExp(r'G1.*Z(-?\d*\.?\d+)');
+    RegExp arcMove = RegExp(r'G[23].*I(-?\d*\.?\d+).*J(-?\d*\.?\d+)');
 
-  RegExp zMove = RegExp(r'G1.*Z(-?\d*\.?\d+)');
-  RegExp arcMove = RegExp(r'G[23].*I(-?\d*\.?\d+).*J(-?\d*\.?\d+)');
+    for (var line in lines) {
+      Match? zMatch = zMove.firstMatch(line);
+      if (zMatch != null) {
+        double zValue = double.parse(zMatch.group(1)!);
+        minZ = min(minZ, zValue);
+        maxZ = max(maxZ, zValue);
+      }
 
-  for (var line in lines) {
-    Match? zMatch = zMove.firstMatch(line);
-    if (zMatch != null) {
-      double zValue = double.parse(zMatch.group(1)!);
-      minZ = min(minZ, zValue);
-      maxZ = max(maxZ, zValue);
+      Match? arcMatch = arcMove.firstMatch(line);
+      if (arcMatch != null) {
+        double iValue = double.parse(arcMatch.group(1)!);
+        double jValue = double.parse(arcMatch.group(2)!);
+        double radius = sqrt(pow(iValue, 2) + pow(jValue, 2));
+        radiusOccurrences[radius] = (radiusOccurrences[radius] ?? 0) + 1;
+      }
     }
 
-    Match? arcMatch = arcMove.firstMatch(line);
-    if (arcMatch != null) {
-      double iValue = double.parse(arcMatch.group(1)!);
-      double jValue = double.parse(arcMatch.group(2)!);
-      double radius = sqrt(pow(iValue, 2) + pow(jValue, 2));
-      radiusOccurrences[radius] = (radiusOccurrences[radius] ?? 0) + 1;
+    double estimatedDiameter = 0.0;
+    if (radiusOccurrences.isNotEmpty) {
+      estimatedDiameter = radiusOccurrences.entries
+              .reduce((a, b) => a.value > b.value ? a : b)
+              .key *
+          2;
     }
+
+    double maxAxialDepth = maxZ - minZ;
+
+    print(
+        'Estimation du diamètre de la fraise : ${estimatedDiameter.toStringAsFixed(2)} mm');
+    print(
+        'Profondeur de passe axiale maximale : ${maxAxialDepth.toStringAsFixed(2)} mm');
   }
 
-  double estimatedDiameter = 0.0;
-  if (radiusOccurrences.isNotEmpty) {
-    estimatedDiameter = radiusOccurrences.entries
-        .reduce((a, b) => a.value > b.value ? a : b)
-        .key * 2;
-  }
-
-  double maxAxialDepth = maxZ - minZ;
-
-  print('Estimation du diamètre de la fraise : ${estimatedDiameter.toStringAsFixed(2)} mm');
-  print('Profondeur de passe axiale maximale : ${maxAxialDepth.toStringAsFixed(2)} mm');
-}
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -373,6 +383,9 @@ void analyzeGCode(String gcodeContent) {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Color(0xFF20917F)),
         backgroundColor: Color(0xFFF0F0F3),
+        actions: const <Widget>[
+          AccountToolbarButton(),
+        ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -674,7 +687,6 @@ void analyzeGCode(String gcodeContent) {
                       child: Center(child: GcodeViewer()),
                     ),
                   ),
-                  
                   Flexible(
                     flex: 1,
                     child: Container(
@@ -1019,31 +1031,33 @@ void analyzeGCode(String gcodeContent) {
                             onPressed: global.machineObjectModel.result?.state
                                         ?.status ==
                                     "idle"
-                                ? () async{
+                                ? () async {
                                     if (ListofGcodeFile!
-                                      .elementAt(global.selectedGcodeFileIndex)!
-                                      .size! <
-                                  100000) {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return const AlertDialog(
-                                        title: Text("Chargement en cours..."),
-                                      );
-                                    });
-                                await API_Manager()
-                                    .downLoadAFile(
-                                        'gcodes',
-                                        ListofGcodeFile!
                                             .elementAt(
                                                 global.selectedGcodeFileIndex)!
-                                            .name
-                                            .toString())
-                                    .then((value) =>
-                                        global.ContentofFileToEdit = value);
-                                Navigator.of(context).pop();
-                                analyzeGCode(global.ContentofFileToEdit);
-                              }
+                                            .size! <
+                                        100000) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return const AlertDialog(
+                                              title: Text(
+                                                  "Chargement en cours..."),
+                                            );
+                                          });
+                                      await API_Manager()
+                                          .downLoadAFile(
+                                              'gcodes',
+                                              ListofGcodeFile!
+                                                  .elementAt(global
+                                                      .selectedGcodeFileIndex)!
+                                                  .name
+                                                  .toString())
+                                          .then((value) => global
+                                              .ContentofFileToEdit = value);
+                                      Navigator.of(context).pop();
+                                      analyzeGCode(global.ContentofFileToEdit);
+                                    }
                                   }
                                 : null,
                           ),

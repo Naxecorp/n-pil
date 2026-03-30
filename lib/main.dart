@@ -1,18 +1,24 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:nweb/screen/conversationel_screen.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:nweb/service/outils.dart';
+import 'package:nweb/service/maintenance/maintenance_config.dart';
+import 'package:nweb/service/logging/action_log_config.dart';
+import 'package:nweb/service/security/user_accounts_config.dart';
 import 'screen/admin_screen.dart';
 import 'screen/dashboard_screen.dart';
 import 'screen/editor_screen.dart';
 import 'screen/job_screen.dart';
 import 'screen/level_calibration_screen.dart';
+import 'screen/maintenance_screen.dart';
 import 'screen/origin_screen.dart';
 import 'screen/parametre_screen.dart';
 import 'screen/programme_screen.dart';
 import 'screen/set_pos.dart';
+import 'screen/user_login_screen.dart';
 import 'service/API/API_Manager.dart';
 import 'globals_var.dart' as global;
 import 'Loading_screen.dart';
@@ -28,7 +34,9 @@ Future<void> actualiserMachineObjectModel() async {
     API_Manager().getdataMachineObjectModel().then((machine) {
       global.machineObjectModel = machine;
       global.controllerMachineObjectModel.add(machine);
-      if(global.machineObjectModel.result?.job?.filePosition?.toInt()!=null)global.cursorNotifier.value=global.machineObjectModel.result?.job?.filePosition?.toInt()??0;
+      if (global.machineObjectModel.result?.job?.filePosition?.toInt() != null)
+        global.cursorNotifier.value =
+            global.machineObjectModel.result?.job?.filePosition?.toInt() ?? 0;
     });
   });
 }
@@ -39,7 +47,6 @@ Future<String> setDateTimeAndShowAnswer() async {
   await API_Manager().sendGcodeCommand("M905");
   return API_Manager().sendrr_reply();
 }
-  
 
 // Fonctions qui actualise le temps d'utilisation de la machine
 Future<void> actualiserMachineUsedTime() async {
@@ -68,113 +75,280 @@ Future<void> actualiserMoveObjectModel() async {
   });
 }
 
-void main() async {
+Future<void> loadMaintenanceConfig() async {
+  final String content =
+      await API_Manager().downLoadAFile("sys", MaintenanceConfig.fileName);
 
-  runApp(const LoadingScreen(message: "Starting",));
+  Future<void> uploadRepairedConfig(MaintenanceConfig config) async {
+    final String jsonContent = maintenanceConfigToJson(config);
+    await API_Manager().upLoadAFile(
+      "0:/sys/${MaintenanceConfig.fileName}",
+      jsonContent.length.toString(),
+      Uint8List.fromList(utf8.encode(jsonContent)),
+    );
+  }
+
+  if (content.toLowerCase() == "nok") {
+    final MaintenanceConfig fallback = MaintenanceConfig.defaults();
+    global.maintenanceConfig = fallback;
+    await uploadRepairedConfig(fallback);
+    return;
+  }
+
+  try {
+    final String sanitized = content.replaceFirst('\uFEFF', '');
+    final MaintenanceConfig parsed = maintenanceConfigFromJson(sanitized);
+    global.maintenanceConfig = parsed;
+  } catch (_) {
+    final MaintenanceConfig fallback = MaintenanceConfig.defaults();
+    global.maintenanceConfig = fallback;
+    await uploadRepairedConfig(fallback);
+  }
+}
+
+Future<void> loadUserAccountsConfig() async {
+  final String content =
+      await API_Manager().downLoadAFile("sys", UserAccountsConfig.fileName);
+
+  Future<void> uploadRepairedConfig(UserAccountsConfig config) async {
+    final String jsonContent = userAccountsConfigToJson(config);
+    await API_Manager().upLoadAFile(
+      "0:/sys/${UserAccountsConfig.fileName}",
+      jsonContent.length.toString(),
+      Uint8List.fromList(utf8.encode(jsonContent)),
+    );
+  }
+
+  if (content.toLowerCase() == "nok") {
+    final UserAccountsConfig fallback = UserAccountsConfig.defaults();
+    global.userAccountsConfig = fallback;
+    global.pwd = fallback.adminAccount?.pin ?? global.pwd;
+    await uploadRepairedConfig(fallback);
+    return;
+  }
+
+  try {
+    final String sanitized = content.replaceFirst('\uFEFF', '');
+    final UserAccountsConfig parsed = userAccountsConfigFromJson(sanitized);
+    global.userAccountsConfig = parsed;
+    global.pwd = parsed.adminAccount?.pin ?? global.pwd;
+  } catch (_) {
+    final UserAccountsConfig fallback = UserAccountsConfig.defaults();
+    global.userAccountsConfig = fallback;
+    global.pwd = fallback.adminAccount?.pin ?? global.pwd;
+    await uploadRepairedConfig(fallback);
+  }
+}
+
+Future<void> loadActionLogConfig() async {
+  final String content =
+      await API_Manager().downLoadAFile("sys", ActionLogConfig.fileName);
+
+  Future<void> uploadRepairedConfig(ActionLogConfig config) async {
+    final String jsonContent = actionLogConfigToJson(config);
+    await API_Manager().upLoadAFile(
+      "0:/sys/${ActionLogConfig.fileName}",
+      utf8.encode(jsonContent).length.toString(),
+      Uint8List.fromList(utf8.encode(jsonContent)),
+    );
+  }
+
+  if (content.toLowerCase() == "nok") {
+    final ActionLogConfig fallback = ActionLogConfig.defaults();
+    global.actionLogConfig = fallback;
+    await uploadRepairedConfig(fallback);
+    return;
+  }
+
+  try {
+    final String sanitized = content.replaceFirst('\uFEFF', '');
+    final ActionLogConfig parsed = actionLogConfigFromJson(sanitized);
+    parsed.ensureConsistency();
+    global.actionLogConfig = parsed;
+  } catch (_) {
+    final ActionLogConfig fallback = ActionLogConfig.defaults();
+    global.actionLogConfig = fallback;
+    await uploadRepairedConfig(fallback);
+  }
+}
+
+DateTime? _lastMaintenanceCounterTick;
+
+void actualiserMaintenanceCounters() {
+  _lastMaintenanceCounterTick = DateTime.now();
+  Timer.periodic(const Duration(seconds: 1), (timer) {
+    final DateTime now = DateTime.now();
+    final DateTime previous = _lastMaintenanceCounterTick ?? now;
+    _lastMaintenanceCounterTick = now;
+
+    final double elapsedSeconds =
+        now.difference(previous).inMilliseconds.toDouble() / 1000.0;
+    if (elapsedSeconds <= 0) {
+      return;
+    }
+
+    final String status =
+        global.machineObjectModel.result?.state?.status?.toLowerCase() ?? "";
+    final bool isProcessing = status == "processing";
+
+    for (final MaintenanceOperation operation
+        in global.maintenanceConfig.operations) {
+      if (operation.countdownMode == MaintenanceOperation.modeProcessing) {
+        if (isProcessing) {
+          operation.countedSeconds += elapsedSeconds;
+        }
+      } else {
+        operation.countedSeconds += elapsedSeconds;
+      }
+    }
+  });
+}
+
+void main() async {
+  runApp(const LoadingScreen(
+    message: "Starting",
+  ));
   await Future.delayed(Duration(seconds: 1));
 
   String dateTime = await setDateTimeAndShowAnswer();
-  if (dateTime.contains("Error"))runApp(const ErrorScreen(message: "Could not reach the machine.",));
+  if (dateTime.contains("Error"))
+    runApp(const ErrorScreen(
+      message: "Could not reach the machine.",
+    ));
   else {
-runApp(LoadingScreen(message: dateTime,));
-  await Future.delayed(Duration(seconds: 3));
+    runApp(LoadingScreen(
+      message: dateTime,
+    ));
+    await Future.delayed(Duration(seconds: 3));
 
-  actualiserMachineObjectModel();
-  actualiserMoveObjectModel();
+    actualiserMachineObjectModel();
+    actualiserMoveObjectModel();
 
-  await API_Manager().getdataMachineObjectModel().then((machine) {
+    await API_Manager().getdataMachineObjectModel().then((machine) {
       global.machineObjectModel = machine;
       global.controllerMachineObjectModel.add(machine);
-      if(global.machineObjectModel.result?.job?.filePosition?.toInt()!=null)global.cursorNotifier.value=global.machineObjectModel.result?.job?.filePosition?.toInt()??0;
+      if (global.machineObjectModel.result?.job?.filePosition?.toInt() != null)
+        global.cursorNotifier.value =
+            global.machineObjectModel.result?.job?.filePosition?.toInt() ?? 0;
     });
 
-if (global.machineObjectModel.result?.state?.status=="processing"||global.machineObjectModel.result?.state?.status=="paused"||global.machineObjectModel.result?.state?.status=="pausing"){
-API_Manager().getMachineMode().then((value) => global.machineMode = value);
-}
-else {
+    if (global.machineObjectModel.result?.state?.status == "processing" ||
+        global.machineObjectModel.result?.state?.status == "paused" ||
+        global.machineObjectModel.result?.state?.status == "pausing") {
+      API_Manager()
+          .getMachineMode()
+          .then((value) => global.machineMode = value);
+    } else {
+      await API_Manager().downLoadNwcSettings().then((value) {
+        if (value.hasAnyNull()) {
+          var prov = value.Serie;
+          global.MyMachineN02Config = global.MyMachineN02ConfigDeflaut;
+          global.MyMachineN02Config.Serie = prov;
+          global.DefaultConfigWasLoaded = true;
 
-await API_Manager().downLoadNwcSettings().then((value)  {
-    if (value.hasAnyNull()){
-      var prov = value.Serie;
-      global.MyMachineN02Config = global.MyMachineN02ConfigDeflaut;
-      global.MyMachineN02Config.Serie = prov;
-      global.DefaultConfigWasLoaded = true;
+          API_Manager().upLoadAFile(
+              "0:/sys/nwc-settings.json",
+              global.MyMachineN02Config.toJson().length.toString(),
+              Uint8List.fromList(
+                  machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
+        } else
+          global.MyMachineN02Config = value;
+      });
 
-      API_Manager().upLoadAFile(
-        "0:/sys/nwc-settings.json",
-        global.MyMachineN02Config.toJson().length.toString(),
-        Uint8List.fromList(
-            machineN02ConfigToJson(global.MyMachineN02Config).codeUnits));
+      runApp(const LoadingScreen(
+        message: "NWCSetting is loaded",
+      ));
+
+      await API_Manager().sendGcodeCommand("M453").then((_) {
+        API_Manager()
+            .getMachineMode()
+            .then((value) => global.machineMode = value);
+      });
+
+      runApp(const LoadingScreen(
+        message: "Machine mode is loaded",
+      ));
+
+      // Actualiser la position du palpeur
+      await API_Manager()
+          .sendGcodeCommand(
+              "set global.CoordPalpeurY = ${global.MyMachineN02Config.Palpeur?.PosY ?? "0"}")
+          .then((_) async {
+        await API_Manager().sendGcodeCommand(
+            "set global.CoordPalpeurX = ${global.MyMachineN02Config.Palpeur?.PosX ?? "0"}");
+      });
+
+      runApp(const LoadingScreen(
+        message: "Palpeur position is set",
+      ));
+
+      await API_Manager()
+          .getMachineMoveObjectModel()
+          .then((move) => global.objectModelMove = move);
+
+      runApp(const LoadingScreen(
+        message: "Machine OBM is gettable",
+      ));
+
+      await API_Manager()
+          .getfileList()
+          .then((value) => global.ListofGcodeFile = value);
+
+      runApp(const LoadingScreen(
+        message: "File List is get",
+      ));
+
+      await API_Manager()
+          .getfileListSys()
+          .then((value) => global.ListofSysFile = value);
+
+      runApp(const LoadingScreen(
+        message: "File SYS List is get",
+      ));
+
+      await API_Manager().sendGcodeCommand('M98 P"config.g"');
+      runApp(const LoadingScreen(
+        message: "config.g is sent",
+      ));
+
+      if ((global.MyMachineN02Config.Serie ?? "NUMSTD") == "DEFAULT") {
+      } else
+        await API_Manager()
+            .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "Start");
+
+      actualiserMachineUsedTime();
     }
-    else
-      global.MyMachineN02Config = value;
-  });
 
-  runApp(const LoadingScreen(message: "NWCSetting is loaded",));
+    await loadUserAccountsConfig();
+    runApp(const LoadingScreen(
+      message: "Users data is loaded",
+    ));
 
-  await API_Manager().sendGcodeCommand("M453").then((_) {
-    API_Manager()
-        .getMachineMode()
-        .then((value) => global.machineMode = value);
-  });
- 
-  runApp(const LoadingScreen(message: "Machine mode is loaded",));
+    await loadActionLogConfig();
+    runApp(const LoadingScreen(
+      message: "Actions log data is loaded",
+    ));
 
+    await loadMaintenanceConfig();
+    actualiserMaintenanceCounters();
+    runApp(const LoadingScreen(
+      message: "Maintenance data is loaded",
+    ));
 
-  // Actualiser la position du palpeur
-    await API_Manager().sendGcodeCommand("set global.CoordPalpeurY = ${global.MyMachineN02Config.Palpeur?.PosY??"0"}").then((_) async {
-      await API_Manager().sendGcodeCommand("set global.CoordPalpeurX = ${global.MyMachineN02Config.Palpeur?.PosX??"0"}");
-  });
+    Timer.periodic(const Duration(minutes: 10), (timer) async {
+      await API_Manager().pushDataToDb(
+          global.MyMachineN02Config.Serie ?? "NUMSTD",
+          global.machineObjectModel.result?.state?.status ?? "is alive");
+    });
 
-  runApp(const LoadingScreen(message: "Palpeur position is set",));
+    runApp(const LoadingScreen(
+      message: "ENJOY ! :)",
+    ));
 
-  await API_Manager()
-      .getMachineMoveObjectModel()
-      .then((move) => global.objectModelMove = move);
+    await Future.delayed(Duration(seconds: 1));
 
-  runApp(const LoadingScreen(message: "Machine OBM is gettable",));
-      
-  await API_Manager()
-      .getfileList()
-      .then((value) => global.ListofGcodeFile = value);
-
-  runApp(const LoadingScreen(message: "File List is get",));
-      
-  await API_Manager()
-      .getfileListSys()
-      .then((value) => global.ListofSysFile = value);
-  
-  runApp(const LoadingScreen(message: "File SYS List is get",));
-  
-
-  await API_Manager().sendGcodeCommand('M98 P"config.g"');
-  runApp(const LoadingScreen(message: "config.g is sent",));
-
-  if ((global.MyMachineN02Config.Serie ?? "NUMSTD") == "DEFAULT") {
-  } else
-    await API_Manager()
-        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", "Start");
-  
-  actualiserMachineUsedTime();
-
-}
-  
-
-
-  
-
-  Timer.periodic(const Duration(minutes: 10), (timer) async {
-    await API_Manager()
-        .pushDataToDb(global.MyMachineN02Config.Serie ?? "NUMSTD", global.machineObjectModel.result?.state?.status??"is alive");
-  });
-
-  runApp(const LoadingScreen(message: "ENJOY ! :)",));
-
-  await Future.delayed(Duration(seconds: 1));
-  
-  runApp(const MyApp());
+    runApp(const MyApp());
   }
-  
 }
 
 class MyApp extends StatelessWidget {
@@ -185,18 +359,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: global.appNavigatorKey,
-      initialRoute: '/',
+      initialRoute: '/userLogin',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => DashboardScreen(
-              notifyParent: () {},
-            ),
+        '/': (context) => const UserLoginScreen(),
+        '/userLogin': (context) => const UserLoginScreen(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/dashboard': (context) => DashboardScreen(notifyParent: () {}),
         '/conversationel': (context) => ConversationelScreen(),
         '/programmes': (context) => ProgrammeScreen(),
         '/jobStatus': (context) => JobScreen(),
         '/levelCalibration': (context) => const LevelCalibrationScreen(),
+        '/maintenance': (context) => const MaintenanceScreen(),
         '/origin': (context) => OriginScreen(notifyParent: () {}),
         '/parameters': (context) => ParametreScreen(),
         '/admin': (context) => AdminScreen(),

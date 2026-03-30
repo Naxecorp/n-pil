@@ -6,10 +6,10 @@ import 'package:nweb/service/API/API_Manager.dart';
 import 'package:nweb/service/nwc-settings/nwc-settings.dart';
 import 'package:nweb/service/nwc-settings/offset.dart';
 import '../widgetUtils/window.dart';
+import '../widgetUtils/account_toolbar_button.dart';
 import '../globals_var.dart' as global;
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import '../menus/side_menu.dart';
-
 
 TextEditingController ManualGcodeComand = TextEditingController();
 
@@ -312,6 +312,9 @@ class OriginScreenState extends State<OriginScreen> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Color(0xFF20917F)),
         backgroundColor: Color(0xFFF0F0F3),
+        actions: const <Widget>[
+          AccountToolbarButton(),
+        ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -395,10 +398,9 @@ class OriginScreenState extends State<OriginScreen> {
                   Flexible(
                     flex: 1,
                     child: Window(
-                      title1: "Mesure Hauteur",
-                      title2: " fraise",
-                      child: ResponsiveImageGrid()
-                    ),
+                        title1: "Mesure Hauteur",
+                        title2: " fraise",
+                        child: ResponsiveImageGrid()),
                   ),
                   Flexible(
                     flex: 2,
@@ -487,7 +489,6 @@ class OriginScreenState extends State<OriginScreen> {
                         },
                       ),
                     ),
-                    
                     Flexible(
                       flex: 4,
                       child: Container(
@@ -605,319 +606,447 @@ class OriginScreenState extends State<OriginScreen> {
                     //     ],
                     //   ),
                     // ),
-                    Flexible(child: Container(child :Center(child: Text("Tableau d'outil à venir"),)),flex: 5,),
-                    SizedBox(height: 40,),
-                    Align(alignment: AlignmentGeometry.centerLeft, child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text("Aller chercher :",style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20 ),),
-                    )),
-                    SizedBox(height: 20,),
-                    Flexible(flex: 5,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                      NeumorphicButton(child: Text("T1",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
-                        API_Manager().sendGcodeCommand("T1");
-                        showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (context) => AlertDialog(
-                          content: Row(
-                            children: const [
-                              CircularProgressIndicator(),
-                              SizedBox(width: 20),
-                              Expanded(child: Text("Changement d'outil en cours")),
-                            ],
+                    Flexible(
+                      child: Container(
+                          child: Center(
+                        child: Text("Tableau d'outil à venir"),
+                      )),
+                      flex: 5,
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Align(
+                        alignment: AlignmentGeometry.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            "Aller chercher :",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w300, fontSize: 20),
                           ),
-                        ),
-                      );
-                      bool MachineSuccessToBeStable = false;
-                      try {
-                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
-                          stableDuration: Duration(seconds: 3),
-                          maxWait: Duration(minutes: 4),
-                        );
-                      } catch (e) {
-                        print("Erreur pendant le changement d'outil : \$e");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
-                        );
-                      } finally {
-                        Navigator.of(context).pop();
-                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
-                              ],
+                        )),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Flexible(
+                      flex: 5,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          NeumorphicButton(
+                            child: Text(
+                              "T1",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 25),
                             ),
+                            onPressed: () async {
+                              API_Manager().sendGcodeCommand("T1");
+                              showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (context) => AlertDialog(
+                                  content: Row(
+                                    children: const [
+                                      CircularProgressIndicator(),
+                                      SizedBox(width: 20),
+                                      Expanded(
+                                          child: Text(
+                                              "Changement d'outil en cours")),
+                                    ],
+                                  ),
+                                ),
+                              );
+                              bool MachineSuccessToBeStable = false;
+                              try {
+                                MachineSuccessToBeStable =
+                                    await API_Manager().waitUntilMachineIsStill(
+                                  stableDuration: Duration(seconds: 3),
+                                  maxWait: Duration(minutes: 4),
+                                );
+                              } catch (e) {
+                                print(
+                                    "Erreur pendant le changement d'outil : \$e");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          "❌ Erreur pendant le changement d'outil : \$e"),
+                                      duration: Duration(seconds: 2)),
+                                );
+                              } finally {
+                                Navigator.of(context).pop();
+                                if ((global.machineObjectModel.result?.sensors
+                                            ?.gpIn?[1]?.value ??
+                                        0) ==
+                                    0) {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "✅ L'outil est correctement mis en place")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("✅ changement d'outil terminé"),
+                                    duration: Duration(seconds: 2)),
+                              );
+                            },
                           ),
-                        );
-                      } 
-                      else {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
-                              ],
+                          NeumorphicButton(
+                            child: Text(
+                              "T2",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 25),
                             ),
+                            onPressed: () async {
+                              API_Manager().sendGcodeCommand("T2");
+                              showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (context) => AlertDialog(
+                                  content: Row(
+                                    children: const [
+                                      CircularProgressIndicator(),
+                                      SizedBox(width: 20),
+                                      Expanded(
+                                          child: Text(
+                                              "Changement d'outil en cours")),
+                                    ],
+                                  ),
+                                ),
+                              );
+                              bool MachineSuccessToBeStable = false;
+                              try {
+                                MachineSuccessToBeStable =
+                                    await API_Manager().waitUntilMachineIsStill(
+                                  stableDuration: Duration(seconds: 3),
+                                  maxWait: Duration(minutes: 4),
+                                );
+                              } catch (e) {
+                                print(
+                                    "Erreur pendant le changement d'outil : \$e");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          "❌ Erreur pendant le changement d'outil : \$e"),
+                                      duration: Duration(seconds: 2)),
+                                );
+                              } finally {
+                                Navigator.of(context).pop();
+                                if ((global.machineObjectModel.result?.sensors
+                                            ?.gpIn?[1]?.value ??
+                                        0) ==
+                                    0) {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "✅ L'outil est correctement mis en place")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("✅ changement d'outil terminé"),
+                                    duration: Duration(seconds: 2)),
+                              );
+                            },
                           ),
-                        );
-                      }
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
-                      );
-                      
-                      },),
-                      NeumorphicButton(child: Text("T2",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
-                        API_Manager().sendGcodeCommand("T2");
-                        showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (context) => AlertDialog(
-                          content: Row(
-                            children: const [
-                              CircularProgressIndicator(),
-                              SizedBox(width: 20),
-                              Expanded(child: Text("Changement d'outil en cours")),
-                            ],
-                          ),
-                        ),
-                      );
-                      bool MachineSuccessToBeStable = false;
-                      try {
-                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
-                          stableDuration: Duration(seconds: 3),
-                          maxWait: Duration(minutes: 4),
-                        );
-                      } catch (e) {
-                        print("Erreur pendant le changement d'outil : \$e");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
-                        );
-                      } finally {
-                        Navigator.of(context).pop();
-                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
-                              ],
+                          NeumorphicButton(
+                            child: Text(
+                              "T3",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 25),
                             ),
+                            onPressed: () async {
+                              API_Manager().sendGcodeCommand("T3");
+                              showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (context) => AlertDialog(
+                                  content: Row(
+                                    children: const [
+                                      CircularProgressIndicator(),
+                                      SizedBox(width: 20),
+                                      Expanded(
+                                          child: Text(
+                                              "Changement d'outil en cours")),
+                                    ],
+                                  ),
+                                ),
+                              );
+                              bool MachineSuccessToBeStable = false;
+                              try {
+                                MachineSuccessToBeStable =
+                                    await API_Manager().waitUntilMachineIsStill(
+                                  stableDuration: Duration(seconds: 3),
+                                  maxWait: Duration(minutes: 4),
+                                );
+                              } catch (e) {
+                                print(
+                                    "Erreur pendant le changement d'outil : \$e");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          "❌ Erreur pendant le changement d'outil : \$e"),
+                                      duration: Duration(seconds: 2)),
+                                );
+                              } finally {
+                                Navigator.of(context).pop();
+                                if ((global.machineObjectModel.result?.sensors
+                                            ?.gpIn?[1]?.value ??
+                                        0) ==
+                                    0) {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "✅ L'outil est correctement mis en place")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("✅ changement d'outil terminé"),
+                                    duration: Duration(seconds: 2)),
+                              );
+                            },
                           ),
-                        );
-                      } 
-                      else {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
-                              ],
+                          NeumorphicButton(
+                            child: Text(
+                              "T4",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 25),
                             ),
+                            onPressed: () async {
+                              API_Manager().sendGcodeCommand("T4");
+                              showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (context) => AlertDialog(
+                                  content: Row(
+                                    children: const [
+                                      CircularProgressIndicator(),
+                                      SizedBox(width: 20),
+                                      Expanded(
+                                          child: Text(
+                                              "Changement d'outil en cours")),
+                                    ],
+                                  ),
+                                ),
+                              );
+                              bool MachineSuccessToBeStable = false;
+                              try {
+                                MachineSuccessToBeStable =
+                                    await API_Manager().waitUntilMachineIsStill(
+                                  stableDuration: Duration(seconds: 3),
+                                  maxWait: Duration(minutes: 4),
+                                );
+                              } catch (e) {
+                                print(
+                                    "Erreur pendant le changement d'outil : \$e");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          "❌ Erreur pendant le changement d'outil : \$e"),
+                                      duration: Duration(seconds: 2)),
+                                );
+                              } finally {
+                                Navigator.of(context).pop();
+                                if ((global.machineObjectModel.result?.sensors
+                                            ?.gpIn?[1]?.value ??
+                                        0) ==
+                                    0) {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "✅ L'outil est correctement mis en place")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("✅ changement d'outil terminé"),
+                                    duration: Duration(seconds: 2)),
+                              );
+                            },
                           ),
-                        );
-                      }
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
-                      );
-                      
-                      },),
-                      NeumorphicButton(child: Text("T3",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
-                        API_Manager().sendGcodeCommand("T3");
-                        showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (context) => AlertDialog(
-                          content: Row(
-                            children: const [
-                              CircularProgressIndicator(),
-                              SizedBox(width: 20),
-                              Expanded(child: Text("Changement d'outil en cours")),
-                            ],
-                          ),
-                        ),
-                      );
-                      bool MachineSuccessToBeStable = false;
-                      try {
-                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
-                          stableDuration: Duration(seconds: 3),
-                          maxWait: Duration(minutes: 4),
-                        );
-                      } catch (e) {
-                        print("Erreur pendant le changement d'outil : \$e");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
-                        );
-                      } finally {
-                        Navigator.of(context).pop();
-                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
-                              ],
+                          NeumorphicButton(
+                            child: Text(
+                              "T5",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 25),
                             ),
+                            onPressed: () async {
+                              API_Manager().sendGcodeCommand("T5");
+                              showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (context) => AlertDialog(
+                                  content: Row(
+                                    children: const [
+                                      CircularProgressIndicator(),
+                                      SizedBox(width: 20),
+                                      Expanded(
+                                          child: Text(
+                                              "Changement d'outil en cours")),
+                                    ],
+                                  ),
+                                ),
+                              );
+                              bool MachineSuccessToBeStable = false;
+                              try {
+                                MachineSuccessToBeStable =
+                                    await API_Manager().waitUntilMachineIsStill(
+                                  stableDuration: Duration(seconds: 3),
+                                  maxWait: Duration(minutes: 4),
+                                );
+                              } catch (e) {
+                                print(
+                                    "Erreur pendant le changement d'outil : \$e");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          "❌ Erreur pendant le changement d'outil : \$e"),
+                                      duration: Duration(seconds: 2)),
+                                );
+                              } finally {
+                                Navigator.of(context).pop();
+                                if ((global.machineObjectModel.result?.sensors
+                                            ?.gpIn?[1]?.value ??
+                                        0) ==
+                                    0) {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => AlertDialog(
+                                      content: Row(
+                                        children: const [
+                                          Expanded(
+                                              child: Text(
+                                                  "✅ L'outil est correctement mis en place")),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("✅ changement d'outil terminé"),
+                                    duration: Duration(seconds: 2)),
+                              );
+                            },
                           ),
-                        );
-                      } 
-                      else {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
-                      );
-                      
-                      },),
-                      NeumorphicButton(child: Text("T4",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
-                        API_Manager().sendGcodeCommand("T4");
-                        showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (context) => AlertDialog(
-                          content: Row(
-                            children: const [
-                              CircularProgressIndicator(),
-                              SizedBox(width: 20),
-                              Expanded(child: Text("Changement d'outil en cours")),
-                            ],
-                          ),
-                        ),
-                      );
-                      bool MachineSuccessToBeStable = false;
-                      try {
-                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
-                          stableDuration: Duration(seconds: 3),
-                          maxWait: Duration(minutes: 4),
-                        );
-                      } catch (e) {
-                        print("Erreur pendant le changement d'outil : \$e");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
-                        );
-                      } finally {
-                        Navigator.of(context).pop();
-                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
-                              ],
-                            ),
-                          ),
-                        );
-                      } 
-                      else {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
-                      );
-                      
-                      },),
-                      NeumorphicButton(child: Text("T5",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25 ),),onPressed: ()async {
-                        API_Manager().sendGcodeCommand("T5");
-                        showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (context) => AlertDialog(
-                          content: Row(
-                            children: const [
-                              CircularProgressIndicator(),
-                              SizedBox(width: 20),
-                              Expanded(child: Text("Changement d'outil en cours")),
-                            ],
-                          ),
-                        ),
-                      );
-                      bool MachineSuccessToBeStable = false;
-                      try {
-                        MachineSuccessToBeStable = await API_Manager().waitUntilMachineIsStill(
-                          stableDuration: Duration(seconds: 3),
-                          maxWait: Duration(minutes: 4),
-                        );
-                      } catch (e) {
-                        print("Erreur pendant le changement d'outil : \$e");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("❌ Erreur pendant le changement d'outil : \$e"), duration: Duration(seconds: 2)),
-                        );
-                      } finally {
-                        Navigator.of(context).pop();
-                        if ((global.machineObjectModel.result?.sensors?.gpIn?[1]?.value ??0) ==0){
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("❌ L'outil n'est pas correctement mis en place ! Vérifiez !")),
-                              ],
-                            ),
-                          ),
-                        );
-                      } 
-                      else {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: const [
-                                Expanded(child: Text("✅ L'outil est correctement mis en place")),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("✅ changement d'outil terminé"), duration: Duration(seconds: 2)),
-                      );
-                      
-                      },),
-                      
-                    ],),),
+                        ],
+                      ),
+                    ),
                     Flexible(
                       flex: 4,
                       child: Container(
